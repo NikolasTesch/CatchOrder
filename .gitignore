@@ -40,3 +40,6 @@ yarn-error.log*
 
 # Coverage
 coverage/
+
+# Personal learning context
+.context/

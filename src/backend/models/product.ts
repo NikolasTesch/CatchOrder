@@ -1,9 +1,9 @@
-import { getDb } from '../config/database.ts';
+import { getDb } from '../config/database';
 import type {
   ProductDTO,
   CreateProductDTO,
   UpdateProductDTO,
-} from '../../shared/dtos/ProductDTO.ts';
+} from '../../shared/dtos/productDto.js';
 
 export type { ProductDTO, CreateProductDTO, UpdateProductDTO };
 

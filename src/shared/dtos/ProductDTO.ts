@@ -1,4 +1,4 @@
-import type { Product } from '../types/Product.ts';
+import type { Product } from '../types/product.js';
 
 // DTO é igual à entidade Product (pode ser estendido se necessário)
 export type ProductDTO = Product;

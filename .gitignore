@@ -16,6 +16,14 @@ out/
 *.db
 *.sqlite3
 *.log
+database/*.sqlite
+database/*.db
+
+# Documentation files (not for remote repository)
+SECURITY.md
+SECURITY_COVERAGE.md
+RESUMO_SEGURANCA.md
+IMPROVEMENTS.md
 
 # Editor directories
 .idea/

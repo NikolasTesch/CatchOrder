@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🍽️ Sistema de Comandas para Restaurantes
+# 🍽️ SnapOrder
 
 <p align="center">
   <img src="https://img.shields.io/badge/Node.js-v18+-green.svg" alt="Node.js">
@@ -10,114 +10,114 @@
   <img src="https://img.shields.io/badge/Jest-30.2.0-red.svg" alt="Jest">
 </p>
 
-Sistema completo de gestão de comandas para restaurantes, desenvolvido com Node.js, TypeScript e arquitetura modular. Controle eficiente de mesas, pedidos, produtos, usuários e muito mais em uma aplicação robusta e escalável.
+Complete restaurant order management system, built with Node.js, TypeScript, and modular architecture. Efficient control of tables, orders, products, users, and more in a robust and scalable application.
 
 </div>
 
 ---
 
-## 📋 Índice
+## 📋 Table of Contents
 
-- [Sobre o Projeto](#-sobre-o-projeto)
-- [Funcionalidades](#-funcionalidades)
-- [Tecnologias](#-tecnologias)
-- [Pré-requisitos](#-pré-requisitos)
-- [Instalação](#-instalação)
-- [Como Usar](#-como-usar)
-- [Executando Testes](#-executando-testes)
-- [Estrutura do Projeto](#-estrutura-do-projeto)
+- [About the Project](#-about-the-project)
+- [Features](#-features)
+- [Technologies](#-technologies)
+- [Prerequisites](#-prerequisites)
+- [Installation](#-installation)
+- [How to Use](#-how-to-use)
+- [Running Tests](#-running-tests)
+- [Project Structure](#-project-structure)
 - [API Endpoints](#-api-endpoints)
-- [Banco de Dados](#-banco-de-dados)
-- [Contribuindo](#-contribuindo)
-- [Autores](#-autores)
-- [Licença](#-licença)
+- [Database](#-database)
+- [Contributing](#-contributing)
+- [Authors](#-authors)
+- [License](#-license)
 
 ---
 
-## 📖 Sobre o Projeto
+## 📖 About the Project
 
-O **Sistema de Comandas para Restaurantes** é uma aplicação completa desenvolvida para otimizar o gerenciamento de operações em estabelecimentos gastronômicos. Com um banco de dados SQLite enxuto e eficiente, o sistema oferece todas as funcionalidades necessárias para controlar:
+**SnapOrder** is a complete application developed to optimize the management of operations in gastronomic establishments. With a lean and efficient SQLite database, the system offers all the necessary functionalities to control:
 
-- 👥 **Usuários** - Gerenciamento de funcionários e permissões
-- 🪑 **Mesas** - Controle de ocupação e status
-- 📋 **Pedidos** - Registro e acompanhamento de comandas
-- 🍔 **Produtos** - Catálogo completo do cardápio
-- 💰 **Pagamentos** - Processamento e histórico financeiro
+- 👥 **Users** - Employee management and permissions
+- 🪑 **Tables** - Occupancy control and status
+- 📋 **Orders** - Order registration and tracking
+- 🍔 **Products** - Complete menu catalog
+- 💰 **Payments** - Payment processing and financial history
 
-Ideal para restaurantes, bares, cafeterias e food trucks que buscam modernizar sua gestão operacional.
-
----
-
-## ✨ Funcionalidades
-
-### 🔐 Autenticação e Autorização
-- [x] Sistema de login com JWT
-- [x] Hash de senhas com bcrypt
-- [x] Controle de permissões por função
-
-### 👥 Gestão de Usuários
-- [x] Criar, visualizar, atualizar e deletar usuários
-- [x] Perfis: Admin, Garçom, Cozinha, Caixa
-
-### 🪑 Controle de Mesas
-- [x] Cadastro e gestão de mesas
-- [x] Status: Livre, Ocupada, Reservada
-- [x] Associação com pedidos
-
-### 📋 Gerenciamento de Pedidos
-- [x] Criar pedidos associados a mesas
-- [x] Adicionar/remover itens do pedido
-- [x] Status: Pendente, Em Preparo, Pronto, Entregue
-- [x] Cálculo automático de totais
-
-### 🍔 Catálogo de Produtos
-- [x] CRUD completo de produtos
-- [x] Categorização (Bebidas, Pratos, Sobremesas, etc)
-- [x] Controle de preços e disponibilidade
-
-### 💳 Sistema de Pagamentos
-- [x] Fechamento de contas
-- [x] Múltiplas formas de pagamento
-- [x] Histórico de transações
+Ideal for restaurants, bars, cafeterias, and food trucks looking to modernize their operational management.
 
 ---
 
-## 🛠️ Tecnologias
+## ✨ Features
 
-Este projeto foi construído com as seguintes tecnologias:
+### 🔐 Authentication and Authorization
+- [x] JWT-based login system
+- [x] Password hashing with bcrypt
+- [x] Role-based permission control
+
+### 👥 User Management
+- [x] Create, view, update, and delete users
+- [x] Profiles: Admin, Waiter, Kitchen, Cashier
+
+### 🪑 Table Control
+- [x] Table registration and management
+- [x] Status: Available, Occupied, Reserved
+- [x] Order association
+
+### 📋 Order Management
+- [x] Create orders associated with tables
+- [x] Add/remove order items
+- [x] Status: Pending, In Preparation, Ready, Delivered
+- [x] Automatic total calculation
+
+### 🍔 Product Catalog
+- [x] Complete product CRUD
+- [x] Categorization (Drinks, Dishes, Desserts, etc.)
+- [x] Price and availability control
+
+### 💳 Payment System
+- [x] Bill closing
+- [x] Multiple payment methods
+- [x] Transaction history
+
+---
+
+## 🛠️ Technologies
+
+This project was built with the following technologies:
 
 ### Backend
-- **[Node.js](https://nodejs.org/)** - Ambiente de execução JavaScript
-- **[TypeScript](https://www.typescriptlang.org/)** - Superset JavaScript com tipagem estática
-- **[Express](https://expressjs.com/)** - Framework web minimalista e flexível
-- **[SQLite3](https://www.sqlite.org/)** - Banco de dados SQL embutido
+- **[Node.js](https://nodejs.org/)** - JavaScript runtime environment
+- **[TypeScript](https://www.typescriptlang.org/)** - JavaScript superset with static typing
+- **[Express](https://expressjs.com/)** - Minimalist and flexible web framework
+- **[SQLite3](https://www.sqlite.org/)** - Embedded SQL database
 
-### Segurança
-- **[bcrypt](https://www.npmjs.com/package/bcrypt)** - Hash de senhas
-- **[jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken)** - Autenticação JWT
-- **[cors](https://www.npmjs.com/package/cors)** - Controle de Cross-Origin Resource Sharing
-- **[cookie-parser](https://www.npmjs.com/package/cookie-parser)** - Parse de cookies
+### Security
+- **[bcrypt](https://www.npmjs.com/package/bcrypt)** - Password hashing
+- **[jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken)** - JWT authentication
+- **[cors](https://www.npmjs.com/package/cors)** - Cross-Origin Resource Sharing control
+- **[cookie-parser](https://www.npmjs.com/package/cookie-parser)** - Cookie parsing
 
-### Desenvolvimento
-- **[Jest](https://jestjs.io/)** - Framework de testes
-- **[ts-jest](https://kulshekhar.github.io/ts-jest/)** - Preset Jest para TypeScript
-- **[ts-node-dev](https://www.npmjs.com/package/ts-node-dev)** - Hot reload para desenvolvimento
+### Development
+- **[Jest](https://jestjs.io/)** - Testing framework
+- **[ts-jest](https://kulshekhar.github.io/ts-jest/)** - Jest preset for TypeScript
+- **[ts-node-dev](https://www.npmjs.com/package/ts-node-dev)** - Hot reload for development
 
-### Outros
-- **[dotenv](https://www.npmjs.com/package/dotenv)** - Variáveis de ambiente
-- **[uuid](https://www.npmjs.com/package/uuid)** - Gerador de IDs únicos
+### Others
+- **[dotenv](https://www.npmjs.com/package/dotenv)** - Environment variables
+- **[uuid](https://www.npmjs.com/package/uuid)** - Unique ID generator
 
 ---
 
-## 📋 Pré-requisitos
+## 📋 Prerequisites
 
-Antes de começar, certifique-se de ter instalado em sua máquina:
+Before starting, make sure you have the following installed on your machine:
 
-- **Node.js** (versão 18 ou superior)
-- **npm** (geralmente vem com Node.js) ou **yarn**
-- **Git** (para clonar o repositório)
+- **Node.js** (version 18 or higher)
+- **npm** (usually comes with Node.js) or **yarn**
+- **Git** (to clone the repository)
 
-Para verificar se já possui instalado:
+To check if you already have them installed:
 
 ```bash
 node --version
@@ -127,56 +127,56 @@ git --version
 
 ---
 
-## 🔧 Instalação
+## 🔧 Installation
 
-Siga estas etapas para configurar o projeto em sua máquina local:
+Follow these steps to set up the project on your local machine:
 
-### 1. Clone o repositório
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/NikolasTesch/DesafioRestaurante.git
 cd DesafioRestaurante
 ```
 
-### 2. Instale as dependências
+### 2. Install dependencies
 
 ```bash
 npm install
 ```
 
-### 3. Configure as variáveis de ambiente
+### 3. Configure environment variables
 
-Crie um arquivo `.env` na raiz do projeto:
+Create a `.env` file in the project root:
 
 ```bash
 cp .env.example .env
 ```
 
-Configure as variáveis necessárias:
+Configure the necessary variables:
 
 ```env
-# Servidor
+# Server
 PORT=3000
 NODE_ENV=development
 
-# Banco de Dados
+# Database
 DB_PATH=./database/restaurante.db
 
 # JWT
-JWT_SECRET=seu_secret_super_secreto_aqui
+JWT_SECRET=your_super_secret_key_here
 JWT_EXPIRES_IN=7d
 
 # CORS
 CORS_ORIGIN=http://localhost:3000
 ```
 
-### 4. Execute as migrations do banco de dados
+### 4. Run database migrations
 
 ```bash
 npm run migrate
 ```
 
-### 5. (Opcional) Popule o banco com dados de teste
+### 5. (Optional) Seed the database with test data
 
 ```bash
 npm run seed
@@ -184,27 +184,27 @@ npm run seed
 
 ---
 
-## 🚀 Como Usar
+## 🚀 How to Use
 
-### Modo Desenvolvimento
+### Development Mode
 
-Inicia o servidor com hot reload (reinicia automaticamente ao detectar mudanças):
+Starts the server with hot reload (automatically restarts when changes are detected):
 
 ```bash
 npm run dev
 ```
 
-O servidor estará disponível em: `http://localhost:3000`
+The server will be available at: `http://localhost:3000`
 
-### Modo Produção
+### Production Mode
 
-Compile o projeto TypeScript para JavaScript:
+Compile the TypeScript project to JavaScript:
 
 ```bash
 npm run build
 ```
 
-Inicie o servidor compilado:
+Start the compiled server:
 
 ```bash
 npm start
@@ -212,37 +212,37 @@ npm start
 
 ---
 
-## ⚙️ Executando Testes
+## ⚙️ Running Tests
 
-### Executar todos os testes
+### Run all tests
 
 ```bash
 npm test
 ```
 
-### Executar testes em modo watch
+### Run tests in watch mode
 
-Útil durante desenvolvimento - reexecuta testes automaticamente:
+Useful during development - automatically reruns tests:
 
 ```bash
 npm run test:watch
 ```
 
-### Gerar relatório de cobertura
+### Generate coverage report
 
 ```bash
 npm run test:coverage
 ```
 
-O relatório será gerado em `coverage/lcov-report/index.html`
+The report will be generated at `coverage/lcov-report/index.html`
 
-### 🔩 Testes Implementados
+### 🔩 Implemented Tests
 
-- ✅ **Testes Unitários** - Controllers e Services isolados
-- ✅ **Testes de Integração** - Fluxos completos da API
-- ✅ **Mocks** - Request/Response do Express
+- ✅ **Unit Tests** - Isolated Controllers and Services
+- ✅ **Integration Tests** - Complete API flows
+- ✅ **Mocks** - Express Request/Response
 
-**Exemplo de saída:**
+**Example output:**
 ```
 Test Suites: 1 passed, 1 total
 Tests:       9 passed, 9 total
@@ -252,137 +252,137 @@ Time:        0.588 s
 
 ---
 
-## 📁 Estrutura do Projeto
+## 📁 Project Structure
 
 ```
 DesafioRestaurante/
-├── 📂 database/              # Banco de dados e migrations
-│   ├── migrations/           # Scripts de criação de tabelas
-│   └── seeds/                # Dados iniciais para popular BD
-├── 📂 public/                # Arquivos estáticos (frontend)
-│   ├── css/                  # Estilos
-│   ├── img/                  # Imagens
-│   └── uploads/              # Upload de arquivos
+├── 📂 database/              # Database and migrations
+│   ├── migrations/           # Table creation scripts
+│   └── seeds/                # Initial data for seeding
+├── 📂 public/                # Static files (frontend)
+│   ├── css/                  # Styles
+│   ├── img/                  # Images
+│   └── uploads/              # File uploads
 ├── 📂 src/
-│   ├── 📂 backend/           # Código do servidor
-│   │   ├── app.ts            # Configuração Express
-│   │   ├── server.ts         # Inicialização do servidor
-│   │   ├── 📂 config/        # Configurações (BD, Auth, etc)
-│   │   ├── 📂 controllers/   # Controladores (lógica das rotas)
-│   │   ├── 📂 middlewares/   # Middlewares (auth, validation, etc)
-│   │   ├── 📂 models/        # Modelos de dados (entidades)
-│   │   ├── 📂 routes/        # Definição de rotas da API
-│   │   ├── 📂 services/      # Lógica de negócio
-│   │   └── 📂 utils/         # Funções utilitárias
-│   ├── 📂 frontend/          # Interface do usuário
-│   │   ├── 📂 components/    # Componentes reutilizáveis
-│   │   ├── 📂 pages/         # Páginas da aplicação
-│   │   ├── 📂 services/      # Requisições API
-│   │   └── 📂 utils/         # Helpers frontend
-│   └── 📂 shared/            # Código compartilhado
+│   ├── 📂 backend/           # Server code
+│   │   ├── app.ts            # Express configuration
+│   │   ├── server.ts         # Server initialization
+│   │   ├── 📂 config/        # Configurations (DB, Auth, etc.)
+│   │   ├── 📂 controllers/   # Controllers (route logic)
+│   │   ├── 📂 middlewares/   # Middlewares (auth, validation, etc.)
+│   │   ├── 📂 models/        # Data models (entities)
+│   │   ├── 📂 routes/        # API route definitions
+│   │   ├── 📂 services/      # Business logic
+│   │   └── 📂 utils/         # Utility functions
+│   ├── 📂 frontend/          # User interface
+│   │   ├── 📂 components/    # Reusable components
+│   │   ├── 📂 pages/         # Application pages
+│   │   ├── 📂 services/      # API requests
+│   │   └── 📂 utils/         # Frontend helpers
+│   └── 📂 shared/            # Shared code
 │       ├── 📂 dtos/          # Data Transfer Objects
-│       └── 📂 types/         # Definições de tipos TypeScript
-├── 📂 tests/                 # Testes automatizados
-│   ├── 📂 integration/       # Testes de integração
-│   └── 📂 unit/              # Testes unitários
-├── .env                      # Variáveis de ambiente (não versionado)
-├── .gitignore                # Arquivos ignorados pelo Git
-├── jest.config.js            # Configuração Jest
-├── package.json              # Dependências e scripts
-├── tsconfig.json             # Configuração TypeScript
-└── README.md                 # Este arquivo
+│       └── 📂 types/         # TypeScript type definitions
+├── 📂 tests/                 # Automated tests
+│   ├── 📂 integration/       # Integration tests
+│   └── 📂 unit/              # Unit tests
+├── .env                      # Environment variables (not versioned)
+├── .gitignore                # Files ignored by Git
+├── jest.config.js            # Jest configuration
+├── package.json              # Dependencies and scripts
+├── tsconfig.json             # TypeScript configuration
+└── README.md                 # This file
 ```
 
 ---
 
 ## 🌐 API Endpoints
 
-### 🔐 Autenticação
+### 🔐 Authentication
 
-| Método | Endpoint        | Descrição           |
+| Method | Endpoint        | Description         |
 |--------|-----------------|---------------------|
-| POST   | `/auth/login`   | Login de usuário    |
-| POST   | `/auth/logout`  | Logout de usuário   |
-| GET    | `/auth/me`      | Dados do usuário    |
+| POST   | `/auth/login`   | User login          |
+| POST   | `/auth/logout`  | User logout         |
+| GET    | `/auth/me`      | User data           |
 
-### 👥 Usuários
+### 👥 Users
 
-| Método | Endpoint         | Descrição                 |
+| Method | Endpoint         | Description               |
 |--------|------------------|---------------------------|
-| GET    | `/users`         | Lista todos os usuários   |
-| GET    | `/users/:id`     | Busca usuário específico  |
-| POST   | `/users`         | Cria novo usuário         |
-| PUT    | `/users/:id`     | Atualiza usuário          |
-| DELETE | `/users/:id`     | Remove usuário            |
+| GET    | `/users`         | List all users            |
+| GET    | `/users/:id`     | Get specific user         |
+| POST   | `/users`         | Create new user           |
+| PUT    | `/users/:id`     | Update user               |
+| DELETE | `/users/:id`     | Remove user               |
 
-### 🪑 Mesas
+### 🪑 Tables
 
-| Método | Endpoint         | Descrição                 |
+| Method | Endpoint         | Description               |
 |--------|------------------|---------------------------|
-| GET    | `/tables`        | Lista todas as mesas      |
-| GET    | `/tables/:id`    | Busca mesa específica     |
-| POST   | `/tables`        | Cria nova mesa            |
-| PUT    | `/tables/:id`    | Atualiza mesa             |
-| DELETE | `/tables/:id`    | Remove mesa               |
+| GET    | `/tables`        | List all tables           |
+| GET    | `/tables/:id`    | Get specific table        |
+| POST   | `/tables`        | Create new table          |
+| PUT    | `/tables/:id`    | Update table              |
+| DELETE | `/tables/:id`    | Remove table              |
 
-### 📋 Pedidos
+### 📋 Orders
 
-| Método | Endpoint              | Descrição                     |
+| Method | Endpoint              | Description                   |
 |--------|-----------------------|-------------------------------|
-| GET    | `/orders`             | Lista todos os pedidos        |
-| GET    | `/orders/:id`         | Busca pedido específico       |
-| POST   | `/orders`             | Cria novo pedido              |
-| PUT    | `/orders/:id`         | Atualiza pedido               |
-| DELETE | `/orders/:id`         | Cancela pedido                |
-| POST   | `/orders/:id/items`   | Adiciona item ao pedido       |
-| DELETE | `/orders/:id/items/:itemId` | Remove item do pedido  |
+| GET    | `/orders`             | List all orders               |
+| GET    | `/orders/:id`         | Get specific order            |
+| POST   | `/orders`             | Create new order              |
+| PUT    | `/orders/:id`         | Update order                  |
+| DELETE | `/orders/:id`         | Cancel order                  |
+| POST   | `/orders/:id/items`   | Add item to order             |
+| DELETE | `/orders/:id/items/:itemId` | Remove item from order  |
 
-### 🍔 Produtos
+### 🍔 Products
 
-| Método | Endpoint          | Descrição                   |
+| Method | Endpoint          | Description                 |
 |--------|-------------------|-----------------------------|
-| GET    | `/products`       | Lista todos os produtos     |
-| GET    | `/products/:id`   | Busca produto específico    |
-| POST   | `/products`       | Cria novo produto           |
-| PUT    | `/products/:id`   | Atualiza produto            |
-| DELETE | `/products/:id`   | Remove produto              |
+| GET    | `/products`       | List all products           |
+| GET    | `/products/:id`   | Get specific product        |
+| POST   | `/products`       | Create new product          |
+| PUT    | `/products/:id`   | Update product              |
+| DELETE | `/products/:id`   | Remove product              |
 
 ---
 
-## 🗄️ Banco de Dados
+## 🗄️ Database
 
 ### SQLite Schema
 
-O projeto utiliza **SQLite** como banco de dados, ideal para:
-- ✅ Desenvolvimento rápido
-- ✅ Sem necessidade de servidor de BD
-- ✅ Portabilidade total
-- ✅ Zero configuração
+This project uses **SQLite** as database, ideal for:
+- ✅ Fast development
+- ✅ No database server needed
+- ✅ Total portability
+- ✅ Zero configuration
 
-### Principais Tabelas
+### Main Tables
 
 ```sql
--- Usuários do sistema
+-- System users
 users (
   id, name, email, password_hash, role, created_at, updated_at
 )
 
--- Mesas do restaurante
+-- Restaurant tables
 tables (
   id, number, capacity, status, created_at, updated_at
 )
 
--- Pedidos/Comandas
+-- Orders
 orders (
   id, table_id, user_id, status, total, created_at, updated_at
 )
 
--- Itens dos pedidos
+-- Order items
 order_items (
   id, order_id, product_id, quantity, unit_price, subtotal
 )
 
--- Produtos do cardápio
+-- Menu products
 products (
   id, name, description, category, price, available, created_at, updated_at
 )
@@ -390,42 +390,42 @@ products (
 
 ---
 
-## 🤝 Contribuindo
+## 🤝 Contributing
 
-Contribuições são sempre bem-vindas! Este projeto segue o fluxo de trabalho Git Flow.
+Contributions are always welcome! This project follows the Git Flow workflow.
 
-### Como contribuir:
+### How to contribute:
 
-1. **Fork** o projeto
-2. Crie uma **branch** para sua feature
+1. **Fork** the project
+2. Create a **branch** for your feature
    ```bash
-   git checkout -b feature/MinhaNovaFeature
+   git checkout -b feature/MyNewFeature
    ```
-3. **Commit** suas mudanças
+3. **Commit** your changes
    ```bash
-   git commit -m 'feat: Adiciona nova funcionalidade X'
+   git commit -m 'feat: Add new feature X'
    ```
-4. **Push** para a branch
+4. **Push** to the branch
    ```bash
-   git push origin feature/MinhaNovaFeature
+   git push origin feature/MyNewFeature
    ```
-5. Abra um **Pull Request**
+5. Open a **Pull Request**
 
-### Padrões de Commit
+### Commit Standards
 
-Seguimos o [Conventional Commits](https://www.conventionalcommits.org/):
+We follow [Conventional Commits](https://www.conventionalcommits.org/):
 
-- `feat:` Nova funcionalidade
-- `fix:` Correção de bug
-- `docs:` Documentação
-- `style:` Formatação
-- `refactor:` Refatoração
-- `test:` Testes
-- `chore:` Manutenção
+- `feat:` New feature
+- `fix:` Bug fix
+- `docs:` Documentation
+- `style:` Formatting
+- `refactor:` Refactoring
+- `test:` Tests
+- `chore:` Maintenance
 
 ---
 
-## ✒️ Autores
+## ✒️ Authors
 
 <table>
   <tr>
@@ -440,28 +440,28 @@ Seguimos o [Conventional Commits](https://www.conventionalcommits.org/):
   </tr>
 </table>
 
-Veja também a lista de [colaboradores](https://github.com/NikolasTesch/DesafioRestaurante/contributors) que participaram deste projeto.
+See also the list of [contributors](https://github.com/NikolasTesch/DesafioRestaurante/contributors) who participated in this project.
 
 ---
 
-## 📄 Licença
+## 📄 License
 
-Este projeto está sob a licença **ISC**. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+This project is licensed under the **ISC** license. See the [LICENSE](LICENSE) file for more details.
 
 ---
 
-## 🎁 Agradecimentos
+## 🎁 Acknowledgments
 
-- 🎓 **Alpha EdTech** - Pela formação e desafio proposto
-- 💡 Comunidade Node.js e TypeScript
-- 📚 Todos os contribuidores do projeto
+- 🎓 **Alpha EdTech** - For the training and proposed challenge
+- 💡 Node.js and TypeScript community
+- 📚 All project contributors
 
 ---
 
 <div align="center">
 
-**⭐ Se este projeto te ajudou, considere dar uma estrela!**
+**⭐ If this project helped you, consider giving it a star!**
 
-Desenvolvido com 💙 por [Nikolas Tesch](https://github.com/NikolasTesch)
+Developed with 💙 by [Nikolas Tesch](https://github.com/NikolasTesch)
 
 </div>

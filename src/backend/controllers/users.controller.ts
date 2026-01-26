@@ -108,4 +108,9 @@ class UsersController {
   }
 }
 
+// Exporta a classe para testes unitários
+export { UsersController };
+
+// Exporta uma instância para uso nas rotas
 export default new UsersController();
+

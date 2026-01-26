@@ -41,5 +41,12 @@ yarn-error.log*
 # Coverage
 coverage/
 
+# Test files
+tests/
+*.spec.ts
+*.spec.js
+*.test.ts
+*.test.js
+
 # Personal learning context
 .context/

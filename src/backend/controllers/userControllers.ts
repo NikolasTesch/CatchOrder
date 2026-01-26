@@ -30,7 +30,7 @@ class UsersController {
   async show(req: Request, res: Response): Promise<Response> {
     try {
       const { id } = req.params;
-      
+
       // TODO: Implementar lógica de busca por ID
       return res.status(200).json({
         message: `Usuário com ID ${id}`,
@@ -51,7 +51,7 @@ class UsersController {
   async store(req: Request, res: Response): Promise<Response> {
     try {
       const userData = req.body;
-      
+
       // TODO: Implementar lógica de criação de usuário
       return res.status(201).json({
         message: 'Usuário criado com sucesso',
@@ -73,7 +73,7 @@ class UsersController {
     try {
       const { id } = req.params;
       const userData = req.body;
-      
+
       // TODO: Implementar lógica de atualização
       return res.status(200).json({
         message: `Usuário ${id} atualizado com sucesso`,
@@ -94,7 +94,7 @@ class UsersController {
   async delete(req: Request, res: Response): Promise<Response> {
     try {
       const { id } = req.params;
-      
+
       // TODO: Implementar lógica de remoção
       return res.status(200).json({
         message: `Usuário ${id} removido com sucesso`
@@ -113,4 +113,3 @@ export { UsersController };
 
 // Exporta uma instância para uso nas rotas
 export default new UsersController();
-

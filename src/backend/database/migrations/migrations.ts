@@ -1,10 +1,10 @@
-import { getDb } from './database';
+import { getDb } from '../../config/database';
 
 export const runMigrations = async () => {
-    const db = await getDb();
+  const db = await getDb();
 
-    // Tabela de Categorias
-    await db.exec(`
+  // Tabela de Categorias
+  await db.exec(`
     CREATE TABLE IF NOT EXISTS categories (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
@@ -12,8 +12,8 @@ export const runMigrations = async () => {
     )
   `);
 
-    // Tabela de Produtos
-    await db.exec(`
+  // Tabela de Produtos
+  await db.exec(`
     CREATE TABLE IF NOT EXISTS products (
       id TEXT PRIMARY KEY,
       category_id TEXT NOT NULL,
@@ -26,8 +26,8 @@ export const runMigrations = async () => {
     )
   `);
 
-    // Tabela de Usuários
-    await db.exec(`
+  // Tabela de Usuários
+  await db.exec(`
     CREATE TABLE IF NOT EXISTS users (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
@@ -38,8 +38,8 @@ export const runMigrations = async () => {
     )
   `);
 
-    // Tabela de Mesas (Restaurant Tables)
-    await db.exec(`
+  // Tabela de Mesas (Restaurant Tables)
+  await db.exec(`
     CREATE TABLE IF NOT EXISTS restaurant_tables (
       id TEXT PRIMARY KEY,
       number INTEGER UNIQUE NOT NULL,
@@ -47,8 +47,8 @@ export const runMigrations = async () => {
     )
   `);
 
-    // Tabela de Pedidos (Orders)
-    await db.exec(`
+  // Tabela de Pedidos (Orders)
+  await db.exec(`
     CREATE TABLE IF NOT EXISTS orders (
       id TEXT PRIMARY KEY,
       table_id TEXT NOT NULL,
@@ -62,8 +62,8 @@ export const runMigrations = async () => {
     )
   `);
 
-    // Tabela de Itens do Pedido (Order Items)
-    await db.exec(`
+  // Tabela de Itens do Pedido (Order Items)
+  await db.exec(`
     CREATE TABLE IF NOT EXISTS order_items (
       id TEXT PRIMARY KEY,
       order_id TEXT NOT NULL,
@@ -75,5 +75,5 @@ export const runMigrations = async () => {
     )
   `);
 
-    console.log('Migrações executadas com sucesso!');
+  console.log('Migrações executadas com sucesso!');
 };

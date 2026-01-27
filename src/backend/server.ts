@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import { app } from './app';
-import { runMigrations } from './config/migrations';
+import { runMigrations } from './database/migrations/migrations';
 
 dotenv.config();
 
@@ -8,7 +8,6 @@ const PORT = process.env.PORT || 3000;
 
 const startServer = async () => {
     try {
-        // 1. Rodar Migrations (Criar tabelas)
         await runMigrations();
 
         app.listen(PORT, () => {

@@ -3,7 +3,7 @@ import type {
   ProductDTO,
   CreateProductDTO,
   UpdateProductDTO,
-} from '../../shared/dtos/productDto.js';
+} from '../../shared/dtos/productDto';
 
 export type { ProductDTO, CreateProductDTO, UpdateProductDTO };
 

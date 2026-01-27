@@ -5,18 +5,13 @@
  */
 
 import { CorsOptions } from 'cors';
+import env from './environment';
 
 /**
  * Lista de origens permitidas para CORS
- * Em produção, deve conter apenas os domínios autorizados
+ * Carregada das variáveis de ambiente
  */
-const allowedOrigins = [
-  'http://localhost:3000',
-  'http://localhost:3001',
-  'http://localhost:5173', // Vite default
-  'http://localhost:4200', // Angular default
-  // Adicionar domínios de produção aqui
-];
+const allowedOrigins = env.CORS_ORIGIN;
 
 /**
  * Configuração do CORS
@@ -62,10 +57,9 @@ export const corsConfig: CorsOptions = {
  */
 export const helmetConfig = {
   // Proteção contra clickjacking (iframes)
+  // 'deny' bloqueia todos os iframes | 'sameorigin' permite mesma origem
   frameguard: {
-    action: 'deny' as const // Bloqueia TODOS os iframes
-    // Alternativas:
-    // action: 'sameorigin' - Permite apenas iframes da mesma origem
+    action: 'sameorigin' as const
   },
   
   // Content Security Policy - Define políticas de carregamento de recursos

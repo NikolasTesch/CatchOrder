@@ -9,31 +9,21 @@ import hpp from 'hpp';
 /**
  * Sanitização contra NoSQL Injection
  * Remove operadores do MongoDB ($, .) dos inputs
- * 
- * Previne ataques como:
- * { "username": {"$gt": ""}, "password": {"$gt": ""} }
  */
 export const sanitizeData = mongoSanitize({
-  replaceWith: '_', // Substitui caracteres proibidos por '_'
-  onSanitize: ({ req, key }) => {
-    console.warn(`⚠️ Tentativa de NoSQL injection detectada: ${key} na rota ${req.path}`);
-  },
+  replaceWith: '_',
 });
 
 /**
  * Proteção contra HTTP Parameter Pollution (HPP)
  * Previne poluição de query parameters
- * 
- * Exemplo de ataque:
- * ?id=1&id=2&id=3 (pode causar comportamento inesperado)
  */
 export const preventParameterPollution = hpp({
-  whitelist: ['sort', 'fields', 'page', 'limit'], // Parâmetros que podem ser duplicados
+  whitelist: ['sort', 'fields', 'page', 'limit'],
 });
 
 /**
  * Validação de tamanho de payload
- * Previne ataques de payload muito grandes
  */
 export const payloadSizeLimit = (req: any, res: any, next: any) => {
   const maxSize = 10 * 1024 * 1024; // 10MB
@@ -49,36 +39,19 @@ export const payloadSizeLimit = (req: any, res: any, next: any) => {
 };
 
 /**
- * Sanitização de inputs de usuário
- * Remove caracteres HTML perigosos para prevenir XSS
+ * Sanitização básica de inputs para prevenir XSS
  */
 export const sanitizeInput = (req: any, res: any, next: any) => {
-  // Sanitiza body
-  if (req.body) {
-    req.body = sanitizeObject(req.body);
-  }
-  
-  // Sanitiza query params
-  if (req.query) {
-    req.query = sanitizeObject(req.query);
-  }
-  
-  // Sanitiza params
-  if (req.params) {
-    req.params = sanitizeObject(req.params);
-  }
+  if (req.body) req.body = sanitizeObject(req.body);
+  if (req.query) req.query = sanitizeObject(req.query);
+  if (req.params) req.params = sanitizeObject(req.params);
   
   next();
 };
 
-/**
- * Função auxiliar para sanitizar objetos recursivamente
- */
 function sanitizeObject(obj: any): any {
   if (typeof obj === 'string') {
-    return obj
-      .replace(/[<>]/g, '') // Remove < e >
-      .trim();
+    return obj.replace(/[<>]/g, '').trim();
   }
   
   if (Array.isArray(obj)) {

@@ -8,6 +8,11 @@
  * - Documentar todas as variáveis necessárias
  */
 
+import dotenv from 'dotenv';
+
+// Carrega variáveis de ambiente do arquivo .env
+dotenv.config();
+
 interface EnvironmentConfig {
   // Server
   NODE_ENV: string;
@@ -65,7 +70,7 @@ function loadEnvironment(): EnvironmentConfig {
     // CORS
     CORS_ORIGIN: process.env.CORS_ORIGIN 
       ? process.env.CORS_ORIGIN.split(',')
-      : ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:5173'],
+      : ['http://localhost:3000', 'http://localhost:3001'],
     
     // Rate Limiting
     RATE_LIMIT_WINDOW: parseInt(process.env.RATE_LIMIT_WINDOW || '900000', 10), // 15 min

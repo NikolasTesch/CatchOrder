@@ -7,7 +7,7 @@ import {
   validateResourceId,
   validatePagination,
 } from '../middlewares/validation';
-import { createLimiter, authLimiter } from '../middlewares/rateLimiter';
+import { authLimiter } from '../middlewares/rateLimiter';
 
 const usersRoutes = Router();
 
@@ -35,10 +35,9 @@ usersRoutes.get(
   asyncHandler(usersController.show)
 );
 
-// POST /users - Cria um novo usuário (rate limit mais restritivo)
+// POST /users - Cria um novo usuário
 usersRoutes.post(
   '/',
-  createLimiter, // 10 criações por hora
   validateUserCreation,
   asyncHandler(usersController.store)
 );
@@ -50,10 +49,10 @@ usersRoutes.put(
   asyncHandler(usersController.update)
 );
 
-// DELETE /users/:id - Remove um usuário (rate limit de autenticação)
+// DELETE /users/:id - Remove um usuário
 usersRoutes.delete(
   '/:id',
-  authLimiter, // Operação sensível
+  authLimiter,
   validateResourceId,
   asyncHandler(usersController.delete)
 );

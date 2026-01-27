@@ -1,4 +1,5 @@
 import { getDb } from '../../config/database';
+import { runSeeds } from '../seeds/seeds';
 
 export const runMigrations = async () => {
   const db = await getDb();
@@ -75,5 +76,6 @@ export const runMigrations = async () => {
     )
   `);
 
-  console.log('Migrações executadas com sucesso!');
+  // Executar seeds
+  await runSeeds();
 };

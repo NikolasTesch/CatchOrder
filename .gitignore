@@ -21,6 +21,7 @@ out/
 .idea/
 *.swp
 *.swo
+.agent/
 
 # VS Code - Ignorar arquivos locais, mas manter configs do projeto
 .vscode/*

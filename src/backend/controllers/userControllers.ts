@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { hashPassword } from '../utils/passwordHash';
 
 /**
  * Controller responsável pelas operações relacionadas a usuários
@@ -50,12 +51,14 @@ class UsersController {
    */
   async store(req: Request, res: Response): Promise<Response> {
     try {
-      const userData = req.body;
+      const { name, username, password, role } = req.body;
+
+      const password_hash = await hashPassword(password);
 
       // TODO: Implementar lógica de criação de usuário
       return res.status(201).json({
         message: 'Usuário criado com sucesso',
-        data: userData
+        data: { name, username, role, password_hash }
       });
     } catch (error) {
       return res.status(500).json({

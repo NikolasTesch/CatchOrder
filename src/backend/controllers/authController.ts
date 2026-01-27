@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { getDb } from '../config/database';
-import { verifyPassword } from '../utils/password_hash';
+import { verifyPassword } from '../utils/passwordHash';
 import jwt from 'jsonwebtoken';
 
 class AuthController {

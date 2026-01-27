@@ -4,10 +4,11 @@ import jwt from 'jsonwebtoken';
 interface UserPayload {
   id: string;
   email: string;
-  [key: string]: any; //Futuramente deve ser trocado para os campos que serão usados no payload - Da forma que está é uma forma genérica
+  iat: number;
+  exp: number;
+  role: 'admin' | 'user';
 }
 
-//Declaração global para adicionar a propriedade user (opcional) ao objeto Request (que faz parte do express)
 declare global {
   namespace Express {
     interface Request {

@@ -4,11 +4,11 @@ import { ProductModel } from '../models/productModel';
 
 interface IdParam {
   id: string;
-}
+};
 
 interface CategoryIdParam {
   categoryId: string;
-}
+};
 
 class ProductsController {
   /**

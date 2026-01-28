@@ -1,21 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-
-interface UserPayload {
-  id: string;
-  email: string;
-  iat: number;
-  exp: number;
-  role: 'admin' | 'user' ;
-}
-
-declare global {
-  namespace Express {
-    interface Request {
-      user?: UserPayload;
-    }
-  }
-}
+import { UserPayload } from '../../shared/types/user';
 
 export const authenticateToken = (req: Request, res: Response, next: NextFunction): void => {
   const token = req.cookies.token || req.headers['authorization']?.split(' ')[1];

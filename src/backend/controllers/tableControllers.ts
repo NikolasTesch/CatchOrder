@@ -3,10 +3,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { TableModel } from '../models/tableModel';
 import { TableStatus } from '../../shared/types/table';
 
-interface IdParam {
-  id: string;
-}
-
 class TablesController {
   /**
    * List all tables
@@ -31,9 +27,9 @@ class TablesController {
    * Get a specific table by ID
    * GET /tables/:id
    */
-  async show(req: Request<IdParam>, res: Response): Promise<Response> {
+  async show(req: Request, res: Response): Promise<Response> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const table = await TableModel.findById(id);
 
       if (!table) {
@@ -50,6 +46,54 @@ class TablesController {
     } catch (error) {
       return res.status(500).json({
         message: 'Error retrieving table',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+  }
+
+  /**
+   * Get available tables
+   * GET /tables/available
+   */
+  async indexAvailable(req: Request, res: Response): Promise<Response> {
+    try {
+      const tables = await TableModel.findAvailable();
+      return res.status(200).json({
+        message: 'Available tables retrieved successfully',
+        data: tables,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: 'Error retrieving available tables',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+  }
+
+  /**
+   * Get tables by status
+   * GET /tables/status/:status
+   */
+  async indexByStatus(req: Request, res: Response): Promise<Response> {
+    try {
+      const status = req.params.status as TableStatus;
+
+      if (!Object.values(TableStatus).includes(status)) {
+        return res.status(400).json({
+          message:
+            'Invalid status. Valid values: AVAILABLE, OCCUPIED, RESERVED',
+          data: null,
+        });
+      }
+
+      const tables = await TableModel.findByStatus(status);
+      return res.status(200).json({
+        message: 'Tables by status retrieved successfully',
+        data: tables,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: 'Error retrieving tables by status',
         error: error instanceof Error ? error.message : 'Unknown error',
       });
     }
@@ -101,9 +145,9 @@ class TablesController {
    * Update an existing table
    * PUT /tables/:id
    */
-  async update(req: Request<IdParam>, res: Response): Promise<Response> {
+  async update(req: Request, res: Response): Promise<Response> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const updateData = req.body;
 
       // If updating number, check for duplicates
@@ -139,59 +183,12 @@ class TablesController {
   }
 
   /**
-   * Delete a table
-   * DELETE /tables/:id
-   */
-  async delete(req: Request<IdParam>, res: Response): Promise<Response> {
-    try {
-      const { id } = req.params;
-
-      const deleted = await TableModel.delete(id);
-
-      if (!deleted) {
-        return res.status(404).json({
-          message: 'Table not found',
-          data: null,
-        });
-      }
-
-      return res.status(200).json({
-        message: 'Table deleted successfully',
-      });
-    } catch (error) {
-      return res.status(500).json({
-        message: 'Error deleting table',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      });
-    }
-  }
-
-  /**
-   * Get available tables
-   * GET /tables/available
-   */
-  async indexAvailable(req: Request, res: Response): Promise<Response> {
-    try {
-      const tables = await TableModel.findAvailable();
-      return res.status(200).json({
-        message: 'Available tables retrieved successfully',
-        data: tables,
-      });
-    } catch (error) {
-      return res.status(500).json({
-        message: 'Error retrieving available tables',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      });
-    }
-  }
-
-  /**
    * Update table status
    * PATCH /tables/:id/status
    */
-  async updateStatus(req: Request<IdParam>, res: Response): Promise<Response> {
+  async updateStatus(req: Request, res: Response): Promise<Response> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const { status } = req.body;
 
       if (!status || !Object.values(TableStatus).includes(status)) {
@@ -217,6 +214,34 @@ class TablesController {
     } catch (error) {
       return res.status(500).json({
         message: 'Error updating table status',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+  }
+
+  /**
+   * Delete a table
+   * DELETE /tables/:id
+   */
+  async delete(req: Request, res: Response): Promise<Response> {
+    try {
+      const id = req.params.id as string;
+
+      const deleted = await TableModel.delete(id);
+
+      if (!deleted) {
+        return res.status(404).json({
+          message: 'Table not found',
+          data: null,
+        });
+      }
+
+      return res.status(200).json({
+        message: 'Table deleted successfully',
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: 'Error deleting table',
         error: error instanceof Error ? error.message : 'Unknown error',
       });
     }

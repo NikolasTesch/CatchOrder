@@ -13,31 +13,32 @@ app.use((req, res, next) => {
 });
 
 // Security: CORS configuration
-const allowedOrigins = [
-  'http://localhost:3000',
-  'http://localhost:3001',
-];
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001'];
 
-app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (mobile apps, Postman)
-    if (!origin) return callback(null, true);
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (mobile apps, Postman)
+      if (!origin) return callback(null, true);
 
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-}));
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
+  }),
+);
 
 // Middlewares
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../../public')));
 app.use(routes);
-app.get('*', (req, res) => {
+
+// Catch-all route for SPA - using named parameter for path-to-regexp v8+
+app.get('/{*catchall}', (req, res) => {
   res.sendFile(path.join(__dirname, '../../public/index.html'));
 });
 

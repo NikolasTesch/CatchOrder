@@ -1,0 +1,26 @@
+/* Variáveis de Identidade Visual */
+:root {
+  --primary: #154956;
+  --background-light: #f6f7f8;
+  --text-main: #111827;
+  --text-secondary: #6b7280;
+  --border-gray: #e5e7eb;
+
+  /* Sombras originais do design */
+  --shadow-card: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --shadow-logo: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Work Sans', sans-serif;
+  background-color: var(--background-light);
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}

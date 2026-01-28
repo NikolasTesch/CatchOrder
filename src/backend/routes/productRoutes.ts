@@ -1,48 +1,30 @@
-import { Router } from "express";
-import { productsController } from "../controllers/productControllers";
-import { authenticateToken } from "../middlewares/jwtAuth";
+import { Router } from 'express';
+import { productsController } from '../controllers/productControllers';
 
 const productsRoutes = Router();
 
 // GET routes
-productsRoutes.get("/", authenticateToken, productsController.index);
+productsRoutes.get('/', productsController.index);
+productsRoutes.get('/active', productsController.indexActive);
+productsRoutes.get('/search', productsController.search);
+productsRoutes.get('/category/:categoryId', productsController.indexByCategory);
 productsRoutes.get(
-  "/active",
-  authenticateToken,
-  productsController.indexActive,
-);
-productsRoutes.get("/search", authenticateToken, productsController.search);
-productsRoutes.get(
-  "/category/:categoryId",
-  authenticateToken,
-  productsController.indexByCategory,
-);
-productsRoutes.get(
-  "/category/:categoryId/active",
-  authenticateToken,
+  '/category/:categoryId/active',
   productsController.indexActiveByCat,
 );
-productsRoutes.get("/:id", authenticateToken, productsController.show);
+productsRoutes.get('/:id', productsController.show);
 
 // POST routes
-productsRoutes.post("/", authenticateToken, productsController.store);
+productsRoutes.post('/', productsController.store);
 
 // PUT routes
-productsRoutes.put("/:id", authenticateToken, productsController.update);
+productsRoutes.put('/:id', productsController.update);
 
 // PATCH routes
-productsRoutes.patch(
-  "/:id/deactivate",
-  authenticateToken,
-  productsController.deactivate,
-);
-productsRoutes.patch(
-  "/:id/activate",
-  authenticateToken,
-  productsController.activate,
-);
+productsRoutes.patch('/:id/deactivate', productsController.deactivate);
+productsRoutes.patch('/:id/activate', productsController.activate);
 
 // DELETE routes
-productsRoutes.delete("/:id", authenticateToken, productsController.delete);
+productsRoutes.delete('/:id', productsController.delete);
 
 export { productsRoutes };

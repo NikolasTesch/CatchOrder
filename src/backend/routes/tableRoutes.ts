@@ -1,37 +1,24 @@
 import { Router } from 'express';
 import { tableController } from '../controllers/tableControllers';
-import { authenticateToken } from '../middlewares/jwtAuth';
 
 const tablesRoutes = Router();
 
 // GET routes
-tablesRoutes.get('/', authenticateToken, tableController.index);
-tablesRoutes.get(
-  '/available',
-  authenticateToken,
-  tableController.indexAvailable,
-);
-tablesRoutes.get(
-  '/status/:status',
-  authenticateToken,
-  tableController.indexByStatus,
-);
-tablesRoutes.get('/:id', authenticateToken, tableController.show);
+tablesRoutes.get('/', tableController.index);
+tablesRoutes.get('/available', tableController.indexAvailable);
+tablesRoutes.get('/status/:status', tableController.indexByStatus);
+tablesRoutes.get('/:id', tableController.show);
 
 // POST routes
-tablesRoutes.post('/', authenticateToken, tableController.store);
+tablesRoutes.post('/', tableController.store);
 
 // PUT routes
-tablesRoutes.put('/:id', authenticateToken, tableController.update);
+tablesRoutes.put('/:id', tableController.update);
 
 // PATCH routes
-tablesRoutes.patch(
-  '/:id/status',
-  authenticateToken,
-  tableController.updateStatus,
-);
+tablesRoutes.patch('/:id/status', tableController.updateStatus);
 
 // DELETE routes
-tablesRoutes.delete('/:id', authenticateToken, tableController.delete);
+tablesRoutes.delete('/:id', tableController.delete);
 
 export { tablesRoutes };

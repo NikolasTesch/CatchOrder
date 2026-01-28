@@ -16,10 +16,16 @@ export class CategoryModel {
     static async create(data: CreateCategoryDTO): Promise<CategoryDTO> {
         const db = await getDb();
         const id = uuidv4();
+        const slug = data.name
+            .toLowerCase()
+            .trim()
+            .replace(/[^\w\s-]/g, '')
+            .replace(/[\s_-]+/g, '-')
+            .replace(/^-+|-+$/g, '');
 
         await db.run(
-            'INSERT INTO categories (id, name) VALUES (?, ?)',
-            [id, data.name]
+            'INSERT INTO categories (id, name, slug) VALUES (?, ?, ?)',
+            [id, data.name, slug]
         );
 
         const category = await CategoryModel.findById(id);
@@ -32,12 +38,15 @@ export class CategoryModel {
 
         const db = await getDb();
 
-        // In this case, we only have 'name' to update, but this pattern supports future fields
         const newName = data.name !== undefined ? data.name : current.name;
+        // Regenerate slug if name changed
+        const newSlug = data.name !== undefined
+            ? data.name.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, '')
+            : current.slug;
 
         await db.run(
-            'UPDATE categories SET name = ? WHERE id = ?',
-            [newName, id]
+            'UPDATE categories SET name = ?, slug = ? WHERE id = ?',
+            [newName, newSlug, id]
         );
 
         return CategoryModel.findById(id);

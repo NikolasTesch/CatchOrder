@@ -9,7 +9,7 @@ export const getDb = async (): Promise<Database> => {
         return db;
     }
 
-    const dbPath = path.resolve(__dirname, '../database/restaurante.sqlite');
+    const dbPath = process.env.DB_SOURCE || path.resolve(__dirname, '../database/restaurante.sqlite');
 
     db = await open({
         filename: dbPath,

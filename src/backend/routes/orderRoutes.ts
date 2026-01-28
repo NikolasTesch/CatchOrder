@@ -5,6 +5,8 @@ import { authenticateToken } from '../middlewares/jwtAuth';
 
 const ordersRoutes = Router();
 
+ordersRoutes.get('/', authenticateToken, orderController.index);
+ordersRoutes.get('/:id', authenticateToken, orderController.show);
 ordersRoutes.post('/', authenticateToken, orderController.store);
 ordersRoutes.post('/:id/items', orderController.addItem);
 ordersRoutes.post('/:id/close', orderController.closeOrder);

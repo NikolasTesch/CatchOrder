@@ -1,23 +1,36 @@
 import { Router } from 'express';
-import tableController from '../controllers/tableControllers';
-
+import { tableController } from '../controllers/tableControllers';
 import { authenticateToken } from '../middlewares/jwtAuth';
 
 const tablesRoutes = Router();
 
-// GET /tables - Lista todas as mesas
+// GET routes
 tablesRoutes.get('/', authenticateToken, tableController.index);
-
-// GET /tables/:id - Busca uma mesa específica pelo ID
+tablesRoutes.get(
+  '/available',
+  authenticateToken,
+  tableController.indexAvailable,
+);
+// @ts-expect-error - Express Router type limitation with generic Request params
 tablesRoutes.get('/:id', authenticateToken, tableController.show);
 
-// POST /tables - Cria uma nova mesa (ex: mesa 01, mesa 02)
+// POST routes
 tablesRoutes.post('/', authenticateToken, tableController.store);
 
-// PUT /tables/:id - Atualiza status ou número da mesa
+// PUT routes
+// @ts-expect-error - Express Router type limitation with generic Request params
 tablesRoutes.put('/:id', authenticateToken, tableController.update);
 
-// DELETE /tables/:id - Remove uma mesa do sistema
+// PATCH routes
+tablesRoutes.patch(
+  '/:id/status',
+  authenticateToken,
+  // @ts-expect-error - Express Router type limitation with generic Request params
+  tableController.updateStatus,
+);
+
+// DELETE routes
+// @ts-expect-error - Express Router type limitation with generic Request params
 tablesRoutes.delete('/:id', authenticateToken, tableController.delete);
 
 export { tablesRoutes };

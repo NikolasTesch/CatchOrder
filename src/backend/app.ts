@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { routes } from './routes';
+import path from 'path';
 
 const app = express();
 
@@ -21,7 +22,7 @@ app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (mobile apps, Postman)
     if (!origin) return callback(null, true);
-    
+
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -34,6 +35,10 @@ app.use(cors({
 // Middlewares
 app.use(express.json());
 app.use(cookieParser());
+app.use(express.static(path.join(__dirname, '../../public')));
 app.use(routes);
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../public/index.html'));
+});
 
 export { app };

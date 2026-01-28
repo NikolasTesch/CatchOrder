@@ -6,7 +6,7 @@ interface UserPayload {
   email: string;
   iat: number;
   exp: number;
-  role: 'admin' | 'user';
+  role: 'admin' | 'user' ;
 }
 
 declare global {

@@ -3,6 +3,8 @@ import { hashPassword } from '../utils/passwordHash';
 import { UserModel } from '../models/userModel';
 import type { CreateUserDTO, UpdateUserDTO } from '../../shared/dtos/userDto';
 
+type IdParam = { id: string };
+
 const userModel = new UserModel();
 
 /**
@@ -32,7 +34,7 @@ class UsersController {
    * Busca um usuário específico por ID
    * GET /users/:id
    */
-  async show(req: Request, res: Response): Promise<Response> {
+  async show(req: Request<IdParam>, res: Response): Promise<Response> {
     try {
       const { id } = req.params;
       const user = await userModel.findById(id);
@@ -98,7 +100,7 @@ class UsersController {
    * Atualiza um usuário existente
    * PUT /users/:id
    */
-  async update(req: Request, res: Response): Promise<Response> {
+  async update(req: Request<IdParam>, res: Response): Promise<Response> {
     try {
       const { id } = req.params;
       const userData: UpdateUserDTO & { password?: string } = req.body;
@@ -132,7 +134,7 @@ class UsersController {
    * Remove um usuário
    * DELETE /users/:id
    */
-  async delete(req: Request, res: Response): Promise<Response> {
+  async delete(req: Request<IdParam>, res: Response): Promise<Response> {
     try {
       const { id } = req.params;
 

@@ -26,7 +26,7 @@ class AuthController {
       }
 
       const secret = process.env.JWT_SECRET;
-      
+
       if (!secret) {
         console.error('JWT_SECRET is not defined');
         return res.status(500).json({ message: 'Erro interno do servidor' });
@@ -41,7 +41,7 @@ class AuthController {
    
       const { password_hash, ...userSafe } = user;
 
-     
+
       res.cookie('token', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',

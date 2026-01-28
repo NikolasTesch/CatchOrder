@@ -1,5 +1,9 @@
 import { Request, Response } from 'express';
 import { hashPassword } from '../utils/passwordHash';
+import { UserModel } from '../models/userModel';
+import type { CreateUserDTO, UpdateUserDTO } from '../../shared/dtos/userDto';
+
+const userModel = new UserModel();
 
 /**
  * Controller responsável pelas operações relacionadas a usuários
@@ -11,10 +15,10 @@ class UsersController {
    */
   async index(req: Request, res: Response): Promise<Response> {
     try {
-      // TODO: Implementar lógica de busca de usuários
+      const users = await userModel.findAll();
       return res.status(200).json({
         message: 'Lista de usuários',
-        data: []
+        data: users
       });
     } catch (error) {
       return res.status(500).json({
@@ -31,11 +35,15 @@ class UsersController {
   async show(req: Request, res: Response): Promise<Response> {
     try {
       const { id } = req.params;
+      const user = await userModel.findById(id);
 
-      // TODO: Implementar lógica de busca por ID
+      if (!user) {
+        return res.status(404).json({ message: 'Usuário não encontrado' });
+      }
+
       return res.status(200).json({
         message: `Usuário com ID ${id}`,
-        data: null
+        data: user
       });
     } catch (error) {
       return res.status(500).json({
@@ -53,12 +61,30 @@ class UsersController {
     try {
       const { name, username, password, role } = req.body;
 
+      if (!name || !username || !password || !role) {
+        return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
+      }
+
+      // Check if user already exists
+      const existingUser = await userModel.findByUsername(username);
+      if (existingUser) {
+        return res.status(409).json({ message: 'Usuário já existe' });
+      }
+
       const password_hash = await hashPassword(password);
 
-      // TODO: Implementar lógica de criação de usuário
+      const newUser: CreateUserDTO = {
+        name,
+        username,
+        password_hash,
+        role
+      };
+
+      const userId = await userModel.create(newUser);
+
       return res.status(201).json({
         message: 'Usuário criado com sucesso',
-        data: { name, username, role, password_hash }
+        data: { id: userId, name, username, role }
       });
     } catch (error) {
       return res.status(500).json({
@@ -75,9 +101,21 @@ class UsersController {
   async update(req: Request, res: Response): Promise<Response> {
     try {
       const { id } = req.params;
-      const userData = req.body;
+      const userData: UpdateUserDTO & { password?: string } = req.body;
 
-      // TODO: Implementar lógica de atualização
+      // Prevent password update via this method if not intended, or handle hashing if involved.
+      // For now, assuming standard update. If password is included, it should be hashed.
+      if (userData.password) {
+        userData.password_hash = await hashPassword(userData.password);
+        delete userData.password;
+      }
+
+      const updated = await userModel.update(id, userData);
+
+      if (!updated) {
+        return res.status(404).json({ message: 'Usuário não encontrado ou sem alterações' });
+      }
+
       return res.status(200).json({
         message: `Usuário ${id} atualizado com sucesso`,
         data: userData
@@ -98,7 +136,12 @@ class UsersController {
     try {
       const { id } = req.params;
 
-      // TODO: Implementar lógica de remoção
+      const deleted = await userModel.delete(id);
+
+      if (!deleted) {
+        return res.status(404).json({ message: 'Usuário não encontrado' });
+      }
+
       return res.status(200).json({
         message: `Usuário ${id} removido com sucesso`
       });

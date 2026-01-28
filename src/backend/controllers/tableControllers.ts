@@ -12,15 +12,15 @@ class TablesController {
    * List all tables
    * GET /tables
    */
-  async index(req: Request, res: Response): Promise<Response> {
+  async index(req: Request, res: Response): Promise<void> {
     try {
       const tables = await TableModel.findAll();
-      return res.status(200).json({
+      res.status(200).json({
         message: 'Tables retrieved successfully',
         data: tables,
       });
     } catch (error) {
-      return res.status(500).json({
+      res.status(500).json({
         message: 'Error retrieving tables',
         error: error instanceof Error ? error.message : 'Unknown error',
       });
@@ -31,24 +31,25 @@ class TablesController {
    * Get a specific table by ID
    * GET /tables/:id
    */
-  async show(req: Request<IdParam>, res: Response): Promise<Response> {
+  async show(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const table = await TableModel.findById(id);
 
       if (!table) {
-        return res.status(404).json({
+        res.status(404).json({
           message: 'Table not found',
           data: null,
         });
+        return;
       }
 
-      return res.status(200).json({
+      res.status(200).json({
         message: 'Table retrieved successfully',
         data: table,
       });
     } catch (error) {
-      return res.status(500).json({
+      res.status(500).json({
         message: 'Error retrieving table',
         error: error instanceof Error ? error.message : 'Unknown error',
       });
@@ -59,24 +60,26 @@ class TablesController {
    * Create a new table
    * POST /tables
    */
-  async store(req: Request, res: Response): Promise<Response> {
+  async store(req: Request, res: Response): Promise<void> {
     try {
       const { number, status } = req.body;
 
       if (!number) {
-        return res.status(400).json({
+        res.status(400).json({
           message: 'Table number is required',
           data: null,
         });
+        return;
       }
 
       // Check if table number already exists
       const existingTable = await TableModel.findByNumber(number);
       if (existingTable) {
-        return res.status(409).json({
+        res.status(409).json({
           message: 'Table number already exists',
           data: null,
         });
+        return;
       }
 
       const table = await TableModel.create({
@@ -85,12 +88,12 @@ class TablesController {
         status: status || TableStatus.AVAILABLE,
       });
 
-      return res.status(201).json({
+      res.status(201).json({
         message: 'Table created successfully',
         data: table,
       });
     } catch (error) {
-      return res.status(500).json({
+      res.status(500).json({
         message: 'Error creating table',
         error: error instanceof Error ? error.message : 'Unknown error',
       });
@@ -101,37 +104,39 @@ class TablesController {
    * Update an existing table
    * PUT /tables/:id
    */
-  async update(req: Request<IdParam>, res: Response): Promise<Response> {
+  async update(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const updateData = req.body;
 
       // If updating number, check for duplicates
       if (updateData.number) {
         const existingTable = await TableModel.findByNumber(updateData.number);
         if (existingTable && existingTable.id !== id) {
-          return res.status(409).json({
+          res.status(409).json({
             message: 'Table number already exists',
             data: null,
           });
+          return;
         }
       }
 
       const table = await TableModel.update(id, updateData);
 
       if (!table) {
-        return res.status(404).json({
+        res.status(404).json({
           message: 'Table not found',
           data: null,
         });
+        return;
       }
 
-      return res.status(200).json({
+      res.status(200).json({
         message: 'Table updated successfully',
         data: table,
       });
     } catch (error) {
-      return res.status(500).json({
+      res.status(500).json({
         message: 'Error updating table',
         error: error instanceof Error ? error.message : 'Unknown error',
       });
@@ -142,24 +147,25 @@ class TablesController {
    * Delete a table
    * DELETE /tables/:id
    */
-  async delete(req: Request<IdParam>, res: Response): Promise<Response> {
+  async delete(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
 
       const deleted = await TableModel.delete(id);
 
       if (!deleted) {
-        return res.status(404).json({
+        res.status(404).json({
           message: 'Table not found',
           data: null,
         });
+        return;
       }
 
-      return res.status(200).json({
+      res.status(200).json({
         message: 'Table deleted successfully',
       });
     } catch (error) {
-      return res.status(500).json({
+      res.status(500).json({
         message: 'Error deleting table',
         error: error instanceof Error ? error.message : 'Unknown error',
       });
@@ -170,15 +176,15 @@ class TablesController {
    * Get available tables
    * GET /tables/available
    */
-  async indexAvailable(req: Request, res: Response): Promise<Response> {
+  async indexAvailable(req: Request, res: Response): Promise<void> {
     try {
       const tables = await TableModel.findAvailable();
-      return res.status(200).json({
+      res.status(200).json({
         message: 'Available tables retrieved successfully',
         data: tables,
       });
     } catch (error) {
-      return res.status(500).json({
+      res.status(500).json({
         message: 'Error retrieving available tables',
         error: error instanceof Error ? error.message : 'Unknown error',
       });
@@ -189,33 +195,35 @@ class TablesController {
    * Update table status
    * PATCH /tables/:id/status
    */
-  async updateStatus(req: Request<IdParam>, res: Response): Promise<Response> {
+  async updateStatus(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const { status } = req.body;
 
       if (!status || !Object.values(TableStatus).includes(status)) {
-        return res.status(400).json({
+        res.status(400).json({
           message: 'Valid status is required (AVAILABLE, OCCUPIED, RESERVED)',
           data: null,
         });
+        return;
       }
 
       const table = await TableModel.updateStatus(id, status);
 
       if (!table) {
-        return res.status(404).json({
+        res.status(404).json({
           message: 'Table not found',
           data: null,
         });
+        return;
       }
 
-      return res.status(200).json({
+      res.status(200).json({
         message: 'Table status updated successfully',
         data: table,
       });
     } catch (error) {
-      return res.status(500).json({
+      res.status(500).json({
         message: 'Error updating table status',
         error: error instanceof Error ? error.message : 'Unknown error',
       });

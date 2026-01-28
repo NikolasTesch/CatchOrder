@@ -1,0 +1,193 @@
+/* Container Principal: Centraliza a box na tela */
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem 1.5rem;
+}
+
+/* Header e Logo (Acima da Box) */
+.header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.logo-box {
+  background-color: var(--primary);
+  width: 80px;
+  height: 80px;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  box-shadow: var(--shadow-logo);
+}
+
+.icon-main {
+  color: white;
+  font-size: 48px !important;
+}
+
+.brand-name {
+  color: var(--primary);
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* A BOX DE LOGIN (CARD) */
+.card {
+  background-color: #ffffff;
+  border: 1px solid var(--border-gray);
+  border-radius: 1rem;
+  /* Bordas mais arredondadas */
+  padding: 2.5rem 2rem;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 30px 60px -10px rgba(0, 0, 0, 0.35);
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+/* Formulário e Campos de Input */
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #374151;
+}
+
+.input-field {
+  width: 100%;
+  height: 3.5rem;
+  padding: 0 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.input-field:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary);
+}
+
+/* Wrapper para o campo de senha com ícone */
+.input-password-wrapper {
+  display: flex;
+}
+
+.password-input {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-right: 0;
+}
+
+.password-toggle {
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+  border: 1px solid #d1d5db;
+  border-left: 0;
+  border-radius: 0 0.5rem 0.5rem 0;
+  background-color: #ffffff;
+  color: #9ca3af;
+  cursor: pointer;
+}
+
+.forgot-password {
+  text-align: right;
+  margin-top: 0.5rem;
+}
+
+.forgot-password a {
+  color: var(--primary);
+  font-size: 0.75rem;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* Botão Principal */
+.btn-primary {
+  width: 100%;
+  height: 3.5rem;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 1.5rem;
+  box-shadow: var(--shadow-logo);
+  transition: transform 0.1s, filter 0.2s;
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+.btn-primary:hover {
+  filter: brightness(1.1);
+}
+
+/* Rodapé */
+.footer {
+  margin-top: 2rem;
+  text-align: center;
+  max-width: 350px;
+}
+
+.footer p {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.link-bold {
+  color: var(--text-main);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* Prompt de Cadastro abaixo do botão */
+.signup-prompt {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.signup-prompt a {
+  color: var(--primary);
+  font-weight: 700;
+  text-decoration: none;
+  margin-left: 4px;
+  transition: opacity 0.2s;
+}
+
+.signup-prompt a:hover {
+  text-decoration: underline;
+  opacity: 0.8;
+}

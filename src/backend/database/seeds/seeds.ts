@@ -1,5 +1,6 @@
 import { getDb } from '../../config/database';
 import { v4 as uuidv4 } from 'uuid';
+import { userRole } from '../../../shared/types/user';
 
 // Gerar IDs com UUID
 const categoryBebidasId = uuidv4();
@@ -256,7 +257,7 @@ const users = [
     username: 'admin',
     password_hash:
       '$2b$10$uxzd8zB2dPQPvhR8KS1nGO5c7xB9kV3cM5xQ2d1E6xL9w9Y8zB2jm', // password: admin123
-    role: 'ADMIN',
+    role: userRole.ADMIN,
   },
   {
     id: userIds[1],
@@ -264,7 +265,7 @@ const users = [
     username: 'joao.silva',
     password_hash:
       '$2b$10$uxzd8zB2dPQPvhR8KS1nGO5c7xB9kV3cM5xQ2d1E6xL9w9Y8zB2jm', // password: admin123
-    role: 'MANAGER',
+    role: userRole.MANAGER,
   },
   {
     id: userIds[2],
@@ -272,7 +273,7 @@ const users = [
     username: 'maria.santos',
     password_hash:
       '$2b$10$uxzd8zB2dPQPvhR8KS1nGO5c7xB9kV3cM5xQ2d1E6xL9w9Y8zB2jm', // password: admin123
-    role: 'WAITER',
+    role: userRole.WAITER,
   },
   {
     id: userIds[3],
@@ -280,7 +281,7 @@ const users = [
     username: 'carlos.oliveira',
     password_hash:
       '$2b$10$uxzd8zB2dPQPvhR8KS1nGO5c7xB9kV3cM5xQ2d1E6xL9w9Y8zB2jm', // password: admin123
-    role: 'WAITER',
+    role: userRole.WAITER,
   },
   {
     id: userIds[4],
@@ -288,7 +289,7 @@ const users = [
     username: 'ana.costa',
     password_hash:
       '$2b$10$uxzd8zB2dPQPvhR8KS1nGO5c7xB9kV3cM5xQ2d1E6xL9w9Y8zB2jm', // password: admin123
-    role: 'WAITER',
+    role: userRole.WAITER,
   },
 ];
 

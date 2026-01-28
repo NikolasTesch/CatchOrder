@@ -1,139 +1,226 @@
 import { Request, Response } from 'express';
-import { TableModel } from "../models/tableModel";
-import type {
-  CreateTableDTO,
-  UpdateTableDTO,
-} from "../../shared/dtos/tableDto";
+import { v4 as uuidv4 } from 'uuid';
+import { TableModel } from '../models/tableModel';
+import { TableStatus } from '../../shared/types/table';
 
-type IdParam = { id: string };
-
-const tableModel = new TableModel();
+interface IdParam {
+  id: string;
+}
 
 class TablesController {
+  /**
+   * List all tables
+   * GET /tables
+   */
   async index(req: Request, res: Response): Promise<Response> {
     try {
-      const tables = await tableModel.findAll();
+      const tables = await TableModel.findAll();
       return res.status(200).json({
-        message: "Lista de mesas",
+        message: 'Tables retrieved successfully',
         data: tables,
       });
     } catch (error) {
       return res.status(500).json({
-        message: "Erro ao listar mesas",
-        error: error instanceof Error ? error.message : "Erro desconhecido",
+        message: 'Error retrieving tables',
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
     }
   }
 
+  /**
+   * Get a specific table by ID
+   * GET /tables/:id
+   */
   async show(req: Request<IdParam>, res: Response): Promise<Response> {
     try {
       const { id } = req.params;
-
-      const table = await tableModel.findById(id);
+      const table = await TableModel.findById(id);
 
       if (!table) {
-        return res.status(404).json({ message: "Mesa não encontrada" });
+        return res.status(404).json({
+          message: 'Table not found',
+          data: null,
+        });
       }
 
       return res.status(200).json({
-        message: `Mesa com ID ${id}`,
+        message: 'Table retrieved successfully',
         data: table,
       });
     } catch (error) {
       return res.status(500).json({
-        message: "Erro ao buscar mesa",
-        error: error instanceof Error ? error.message : "Erro desconhecido",
+        message: 'Error retrieving table',
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
     }
   }
 
+  /**
+   * Create a new table
+   * POST /tables
+   */
   async store(req: Request, res: Response): Promise<Response> {
     try {
       const { number, status } = req.body;
 
-      if (number === undefined) {
-        return res
-          .status(400)
-          .json({ message: "Número da mesa é obrigatório" });
+      if (!number) {
+        return res.status(400).json({
+          message: 'Table number is required',
+          data: null,
+        });
       }
 
       // Check if table number already exists
-      const existingTable = await tableModel.findByNumber(number);
+      const existingTable = await TableModel.findByNumber(number);
       if (existingTable) {
-        return res
-          .status(409)
-          .json({ message: "Mesa com este número já existe" });
+        return res.status(409).json({
+          message: 'Table number already exists',
+          data: null,
+        });
       }
 
-      const newTable: CreateTableDTO = {
+      const table = await TableModel.create({
+        id: uuidv4(),
         number,
-        status,
-      };
-
-      const tableId = await tableModel.create(newTable);
+        status: status || TableStatus.AVAILABLE,
+      });
 
       return res.status(201).json({
-        message: "Mesa criada com sucesso",
-        data: { id: tableId, ...newTable },
+        message: 'Table created successfully',
+        data: table,
       });
     } catch (error) {
       return res.status(500).json({
-        message: "Erro ao criar mesa",
-        error: error instanceof Error ? error.message : "Erro desconhecido",
+        message: 'Error creating table',
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
     }
   }
 
+  /**
+   * Update an existing table
+   * PUT /tables/:id
+   */
   async update(req: Request<IdParam>, res: Response): Promise<Response> {
     try {
       const { id } = req.params;
-      const { number, status } = req.body;
+      const updateData = req.body;
 
-      const updateData: UpdateTableDTO = {};
-      if (number !== undefined) updateData.number = number;
-      if (status !== undefined) updateData.status = status;
+      // If updating number, check for duplicates
+      if (updateData.number) {
+        const existingTable = await TableModel.findByNumber(updateData.number);
+        if (existingTable && existingTable.id !== id) {
+          return res.status(409).json({
+            message: 'Table number already exists',
+            data: null,
+          });
+        }
+      }
 
-      const updated = await tableModel.update(id, updateData);
+      const table = await TableModel.update(id, updateData);
 
-      if (!updated) {
-        return res
-          .status(404)
-          .json({ message: "Mesa não encontrada ou sem alterações" });
+      if (!table) {
+        return res.status(404).json({
+          message: 'Table not found',
+          data: null,
+        });
       }
 
       return res.status(200).json({
-        message: `Mesa ${id} atualizada com sucesso`,
-        data: updateData,
+        message: 'Table updated successfully',
+        data: table,
       });
     } catch (error) {
       return res.status(500).json({
-        message: "Erro ao atualizar mesa",
-        error: error instanceof Error ? error.message : "Erro desconhecido",
+        message: 'Error updating table',
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
     }
   }
 
+  /**
+   * Delete a table
+   * DELETE /tables/:id
+   */
   async delete(req: Request<IdParam>, res: Response): Promise<Response> {
     try {
       const { id } = req.params;
 
-      const deleted = await tableModel.delete(id);
+      const deleted = await TableModel.delete(id);
 
       if (!deleted) {
-        return res.status(404).json({ message: "Mesa não encontrada" });
+        return res.status(404).json({
+          message: 'Table not found',
+          data: null,
+        });
       }
 
       return res.status(200).json({
-        message: `Mesa ${id} removida com sucesso`,
+        message: 'Table deleted successfully',
       });
     } catch (error) {
       return res.status(500).json({
-        message: "Erro ao remover mesa",
-        error: error instanceof Error ? error.message : "Erro desconhecido",
+        message: 'Error deleting table',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+  }
+
+  /**
+   * Get available tables
+   * GET /tables/available
+   */
+  async indexAvailable(req: Request, res: Response): Promise<Response> {
+    try {
+      const tables = await TableModel.findAvailable();
+      return res.status(200).json({
+        message: 'Available tables retrieved successfully',
+        data: tables,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: 'Error retrieving available tables',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+  }
+
+  /**
+   * Update table status
+   * PATCH /tables/:id/status
+   */
+  async updateStatus(req: Request<IdParam>, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+
+      if (!status || !Object.values(TableStatus).includes(status)) {
+        return res.status(400).json({
+          message: 'Valid status is required (AVAILABLE, OCCUPIED, RESERVED)',
+          data: null,
+        });
+      }
+
+      const table = await TableModel.updateStatus(id, status);
+
+      if (!table) {
+        return res.status(404).json({
+          message: 'Table not found',
+          data: null,
+        });
+      }
+
+      return res.status(200).json({
+        message: 'Table status updated successfully',
+        data: table,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: 'Error updating table status',
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
     }
   }
 }
 
-export { TablesController };
-export default new TablesController();
+export const tableController = new TablesController();

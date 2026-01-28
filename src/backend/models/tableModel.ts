@@ -1,74 +1,104 @@
 import { getDb } from '../config/database';
-import { v4 as uuidv4 } from 'uuid';
-import { Table } from '../../shared/types/table';
-import { CreateTableDTO, UpdateTableDTO } from '../../shared/dtos/tableDto';
+import type {
+  TableDTO,
+  CreateTableDTO,
+  UpdateTableDTO,
+} from '../../shared/dtos/tableDto';
+import { TableStatus } from '../../shared/types/table';
+
+export type { TableDTO, CreateTableDTO, UpdateTableDTO };
 
 export class TableModel {
-
-  async findAll(): Promise<Table[]> {
+  static async findAll(): Promise<TableDTO[]> {
     const db = await getDb();
-    const tables = await db.all<Table[]>('SELECT * FROM restaurant_tables', []);
+    const tables = await db.all<TableDTO[]>(
+      'SELECT * FROM restaurant_tables ORDER BY number',
+    );
     return tables;
   }
 
-  async findById(id: string): Promise<Table | undefined> {
+  static async findById(id: string): Promise<TableDTO | undefined> {
     const db = await getDb();
-    const table = await db.get<Table>(
+    const table = await db.get<TableDTO>(
       'SELECT * FROM restaurant_tables WHERE id = ?',
-      [id]
+      [id],
     );
     return table;
   }
 
-  async findByNumber(number: number): Promise<Table | undefined> {
+  static async findByNumber(number: number): Promise<TableDTO | undefined> {
     const db = await getDb();
-    const table = await db.get<Table>('SELECT * FROM restaurant_tables WHERE number = ?', [number]);
+    const table = await db.get<TableDTO>(
+      'SELECT * FROM restaurant_tables WHERE number = ?',
+      [number],
+    );
     return table;
   }
 
-  async create(table: CreateTableDTO): Promise<string> {
+  static async findByStatus(status: TableStatus): Promise<TableDTO[]> {
     const db = await getDb();
-    const id = uuidv4();
-    const status = table.status || 'AVAILABLE';
-    
+    const tables = await db.all<TableDTO[]>(
+      'SELECT * FROM restaurant_tables WHERE status = ? ORDER BY number',
+      [status],
+    );
+    return tables;
+  }
+
+  static async findAvailable(): Promise<TableDTO[]> {
+    return TableModel.findByStatus(TableStatus.AVAILABLE);
+  }
+
+  static async create(data: CreateTableDTO): Promise<TableDTO> {
+    const db = await getDb();
+    const { id, number, status = TableStatus.AVAILABLE } = data;
+
     await db.run(
-      'INSERT INTO restaurant_tables (id, number, status) VALUES (?, ?, ?)',
-      [id, table.number, status]
+      `INSERT INTO restaurant_tables (id, number, status) VALUES (?, ?, ?)`,
+      [id, number, status],
     );
-    return id;
+
+    const table = await TableModel.findById(id);
+    return table!;
   }
 
-  async update(id: string, table: UpdateTableDTO): Promise<boolean> {
+  static async update(
+    id: string,
+    data: UpdateTableDTO,
+  ): Promise<TableDTO | undefined> {
+    const current = await TableModel.findById(id);
+    if (!current) return undefined;
+
+    const updated = { ...current, ...data };
+
     const db = await getDb();
-    
-    // Build dynamic query
-    const fields: string[] = [];
-    const values: any[] = [];
+    await db.run(
+      `UPDATE restaurant_tables SET number = ?, status = ? WHERE id = ?`,
+      [updated.number, updated.status, id],
+    );
 
-    if (table.number !== undefined) {
-      fields.push('number = ?');
-      values.push(table.number);
-    }
-    if (table.status !== undefined) {
-      fields.push('status = ?');
-      values.push(table.status);
-    }
+    return TableModel.findById(id);
+  }
 
-    if (fields.length === 0) return false;
-
-    values.push(id);
-
+  static async updateStatus(
+    id: string,
+    status: TableStatus,
+  ): Promise<TableDTO | undefined> {
+    const db = await getDb();
     const result = await db.run(
-      `UPDATE restaurant_tables SET ${fields.join(', ')} WHERE id = ?`,
-      values
+      'UPDATE restaurant_tables SET status = ? WHERE id = ?',
+      [status, id],
     );
 
-    return (result.changes ?? 0) > 0;
+    if ((result.changes ?? 0) === 0) return undefined;
+
+    return TableModel.findById(id);
   }
 
-  async delete(id: string): Promise<boolean> {
+  static async delete(id: string): Promise<boolean> {
     const db = await getDb();
-    const result = await db.run('DELETE FROM restaurant_tables WHERE id = ?', [id]);
+    const result = await db.run('DELETE FROM restaurant_tables WHERE id = ?', [
+      id,
+    ]);
     return (result.changes ?? 0) > 0;
   }
 }

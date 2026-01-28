@@ -4,9 +4,6 @@ import { authenticateToken } from "../middlewares/jwtAuth";
 
 const authRoutes = Router();
 
-// Rota pública
-authRoutes.post('/login', authController.login.bind(authController));
-
 // Rotas protegidas
 authRoutes.post('/logout', authenticateToken, authController.logout.bind(authController));
 authRoutes.get('/me', authenticateToken, authController.me.bind(authController));

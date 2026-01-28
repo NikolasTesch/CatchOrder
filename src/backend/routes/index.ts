@@ -6,16 +6,20 @@ import { categoryRoutes } from './categoryRoutes';
 import { productsRoutes } from './productRoutes';
 import { authRoutes } from './authRoutes';
 import { authenticateToken } from '../middlewares/jwtAuth';
+import authController from '../controllers/authController';
+import usersController from '../controllers/userControllers';
 
 const routes = Router();
 
-// Rotas públicas (antes do middleware de autenticação)
-routes.use('/auth', authRoutes);
+// Rotas públicas
+routes.post('/auth/login', authController.login.bind(authController));
+// POST /users - Cria um novo usuário
+usersRoutes.post('/users', usersController.store);
 
 // Middleware de autenticação global para todas as rotas abaixo
 routes.use(authenticateToken);
 
-// Rotas protegidas
+routes.use('/auth', authRoutes)
 routes.use('/users', usersRoutes);
 routes.use('/orders', ordersRoutes);
 routes.use('/tables', tablesRoutes);

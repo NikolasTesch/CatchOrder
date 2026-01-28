@@ -9,9 +9,6 @@ usersRoutes.get('/', usersController.index);
 // GET /users/:id - Busca um usuário específico
 usersRoutes.get('/:id', usersController.show);
 
-// POST /users - Cria um novo usuário
-usersRoutes.post('/', usersController.store);
-
 // PUT /users/:id - Atualiza um usuário existente
 usersRoutes.put('/:id', usersController.update);
 

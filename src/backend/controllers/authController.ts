@@ -38,7 +38,7 @@ class AuthController {
         { expiresIn: '1h' }
       );
 
-   
+
       const { password_hash, ...userSafe } = user;
 
 
@@ -51,15 +51,65 @@ class AuthController {
       return res.status(200).json({
         message: 'Login realizado com sucesso',
         token,
-        user: userSafe
+        user: userSafe,
+      });
+    } catch (error) {
+      console.error("Login error:", error);
+      return res.status(500).json({
+        message: "Erro ao realizar login",
+        error: error instanceof Error ? error.message : "Erro desconhecido",
+      });
+    }
+  }
+
+
+  async logout(req: Request, res: Response): Promise<Response> {
+    try {
+      res.clearCookie("token", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
       });
 
+      return res.status(200).json({
+        message: "Logout realizado com sucesso",
+      });
     } catch (error) {
-        console.error('Login error:', error);
-        return res.status(500).json({
-            message: 'Erro ao realizar login',
-            error: error instanceof Error ? error.message : 'Erro desconhecido'
-        });
+      console.error("Logout error:", error);
+      return res.status(500).json({
+        message: "Erro ao realizar logout",
+        error: error instanceof Error ? error.message : "Erro desconhecido",
+      });
+    }
+  }
+
+  async me(req: Request, res: Response): Promise<Response> {
+    try {
+
+      if (!req.user) {
+        return res.status(401).json({ message: "Usuário não autenticado" });
+      }
+
+      // Busca os dados completos do usuário no banco
+      const db = await getDb();
+      const user = await db.get(
+        "SELECT id, name, username, role, created_at, updated_at FROM users WHERE id = ?",
+        [req.user.id],
+      );
+
+      if (!user) {
+        return res.status(404).json({ message: "Usuário não encontrado" });
+      }
+
+      return res.status(200).json({
+        message: "Dados do usuário recuperados com sucesso",
+        user,
+      });
+    } catch (error) {
+      console.error("Me error:", error);
+      return res.status(500).json({
+        message: "Erro ao buscar dados do usuário",
+        error: error instanceof Error ? error.message : "Erro desconhecido",
+      });
     }
   }
 }

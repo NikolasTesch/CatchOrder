@@ -80,7 +80,7 @@ describe('Orders API Integration Tests', () => {
       const quantity = 2;
       const response = await request(app)
         .post(`/orders/${testOrderId}/items`)
-        //.set('Authorization', `Bearer ${authToken}`) // Route is public in routing file currently? Checked file: yes, no auth middleware on addItem
+        .set('Authorization', `Bearer ${authToken}`)
         .send({
           product_id: testProductId,
           quantity: quantity
@@ -124,7 +124,7 @@ describe('Orders API Integration Tests', () => {
     it('should close the order', async () => {
       const response = await request(app)
         .post(`/orders/${testOrderId}/close`)
-        //.set('Authorization', `Bearer ${authToken}`) // Also no auth in route file for close
+        .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
 
       expect(response.body).toHaveProperty('message', 'Comanda fechada com sucesso');

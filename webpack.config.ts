@@ -20,7 +20,8 @@ const config: webpack.Configuration = {
       if (dirent.isDirectory()) {
         const pagePath = path.join(pagesDir, dirent.name);
         const files = fs.readdirSync(pagePath);
-        const entryFile = files.find(file => file.endsWith('.js'));
+        // Busca por .ts ou .js (dando preferência para o que ele achar primeiro na leitura)
+        const entryFile = files.find(file => file.endsWith('.ts') || file.endsWith('.js'));
 
         if (entryFile) {
           entries[dirent.name] = path.join(pagePath, entryFile);
@@ -31,6 +32,11 @@ const config: webpack.Configuration = {
   },
   module: {
     rules: [
+      {
+        test: /\.ts$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
       {
         test: /\.js$/,
         exclude: /node_modules/,

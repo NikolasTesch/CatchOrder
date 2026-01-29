@@ -70,8 +70,8 @@ function filterUsers() {
   
   const term = searchTerm.toLowerCase();
   return users.filter(user => 
+    user.name?.toLowerCase().includes(term) ||
     user.username?.toLowerCase().includes(term) ||
-    user.email?.toLowerCase().includes(term) ||
     user.role?.toLowerCase().includes(term)
   );
 }
@@ -84,15 +84,14 @@ function createUserCard(user) {
   card.className = 'user-card';
   card.dataset.userId = user.id;
   
-  const userName = user.username || 'Usuário';
-  const userEmail = user.email || 'Email não informado';
+  const userName = user.name || user.username || 'Usuário';
   const userRole = getRoleLabel(user.role);
   
   card.innerHTML = `
     <div class="user-avatar" style="${getUserAvatarStyle(user)}"></div>
     <div class="user-info">
       <h3 class="user-name">${userName} (${userRole})</h3>
-      <p class="user-email">${userEmail}</p>
+      <p class="user-email">@${user.username || 'username'}</p>
     </div>
     <button class="btn-config" data-user-id="${user.id}">
       Configurar
@@ -138,10 +137,6 @@ function getUserInitials(name) {
   }
   return name.substring(0, 2).toUpperCase();
 }
-
-/**
- * Get role label in Portuguese
- */
 function getRoleLabel(role) {
   const labels = {
     'admin': 'Administrador',
@@ -197,8 +192,8 @@ function showActionModal(user, actions) {
   `;
   
   modalContent.innerHTML = `
-    <h3 style="margin: 0 0 1rem 0; font-size: 1.25rem;">${user.username}</h3>
-    <p style="margin: 0 0 1.5rem 0; color: #666;">${user.email}</p>
+    <h3 style="margin: 0 0 1rem 0; font-size: 1.25rem;">${user.name || user.username}</h3>
+    <p style="margin: 0 0 1.5rem 0; color: #666;">@${user.username}</p>
   `;
   
   // Add action buttons
@@ -362,51 +357,6 @@ function showError(message) {
     setTimeout(() => toast.remove(), 300);
   }, 3000);
 }
-
-// Add CSS animations
-const style = document.createElement('style');
-style.textContent = `
-  @keyframes slideIn {
-    from {
-      transform: translateX(100%);
-      opacity: 0;
-    }
-    to {
-      transform: translateX(0);
-      opacity: 1;
-    }
-  }
-  
-  @keyframes slideOut {
-    from {
-      transform: translateX(0);
-      opacity: 1;
-    }
-    to {
-      transform: translateX(100%);
-      opacity: 0;
-    }
-  }
-  
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-  
-  .user-card {
-    cursor: pointer;
-    transition: transform 0.2s ease;
-  }
-  
-  .user-card:hover {
-    transform: translateX(4px);
-  }
-`;
-document.head.appendChild(style);
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', init);

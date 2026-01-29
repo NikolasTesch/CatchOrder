@@ -1,0 +1,183 @@
+/* Container que centraliza o card */
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  padding: 0;
+  background-color: var(--background-light);
+}
+
+/* Header com botão de fechar */
+.header {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 1.5rem 1rem;
+  background-color: var(--background-light);
+  border-bottom: 1px solid var(--border-gray);
+}
+
+.close-button {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-main);
+}
+
+.close-button .material-symbols-outlined {
+  font-size: 24px;
+}
+
+.header-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin: 0;
+}
+
+/* Card principal */
+.card {
+  background-color: #ffffff;
+  width: 100%;
+  max-width: 360px;
+  padding: 2rem 1.5rem;
+  min-height: calc(100vh - 73px);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Upload de foto */
+.photo-upload {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.photo-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #d4a853 0%, #c89640 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px rgba(212, 168, 83, 0.3);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.photo-circle:hover {
+  transform: scale(1.05);
+}
+
+.camera-icon {
+  font-size: 56px !important;
+  color: white;
+  font-weight: 300;
+}
+
+/* Campos de Formulário */
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: var(--text-secondary);
+}
+
+.input-field {
+  width: 100%;
+  height: 3rem;
+  padding: 0 1rem;
+  border: none;
+  border-bottom: 1px solid var(--border-gray);
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.2s;
+  background-color: transparent;
+  color: var(--text-main);
+}
+
+.input-field::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+.input-field:focus {
+  border-bottom-color: var(--primary);
+}
+
+/* Campo de telefone com ícone */
+.phone-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.phone-icon {
+  position: absolute;
+  left: 0;
+  font-size: 20px !important;
+  color: var(--text-secondary);
+}
+
+.phone-input {
+  padding-left: 2rem;
+}
+
+/* Botão Principal */
+.btn-primary {
+  width: 100%;
+  height: 3.5rem;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: auto;
+  transition: transform 0.1s, background-color 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: #0f3a45;
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+/* Responsividade para telas maiores */
+@media (min-width: 480px) {
+  .page-wrapper {
+    justify-content: center;
+  }
+
+  .header {
+    border-radius: 1rem 1rem 0 0;
+  }
+
+  .card {
+    border-radius: 0 0 1rem 1rem;
+    min-height: auto;
+    box-shadow: 0 30px 60px -10px rgba(0, 0, 0, 0.35);
+  }
+}

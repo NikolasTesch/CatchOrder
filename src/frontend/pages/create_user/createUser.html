@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catchorder - Adicionar Usuário</title>
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="../../../../public/css/global.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="page-wrapper">
+    <header class="header">
+      <button class="close-button">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+      <h1 class="header-title">Adicionar Usuário</h1>
+    </header>
+
+    <main class="card">
+      <div class="photo-upload">
+        <div class="photo-circle">
+          <span class="material-symbols-outlined camera-icon">photo_camera</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="full-name">Nome Completo</label>
+        <input type="text" id="full-name" placeholder="Nome Completo" class="input-field">
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Telefone</label>
+        <div class="phone-input-wrapper">
+          <span class="phone-icon material-symbols-outlined">flag</span>
+          <input type="tel" id="phone" placeholder="+55 (00) 00000-0000" class="input-field phone-input">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="Emailcompleto@gmail.com" class="input-field">
+      </div>
+
+      <div class="form-group">
+        <label for="password">Senha</label>
+        <input type="password" id="password" placeholder="******************" class="input-field">
+      </div>
+
+      <div class="form-group">
+        <label for="role">Cargo</label>
+        <input type="text" id="role" placeholder="Cargo" class="input-field">
+      </div>
+
+      <button class="btn btn-primary">Salvar</button>
+    </main>
+  </div>
+</body>
+
+</html>

@@ -3,14 +3,33 @@ import { app } from '../../src/backend/app';
 import { getDb } from '../../src/backend/config/database';
 import { runMigrations } from '../../src/backend/database/migrations/migrations';
 import { v4 as uuidv4 } from 'uuid';
+import bcrypt from 'bcrypt';
 
 describe('Products API Integration Tests', () => {
   let testCategoryId: string;
   let testProductId: string;
+  let authToken: string;
+  let testUserId: string;
 
   beforeAll(async () => {
     await runMigrations();
     const db = await getDb();
+
+    // 1. Create User & Token
+    testUserId = uuidv4();
+    const hashedPassword = await bcrypt.hash('password123', 10);
+    const username = `product-test-${Date.now()}@example.com`;
+
+    await db.run(
+      'INSERT INTO users (id, name, username, password_hash, role) VALUES (?, ?, ?, ?, ?)',
+      [testUserId, 'Product Test User', username, hashedPassword, 'admin']
+    );
+
+    const loginResponse = await request(app)
+      .post('/auth/login')
+      .send({ username, password: 'password123' });
+
+    authToken = loginResponse.body.token;
 
     // Create test category
     testCategoryId = uuidv4();
@@ -29,6 +48,7 @@ describe('Products API Integration Tests', () => {
       testCategoryId,
     ]);
     await db.run('DELETE FROM categories WHERE id = ?', [testCategoryId]);
+    await db.run('DELETE FROM users WHERE id = ?', [testUserId]);
   });
 
   describe('POST /products', () => {
@@ -44,6 +64,7 @@ describe('Products API Integration Tests', () => {
 
       const response = await request(app)
         .post('/products')
+        .set('Authorization', `Bearer ${authToken}`)
         .send(newProduct)
         .expect(201);
 
@@ -62,6 +83,7 @@ describe('Products API Integration Tests', () => {
 
       const response = await request(app)
         .post('/products')
+        .set('Authorization', `Bearer ${authToken}`)
         .send(invalidProduct)
         .expect(400);
 
@@ -73,7 +95,10 @@ describe('Products API Integration Tests', () => {
 
   describe('GET /products', () => {
     it('should return all products', async () => {
-      const response = await request(app).get('/products').expect(200);
+      const response = await request(app)
+        .get('/products')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect(200);
 
       expect(response.body.message).toBe('Products retrieved successfully');
       expect(Array.isArray(response.body.data)).toBe(true);
@@ -82,7 +107,10 @@ describe('Products API Integration Tests', () => {
 
   describe('GET /products/active', () => {
     it('should return only active products', async () => {
-      const response = await request(app).get('/products/active').expect(200);
+      const response = await request(app)
+        .get('/products/active')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect(200);
 
       expect(response.body.message).toBe(
         'Active products retrieved successfully',
@@ -100,6 +128,7 @@ describe('Products API Integration Tests', () => {
     it('should return a product by id', async () => {
       const response = await request(app)
         .get(`/products/${testProductId}`)
+        .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
 
       expect(response.body.message).toBe('Product retrieved successfully');
@@ -109,6 +138,7 @@ describe('Products API Integration Tests', () => {
     it('should return 404 for non-existent product', async () => {
       const response = await request(app)
         .get('/products/non-existent-id')
+        .set('Authorization', `Bearer ${authToken}`)
         .expect(404);
 
       expect(response.body.message).toBe('Product not found');
@@ -119,6 +149,7 @@ describe('Products API Integration Tests', () => {
     it('should return products by category', async () => {
       const response = await request(app)
         .get(`/products/category/${testCategoryId}`)
+        .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
 
       expect(response.body.message).toBe(
@@ -137,6 +168,7 @@ describe('Products API Integration Tests', () => {
     it('should search products by query', async () => {
       const response = await request(app)
         .get('/products/search?q=Integration')
+        .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
 
       expect(response.body.message).toBe(
@@ -146,7 +178,10 @@ describe('Products API Integration Tests', () => {
     });
 
     it('should return 400 when query is missing', async () => {
-      const response = await request(app).get('/products/search').expect(400);
+      const response = await request(app)
+        .get('/products/search')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect(400);
 
       expect(response.body.message).toBe('Search query is required');
     });
@@ -161,6 +196,7 @@ describe('Products API Integration Tests', () => {
 
       const response = await request(app)
         .put(`/products/${testProductId}`)
+        .set('Authorization', `Bearer ${authToken}`)
         .send(updateData)
         .expect(200);
 
@@ -172,6 +208,7 @@ describe('Products API Integration Tests', () => {
     it('should return 404 for non-existent product', async () => {
       const response = await request(app)
         .put('/products/non-existent-id')
+        .set('Authorization', `Bearer ${authToken}`)
         .send({ name: 'Updated Name' })
         .expect(404);
 
@@ -183,6 +220,7 @@ describe('Products API Integration Tests', () => {
     it('should deactivate a product', async () => {
       const response = await request(app)
         .patch(`/products/${testProductId}/deactivate`)
+        .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
 
       expect(response.body.message).toBe('Product deactivated successfully');
@@ -194,6 +232,7 @@ describe('Products API Integration Tests', () => {
     it('should activate a product', async () => {
       const response = await request(app)
         .patch(`/products/${testProductId}/activate`)
+        .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
 
       expect(response.body.message).toBe('Product activated successfully');
@@ -205,6 +244,7 @@ describe('Products API Integration Tests', () => {
     it('should delete a product', async () => {
       const response = await request(app)
         .delete(`/products/${testProductId}`)
+        .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
 
       expect(response.body.message).toBe('Product deleted successfully');
@@ -213,6 +253,7 @@ describe('Products API Integration Tests', () => {
     it('should return 404 for already deleted product', async () => {
       const response = await request(app)
         .delete(`/products/${testProductId}`)
+        .set('Authorization', `Bearer ${authToken}`)
         .expect(404);
 
       expect(response.body.message).toBe('Product not found');

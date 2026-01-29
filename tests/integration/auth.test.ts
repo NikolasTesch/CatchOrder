@@ -68,4 +68,64 @@ describe('Auth API Integration Tests', () => {
       expect(response.body).toHaveProperty('message', 'Credenciais inválidas');
     });
   });
+
+  describe('GET /auth/me', () => {
+    let authToken: string;
+
+    beforeAll(async () => {
+      // Login to get token first
+      const loginResponse = await request(app)
+        .post('/auth/login')
+        .send({
+          username: testEmail,
+          password: testPassword,
+        });
+      authToken = loginResponse.body.token;
+    });
+
+    it('should return user profile when authenticated', async () => {
+      const response = await request(app)
+        .get('/auth/me')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect(200);
+
+      expect(response.body.user).toHaveProperty('id', testUserId);
+      expect(response.body.user).toHaveProperty('username', testEmail);
+      expect(response.body.user).not.toHaveProperty('password');
+      expect(response.body.user).not.toHaveProperty('password_hash');
+    });
+
+    it('should return 401 when not authenticated', async () => {
+      await request(app)
+        .get('/auth/me')
+        .expect(401);
+    });
+  });
+
+  describe('POST /auth/logout', () => {
+    let authToken: string;
+
+    beforeAll(async () => {
+      const loginResponse = await request(app)
+        .post('/auth/login')
+        .send({
+          username: testEmail,
+          password: testPassword,
+        });
+      authToken = loginResponse.body.token;
+    });
+
+    it('should logout successfully', async () => {
+      const response = await request(app)
+        .post('/auth/logout')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect(200);
+
+      expect(response.body).toHaveProperty('message', 'Logout realizado com sucesso');
+    });
+
+    // Note: Since JWT is stateless, "logout" on server side without blacklist usually just means client discards token.
+    // If we had a blacklist, we would test that the token relies invalid. 
+    // Assuming standard JWT implementation for now where presence of endpoint implies future/current blacklist or cookie clearing.
+  });
 });

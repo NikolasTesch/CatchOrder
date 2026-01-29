@@ -1,0 +1,228 @@
+/* Variáveis de Cores (Matching existing system) */
+:root {
+  --destaque-1: #154A57;
+  --destaque-2: #F4AC45;
+  --back-1: #FCF7F8;
+  --back-2: #DFDFDF;
+  --text-main: #111827;
+}
+
+body {
+  background-color: var(--back-2);
+  margin: 0;
+  font-family: 'Work Sans', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Top Nav (Just the menu icon) */
+.top-nav {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 10;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: #000;
+}
+
+.icon-btn .material-symbols-outlined {
+  font-size: 32px;
+  font-weight: 700;
+}
+
+/* Price Header */
+.price-header {
+  background-color: var(--back-1);
+  min-height: 180px;
+  border-bottom-left-radius: 2.5rem;
+  border-bottom-right-radius: 2.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  position: relative;
+  padding-top: 20px;
+  /* Space for top nav */
+}
+
+.total-price {
+  font-size: 4rem;
+  font-weight: 700;
+  color: var(--destaque-1);
+  margin: 0;
+}
+
+/* Page Wrapper */
+.page-wrapper {
+  flex: 1;
+  padding: 1.5rem;
+  max-width: 360px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Center content vertically like in the design */
+}
+
+/* Consumed Card */
+.consumed-card {
+  background-color: var(--back-1);
+  border-radius: 2rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.section-header {
+  margin-bottom: 1.5rem;
+}
+
+.section-title {
+  font-size: 1.75rem;
+  color: var(--destaque-1);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.arrow-icon {
+  font-weight: 700;
+  font-size: 2rem;
+}
+
+/* Consumed List Items */
+.consumed-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.consumed-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.item-header {
+  display: flex;
+  align-items: center;
+}
+
+.item-price {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--destaque-1);
+}
+
+.item-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--destaque-1);
+  opacity: 0.9;
+}
+
+.item-divider {
+  height: 2px;
+  background-color: #9CA3AF;
+  margin-top: 0.25rem;
+  width: 100%;
+  opacity: 0.6;
+}
+
+/* Payment Methods */
+.payment-methods-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0 0.5rem;
+}
+
+.payment-btn {
+  flex: 1;
+  height: 64px;
+  background-color: var(--back-1);
+  border: none;
+  border-radius: 2rem;
+  /* Fully rounded/pill shape ends or large radius */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #4B5563;
+  /* Grey icon color */
+  transition: transform 0.1s;
+}
+
+.payment-btn:active {
+  transform: scale(0.95);
+}
+
+/* Specific styling for the active state/selected if needed, or just default style */
+.payment-btn .material-symbols-outlined {
+  font-size: 32px;
+}
+
+/* Pix specific styling */
+.pix-icon-container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #9CA3AF;
+  /* Light grey for pix logo parts */
+}
+
+/* Custom Pix logo simulation */
+.pix-text {
+  font-family: sans-serif;
+  font-weight: 600;
+  font-size: 1.2rem;
+  letter-spacing: -1px;
+}
+
+/* Footer Logo */
+.main-footer {
+  padding: 1.5rem;
+  text-align: center;
+  background-color: var(--back-2);
+  /* Matches body connection */
+  margin-top: auto;
+}
+
+.logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo-text {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--destaque-1);
+  display: flex;
+  align-items: center;
+  letter-spacing: -2px;
+}
+
+.logo-icon {
+  font-size: 2rem;
+  margin: 0 2px;
+  font-weight: 700;
+}
+
+@media (min-width: 361px) {
+  body {
+    background-color: #F3F4F6;
+    /* Light grey for desktop background */
+  }
+}

@@ -5,7 +5,7 @@ export {
   OrderItemValidator,
   validateOrderItems,
 } from "./validators/orderItemValidator";
-export { User, UserValidator } from "./validators/userValidator";
+export { UserValidator } from "./validators/userValidator";
 export { Table, TableValidator } from "./validators/tableValidator";
 
 export {
@@ -21,7 +21,6 @@ export {
   OrderItemValidator as OrderItemValidatorClass,
 } from "./validators/orderItemValidator";
 export {
-  User as user,
   UserValidator as UserValidatorClass,
 } from "./validators/userValidator";
 export {

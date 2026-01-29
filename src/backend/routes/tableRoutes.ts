@@ -1,26 +1,39 @@
 import { Router } from 'express';
 import { tableController } from '../controllers/tableControllers';
-import { authenticateToken } from '../middlewares/jwtAuth';
+import { isAdminOrManager } from '../middlewares/roleAuth';
 
 const tablesRoutes = Router();
 
-// GET routes
+// Rotas públicas - acessíveis por todos os usuários autenticados
+
+// Lista todas as mesas cadastradas
 tablesRoutes.get('/', tableController.index);
+
+// Lista apenas mesas disponíveis para uso
 tablesRoutes.get('/available', tableController.indexAvailable);
+
 tablesRoutes.get('/mine', authenticateToken, tableController.indexMine);
+
+// Lista mesas filtradas por status (ocupada, disponível, reservada)
+
 tablesRoutes.get('/status/:status', tableController.indexByStatus);
+
+// Busca uma mesa específica por ID
 tablesRoutes.get('/:id', tableController.show);
 
-// POST routes
-tablesRoutes.post('/', authenticateToken, tableController.store);
+// Atualiza o status operacional de uma mesa (garçom pode usar)
+tablesRoutes.patch('/:id/status', tableController.updateStatus);
 
-// PUT routes
-tablesRoutes.put('/:id', authenticateToken, tableController.update);
+// Rotas restritas - apenas Admin ou Manager podem acessar
+tablesRoutes.use(isAdminOrManager);
 
-// PATCH routes
-tablesRoutes.patch('/:id/status', authenticateToken, tableController.updateStatus);
+// Cria uma nova mesa no sistema
+tablesRoutes.post('/', tableController.store);
 
-// DELETE routes
-tablesRoutes.delete('/:id', authenticateToken, tableController.delete);
+// Atualiza os dados de uma mesa existente
+tablesRoutes.put('/:id', tableController.update);
+
+// Remove uma mesa do sistema
+tablesRoutes.delete('/:id', tableController.delete);
 
 export { tablesRoutes };

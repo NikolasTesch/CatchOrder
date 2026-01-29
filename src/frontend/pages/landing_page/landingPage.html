@@ -9,8 +9,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
     rel="stylesheet">
 
-  <link rel="stylesheet" href="../../../../public/css/global.css">
-  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -27,8 +25,8 @@
       <h1 class="card-title">Bem-vindo ao Catchorder</h1>
 
       <div class="form-group">
-        <label for="email">Email</label>
-        <input type="email" id="email" placeholder="Digite o seu e-mail" class="input-field">
+        <label for="username">Usuário</label>
+        <input type="text" id="username" placeholder="Digite seu nome de usuário" class="input-field">
       </div>
 
       <div class="form-group">
@@ -44,10 +42,11 @@
         </div>
       </div>
 
+      <div id="login-error" class="error-message"></div>
       <button class="btn btn-primary">Continuar</button>
 
       <div class="signup-prompt">
-        Não tem uma conta? <a href="#">Cadastre-se agora</a>
+        Não tem uma conta? <a href="../register/register.html">Cadastre-se agora</a>
       </div>
 
     </main>
@@ -59,6 +58,7 @@
       </p>
     </footer>
   </div>
+  <script src="landingPage.js"></script>
 </body>
 
 </html>

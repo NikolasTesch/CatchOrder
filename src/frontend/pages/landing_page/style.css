@@ -191,3 +191,38 @@ label {
   text-decoration: underline;
   opacity: 0.8;
 }
+
+/* Error Message */
+.error-message {
+  color: #ff3333;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  min-height: 1.2em; /* Prevent layout shift */
+  text-align: center;
+}
+
+/* Loading Spinner */
+.btn-loading {
+  position: relative;
+  color: transparent !important; /* Hide text */
+  pointer-events: none;
+}
+
+.spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 0.8s linear infinite;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes spin {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}

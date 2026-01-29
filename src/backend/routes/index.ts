@@ -8,13 +8,12 @@ import { authRoutes } from './authRoutes';
 import { authenticateToken } from '../middlewares/jwtAuth';
 import authController from '../controllers/authController';
 import usersController from '../controllers/userControllers';
+import { isAdmin, isWaiter, isManager } from '../middlewares/roleAuth';
 
 const routes = Router();
 
 // Rotas públicas
 routes.post('/auth/login', authController.login.bind(authController));
-// POST /users - Cria um novo usuário
-routes.post('/users', usersController.store);
 
 // Middleware de autenticação global para todas as rotas abaixo
 routes.use(authenticateToken);

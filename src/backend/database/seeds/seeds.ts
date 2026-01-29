@@ -1,6 +1,7 @@
 import { getDb } from '../../config/database';
 import { v4 as uuidv4 } from 'uuid';
 import { userRole } from '../../../shared/types/user';
+import { hashPassword } from '../../utils/passwordHash';
 
 // Gerar IDs com UUID
 const categoryBebidasId = uuidv4();
@@ -255,40 +256,35 @@ const users = [
     id: userIds[0],
     name: 'Admin Sistema',
     username: 'admin',
-    password_hash:
-      '$2b$10$uxzd8zB2dPQPvhR8KS1nGO5c7xB9kV3cM5xQ2d1E6xL9w9Y8zB2jm', // password: admin123
+    password: 'admin123',
     role: userRole.ADMIN,
   },
   {
     id: userIds[1],
     name: 'João Silva',
     username: 'joao.silva',
-    password_hash:
-      '$2b$10$uxzd8zB2dPQPvhR8KS1nGO5c7xB9kV3cM5xQ2d1E6xL9w9Y8zB2jm', // password: admin123
+    password: 'manager123',
     role: userRole.MANAGER,
   },
   {
     id: userIds[2],
     name: 'Maria Santos',
     username: 'maria.santos',
-    password_hash:
-      '$2b$10$uxzd8zB2dPQPvhR8KS1nGO5c7xB9kV3cM5xQ2d1E6xL9w9Y8zB2jm', // password: admin123
+    password: 'waiter123',
     role: userRole.WAITER,
   },
   {
     id: userIds[3],
     name: 'Carlos Oliveira',
     username: 'carlos.oliveira',
-    password_hash:
-      '$2b$10$uxzd8zB2dPQPvhR8KS1nGO5c7xB9kV3cM5xQ2d1E6xL9w9Y8zB2jm', // password: admin123
+    password: 'waiter123',
     role: userRole.WAITER,
   },
   {
     id: userIds[4],
     name: 'Ana Costa',
     username: 'ana.costa',
-    password_hash:
-      '$2b$10$uxzd8zB2dPQPvhR8KS1nGO5c7xB9kV3cM5xQ2d1E6xL9w9Y8zB2jm', // password: admin123
+    password: 'waiter123',
     role: userRole.WAITER,
   },
 ];
@@ -524,12 +520,13 @@ export const runSeeds = async () => {
     }
     console.log('✓ Produtos inseridos');
 
-    // Inserir usuários
+    // Inserir usuários com senhas hasheadas
     for (const user of users) {
+      const password_hash = await hashPassword(user.password);
       await db.run(
         `INSERT INTO users (id, name, username, password_hash, role)
          VALUES (?, ?, ?, ?, ?)`,
-        [user.id, user.name, user.username, user.password_hash, user.role],
+        [user.id, user.name, user.username, password_hash, user.role],
       );
     }
     console.log('✓ Usuários inseridos');

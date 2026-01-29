@@ -14,7 +14,7 @@ const routes = Router();
 // Rotas públicas
 routes.post('/auth/login', authController.login.bind(authController));
 // POST /users - Cria um novo usuário
-usersRoutes.post('/users', usersController.store);
+routes.post('/users', usersController.store);
 
 // Middleware de autenticação global para todas as rotas abaixo
 routes.use(authenticateToken);

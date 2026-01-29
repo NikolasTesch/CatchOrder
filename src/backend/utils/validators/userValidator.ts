@@ -1,14 +1,6 @@
-// Validação de Usuário
-export interface User {
-  name: string;
-  email: string;
-  password: string;
-  role: string;
-}
+import { userRole } from "../../../shared/types/user";
 
 export class UserValidator {
-  private static rolesValidos = ["MASTER", "ADMIN", "GARCOM"];
-
   static validate(user: any): { valido: boolean; error: string[] } {
     const error: string[] = [];
 
@@ -43,8 +35,11 @@ export class UserValidator {
 
     if (!user.role || user.role.trim().length === 0) {
       error.push("Função é obrigatória");
-    } else if (!this.rolesValidos.includes(user.role)) {
-      error.push("Função deve ser uma das seguintes: " + this.rolesValidos.join(", "));
+    } else {
+      const validRoles = Object.values(userRole) as string[];
+      if (!validRoles.includes(user.role)) {
+        error.push("Função deve ser uma das seguintes: " + validRoles.join(", "));
+      }
     }
 
     return {
@@ -53,4 +48,5 @@ export class UserValidator {
     };
   }
 }
+
 

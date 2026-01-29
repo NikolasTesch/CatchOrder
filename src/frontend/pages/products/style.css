@@ -1,186 +1,199 @@
-/* Variáveis de Cores */
-:root {
-  --destaque-1: #154A57;
-  /* Dark Teal */
-  --back-1: #F3F4F6;
-  /* Light Grey Background */
-  --back-card: #E5E7EB;
-  /* Grey for image placeholders */
-  --white: #FFFFFF;
-  --text-dark: #111827;
-}
-
-body {
-  background-color: var(--back-1);
-  margin: 0;
-  font-family: 'Work Sans', sans-serif;
-  color: var(--text-dark);
+/* Content Wrapper */
+.content-wrapper {
+  padding: var(--space-md);
+  padding-top: clamp(4rem, 12vw, 5rem);
+  width: 100%;
+  max-width: min(95vw, 480px);
+  margin: 0 auto;
+  min-height: 100vh;
+  padding-bottom: var(--space-xl);
 }
 
 /* Header */
 .main-header {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: min(95vw, 480px);
+  height: clamp(54px, 15vw, 60px);
+  background-color: var(--bg-white);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
-  background-color: var(--back-1);
-  /* Matches body based on design, or could be white */
-  /* If the header needs to be white with shadow as per some mobile conventions: */
-  /* background-color: var(--white); */
-  /* box-shadow: 0 2px 4px rgba(0,0,0,0.05); */
+  padding: 0 clamp(0.75rem, 3vw, 1rem);
+  z-index: var(--z-fixed);
+  box-shadow: var(--shadow-sm);
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-sm);
+  flex: 1;
 }
 
 .icon-btn {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
+  padding: var(--space-xs);
   display: flex;
   align-items: center;
+  min-height: 44px;
+  min-width: 44px;
+  color: var(--text-primary);
+  transition: all var(--transition-base);
+}
+
+.icon-btn:hover {
+  opacity: 0.8;
 }
 
 .icon-btn .material-symbols-outlined {
-  font-size: 32px;
+  font-size: clamp(28px, 8vw, 32px);
   font-weight: 700;
 }
 
 .page-title {
-  font-size: 1.5rem;
+  font-size: clamp(1.25rem, 4vw, 1.5rem);
   font-weight: 800;
   margin: 0;
+  color: var(--text-primary);
 }
 
 .header-center {
   flex: 1;
   display: flex;
   justify-content: center;
-  /* Adjust positioning to match image which is slightly off-center or centered relative to remaining space */
 }
 
-.brand-text {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--destaque-1);
-  letter-spacing: -1px;
+/* Logo Image */
+.logo-image {
+  height: clamp(50px, 12vw, 60px);
+  width: auto;
+  cursor: pointer;
+  filter: brightness(0) saturate(100%) invert(25%) sepia(12%) saturate(2476%) hue-rotate(147deg) brightness(95%) contrast(93%);
+  transition: transform var(--transition-base);
+}
+
+.logo-image:hover {
+  transform: scale(1.05);
 }
 
 .header-right {
   display: flex;
   align-items: center;
+  gap: var(--space-sm);
+  flex: 1;
+  justify-content: flex-end;
 }
 
-.user-avatar {
-  width: 32px;
-  height: 32px;
-  background-color: #D1D5DB;
-  /* Grey placeholder */
-  border-radius: 50%;
-  border: 2px solid #93C5FD;
-  /* Light blue border */
-  box-sizing: border-box;
+/* Icon Button Small */
+.icon-btn-small {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xs);
+  min-height: 44px;
+  min-width: 44px;
+  color: var(--color-primary);
+  transition: all var(--transition-base);
+  border-radius: var(--radius-md);
 }
 
-/* Content Wrapper */
-.content-wrapper {
-  padding: 1rem;
-  max-width: 480px;
-  /* Constrain width for mobile view likeness on desktop */
-  margin: 0 auto;
+.icon-btn-small:hover {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  transform: scale(1.05);
+}
+
+.icon-btn-small:active {
+  transform: scale(0.95);
+}
+
+.icon-btn-small .material-symbols-outlined {
+  font-size: 24px;
 }
 
 /* Search Bar */
 .search-container {
   display: flex;
   align-items: center;
-  border-bottom: 2px solid #000;
-  padding-bottom: 0.25rem;
-  margin-bottom: 1.5rem;
+  border-bottom: 2px solid var(--text-primary);
+  padding-bottom: var(--space-xs);
+  margin-bottom: clamp(1rem, 4vw, 1.5rem);
 }
 
 .search-icon {
-  font-size: 24px;
-  margin-right: 0.5rem;
+  font-size: clamp(20px, 6vw, 24px);
+  margin-right: var(--space-sm);
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 .search-input {
   border: none;
   background: none;
-  font-family: 'Work Sans', sans-serif;
-  font-size: 1rem;
+  font-family: var(--font-primary);
+  font-size: clamp(0.875rem, 3vw, 1rem);
   font-weight: 700;
   width: 100%;
   outline: none;
-  color: #000;
+  color: var(--text-primary);
 }
 
 .search-input::placeholder {
-  color: #000;
+  color: var(--text-primary);
   opacity: 1;
 }
 
-/* Action Button */
+/* Action Button uses global .btn .btn-primary .btn-full */
+
 .actions-container {
   display: flex;
   justify-content: center;
-  margin-bottom: 1.5rem;
-}
-
-.btn-add-product {
-  background-color: var(--destaque-1);
-  color: white;
-  font-family: 'Work Sans', sans-serif;
-  font-size: 1rem;
-  font-weight: 700;
-  padding: 0.75rem 2rem;
-  border: none;
-  border-radius: 0.5rem;
-  width: 100%;
-  cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: clamp(1rem, 4vw, 1.5rem);
 }
 
 /* Products Grid */
 .products-grid {
   display: grid;
-  /* Mobile First: 2 columns by default for small screens, or auto-fill */
   grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
+  gap: var(--space-md);
 }
 
 .product-card {
   background-color: transparent;
-  border-radius: 1rem;
+  border-radius: var(--radius-lg);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  /* Aspect ratio imitation */
   aspect-ratio: 3/4;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
+  border: none;
+  padding: 0;
+  cursor: default;
 }
 
 .product-card.placeholder-only {
-  background-color: #E5E7EB;
-  /* Just a grey box as per image bottom rows */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  background-color: var(--bg-secondary);
+  box-shadow: var(--shadow-sm);
 }
 
 .card-image {
-  background-color: #E5E7EB;
+  background-color: var(--bg-secondary);
   flex: 1;
   min-height: 60%;
 }
 
 .card-info {
-  background-color: var(--destaque-1);
-  color: white;
-  padding: 0.5rem;
+  background-color: var(--color-primary);
+  color: var(--text-white);
+  padding: clamp(0.4rem, 2vw, 0.5rem);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -188,41 +201,65 @@ body {
 
 .product-name {
   margin: 0;
-  font-size: 0.7rem;
+  font-size: clamp(0.625rem, 2vw, 0.7rem);
   font-weight: 700;
   line-height: 1.2;
 }
 
 .product-category {
-  font-size: 0.6rem;
+  font-size: clamp(0.5rem, 1.5vw, 0.6rem);
   opacity: 0.8;
   margin-bottom: 0.25rem;
 }
 
 .product-price {
-  font-size: 0.9rem;
+  font-size: clamp(0.75rem, 2.5vw, 0.9rem);
   font-weight: 700;
 }
 
 /* Add Card Special Styling */
 .add-card {
-  background-color: #E5E7EB;
-  /* Grey background like others */
+  background-color: var(--bg-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.add-card:hover {
+  transform: scale(1.02);
+  box-shadow: var(--shadow-lg);
+}
+
+.add-card:active {
+  transform: scale(0.98);
 }
 
 .add-icon {
-  font-size: 48px;
-  color: #9CA3AF;
-  /* Icon color */
+  font-size: clamp(40px, 12vw, 48px);
+  color: var(--text-secondary);
+  pointer-events: none;
 }
 
-@media (min-width: 361px) {
-  body {
-    background-color: #F3F4F6;
-    /* Light grey for desktop background */
+/* Dark mode logo filter */
+@media (prefers-color-scheme: dark) {
+  .logo-image {
+    filter: brightness(0) saturate(100%) invert(59%) sepia(53%) saturate(434%) hue-rotate(147deg) brightness(93%) contrast(88%);
+  }
+}
+
+body.dark-mode .logo-image {
+  filter: brightness(0) saturate(100%) invert(59%) sepia(53%) saturate(434%) hue-rotate(147deg) brightness(93%) contrast(88%);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 360px) {
+  .content-wrapper {
+    padding: clamp(0.5rem, 2vw, 0.75rem);
+  }
+
+  .products-grid {
+    gap: var(--space-sm);
   }
 }

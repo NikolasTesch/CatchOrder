@@ -5,90 +5,98 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CatchOrder - Garçom</title>
-  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  
+  <!-- Noto Sans JP Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Material Icons -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 
 <body>
   <!-- Cabeçalho Principal -->
   <header class="main-header">
-    <button class="icon-btn">
+    <button class="icon-btn" aria-label="Menu" id="menuBtn">
       <span class="material-symbols-outlined">menu</span>
     </button>
 
     <div class="header-center">
-      <h1 class="page-title">CatchOrder</h1>
+      <img src="/img/logoName.svg" alt="CatchOrder Logo" class="logo-image" id="logoImage">
     </div>
 
-    <div class="header-actions">
-      <span class="status-indicator"></span>
-      <span class="material-symbols-outlined profile-icon">account_circle</span>
-    </div>
+    <nav class="header-actions" aria-label="Ações do cabeçalho">
+      <button class="icon-btn-small" aria-label="Alternar modo escuro" id="darkModeToggle">
+        <span class="material-symbols-outlined">light_mode</span>
+      </button>
+      <button class="icon-btn-small" aria-label="Acessar perfil do usuário" id="userBtn">
+        <span class="material-symbols-outlined">account_circle</span>
+      </button>
+    </nav>
   </header>
 
-  <div class="page-wrapper">
+  <!-- Main Content -->
+  <main class="page-wrapper">
     <!-- Card de Resumo do Dia -->
-    <div class="summary-card">
+    <section class="summary-card" aria-label="Resumo do dia">
       <p class="summary-title">HOJE</p>
       <h2 class="summary-value">R$00,00</h2>
       <p class="summary-subtitle">x mesas atendidas hoje</p>
-      <button class="btn-new-order">Novo Pedido</button>
-    </div>
+      <button class="btn btn-primary btn-full" id="newOrderBtn">Novo Pedido</button>
+    </section>
 
     <!-- Seção: Mesas Ocupadas -->
-    <section class="tables-section">
+    <section class="tables-section" aria-label="Mesas ocupadas">
       <h3 class="section-title">Mesas Ocupadas <span class="material-symbols-outlined icon-arrow">arrow_forward</span>
       </h3>
       <div class="occupied-scroll">
-        <div class="table-card occupied">
+        <button class="table-card occupied" aria-label="Mesa 1">
           <span class="table-number">1</span>
-        </div>
-        <div class="table-card occupied">
-          <span class="table-number">1</span>
-        </div>
-        <div class="table-card occupied">
-          <span class="table-number">1</span>
-        </div>
-        <div class="table-card occupied">
-          <span class="table-number">1</span>
-        </div>
+        </button>
+        <button class="table-card occupied" aria-label="Mesa 2">
+          <span class="table-number">2</span>
+        </button>
+        <button class="table-card occupied" aria-label="Mesa 3">
+          <span class="table-number">3</span>
+        </button>
+        <button class="table-card occupied" aria-label="Mesa 4">
+          <span class="table-number">4</span>
+        </button>
       </div>
     </section>
 
     <!-- Seção: Todas as Mesas -->
-    <section class="tables-section">
+    <section class="tables-section" aria-label="Todas as mesas">
       <h3 class="section-title">Mesas <span class="material-symbols-outlined icon-arrow">arrow_forward</span></h3>
       <div class="tables-grid">
-        <div class="table-card available">
+        <button class="table-card available" aria-label="Mesa 1">
           <span class="table-number">1</span>
-        </div>
-        <div class="table-card available">
-          <span class="table-number">1</span>
-        </div>
-        <div class="table-card available">
-          <span class="table-number">1</span>
-        </div>
-        <div class="table-card available">
-          <span class="table-number">1</span>
-        </div>
-        <div class="table-card available">
-          <span class="table-number">1</span>
-        </div>
-        <div class="table-card available">
-          <span class="table-number">1</span>
-        </div>
-        <div class="table-card available">
-          <span class="table-number">1</span>
-        </div>
-        <div class="table-card available">
-          <span class="table-number">1</span>
-        </div>
+        </button>
+        <button class="table-card available" aria-label="Mesa 2">
+          <span class="table-number">2</span>
+        </button>
+        <button class="table-card available" aria-label="Mesa 3">
+          <span class="table-number">3</span>
+        </button>
+        <button class="table-card available" aria-label="Mesa 4">
+          <span class="table-number">4</span>
+        </button>
+        <button class="table-card available" aria-label="Mesa 5">
+          <span class="table-number">5</span>
+        </button>
+        <button class="table-card available" aria-label="Mesa 6">
+          <span class="table-number">6</span>
+        </button>
+        <button class="table-card available" aria-label="Mesa 7">
+          <span class="table-number">7</span>
+        </button>
+        <button class="table-card available" aria-label="Mesa 8">
+          <span class="table-number">8</span>
+        </button>
       </div>
     </section>
-  </div>
+  </main>
 
-  <script src="script.js"></script>
+  <script src="waiterMain.js"></script>
 </body>
 
 </html>

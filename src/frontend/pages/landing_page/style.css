@@ -1,210 +1,235 @@
-/* Container Principal: Centraliza a box na tela */
+/* ========================================
+   LANDING PAGE (LOGIN) - SPECIFIC STYLES
+   Using Global CSS Design System
+   ======================================== */
+
+/* Dark Mode Toggle Button (Fixed Position) */
+.dark-mode-toggle {
+  position: fixed;
+  top: var(--space-md);
+  right: var(--space-md);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-xs);
+  min-height: 44px;
+  min-width: 44px;
+  color: var(--color-primary);
+  transition: all var(--transition-base);
+  border-radius: var(--radius-md);
+  z-index: var(--z-fixed);
+}
+
+.dark-mode-toggle:hover {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  transform: scale(1.05);
+}
+
+.dark-mode-toggle:active {
+  transform: scale(0.95);
+}
+
+.dark-mode-toggle .material-symbols-outlined {
+  font-size: 24px;
+}
+
+/* Page Wrapper - Centered Layout */
 .page-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  padding: 2rem 1.5rem;
+  width: 100%;
+  max-width: min(95vw, 480px);
+  margin: 0 auto;
+  padding: clamp(1.5rem, 5vw, 2rem) var(--space-md);
 }
 
-/* Header e Logo (Acima da Box) */
-.header {
+/* Header (Logo Area Above Card) */
+.login-header {
   text-align: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: clamp(2rem, 6vw, 2.5rem);
 }
 
 .logo-box {
-  background-color: var(--primary);
-  width: 80px;
-  height: 80px;
-  border-radius: 0.75rem;
+  background-color: var(--color-primary);
+  width: clamp(70px, 20vw, 80px);
+  height: clamp(70px, 20vw, 80px);
+  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 1rem;
-  box-shadow: var(--shadow-logo);
+  margin: 0 auto var(--space-md);
+  box-shadow: var(--shadow-md);
+  transition: transform var(--transition-base);
+}
+
+.logo-box:hover {
+  transform: scale(1.05);
 }
 
 .icon-main {
-  color: white;
-  font-size: 48px !important;
+  color: var(--text-white);
+  font-size: clamp(40px, 12vw, 48px) !important;
 }
 
 .brand-name {
-  color: var(--primary);
-  font-size: 1.75rem;
-  font-weight: 700;
+  color: var(--color-primary);
+  font-size: clamp(1.5rem, 4vw, 1.75rem);
+  font-weight: var(--font-bold);
   letter-spacing: -0.025em;
+  margin: 0;
 }
 
 .subtitle {
   color: var(--text-secondary);
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
+  font-size: clamp(0.75rem, 2.5vw, 0.875rem);
+  margin-top: var(--space-xs);
 }
 
-/* A BOX DE LOGIN (CARD) */
-.card {
-  background-color: #ffffff;
-  border: 1px solid var(--border-gray);
-  border-radius: 1rem;
-  /* Bordas mais arredondadas */
-  padding: 2.5rem 2rem;
+/* Login Card */
+.login-card {
+  background-color: var(--bg-white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: clamp(1.5rem, 5vw, 2.5rem) clamp(1.25rem, 4vw, 2rem);
   width: 100%;
-  max-width: 440px;
-  box-shadow: 0 30px 60px -10px rgba(0, 0, 0, 0.35);
+  max-width: clamp(320px, 90vw, 440px);
+  box-shadow: var(--shadow-lg);
 }
 
 .card-title {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: clamp(1.25rem, 4vw, 1.5rem);
+  font-weight: var(--font-bold);
   line-height: 1.3;
   text-align: center;
-  margin-bottom: 2rem;
+  margin: 0 0 clamp(1.5rem, 5vw, 2rem) 0;
+  color: var(--text-primary);
 }
 
-/* Formulário e Campos de Input */
+/* Form */
+.login-form {
+  width: 100%;
+}
+
 .form-group {
-  margin-bottom: 1.25rem;
+  margin-bottom: clamp(1rem, 3.5vw, 1.25rem);
 }
 
 label {
   display: block;
-  font-size: 0.875rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  color: #374151;
+  font-size: clamp(0.75rem, 2.5vw, 0.875rem);
+  font-weight: var(--font-semibold);
+  margin-bottom: var(--space-sm);
+  color: var(--text-primary);
 }
 
 .input-field {
   width: 100%;
-  height: 3.5rem;
-  padding: 0 1rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
-  font-size: 1rem;
+  height: clamp(3rem, 10vw, 3.5rem);
+  padding: 0 var(--space-md);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  font-size: clamp(0.875rem, 3vw, 1rem);
+  font-family: var(--font-primary);
   outline: none;
-  transition: all 0.2s;
+  transition: all var(--transition-base);
+  background-color: var(--bg-white);
+  color: var(--text-primary);
+}
+
+.input-field::placeholder {
+  color: var(--text-secondary);
 }
 
 .input-field:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px var(--primary);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
 }
 
-/* Wrapper para o campo de senha com ícone */
+/* Password Input Wrapper */
 .input-password-wrapper {
   display: flex;
+  align-items: stretch;
 }
 
 .password-input {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
   border-right: 0;
+  flex: 1;
 }
 
 .password-toggle {
   display: flex;
   align-items: center;
-  padding: 0 1rem;
-  border: 1px solid #d1d5db;
+  justify-content: center;
+  padding: 0 var(--space-md);
+  min-width: 44px;
+  border: 1px solid var(--border-medium);
   border-left: 0;
-  border-radius: 0 0.5rem 0.5rem 0;
-  background-color: #ffffff;
-  color: #9ca3af;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  background-color: var(--bg-white);
+  color: var(--text-secondary);
   cursor: pointer;
+  transition: all var(--transition-base);
 }
 
+.password-toggle:hover {
+  background-color: var(--bg-secondary);
+  color: var(--color-primary);
+}
+
+.password-toggle:active {
+  transform: scale(0.95);
+}
+
+.password-toggle .material-symbols-outlined {
+  font-size: 20px;
+}
+
+/* Forgot Password Link */
 .forgot-password {
   text-align: right;
-  margin-top: 0.5rem;
+  margin-top: var(--space-sm);
 }
 
 .forgot-password a {
-  color: var(--primary);
-  font-size: 0.75rem;
+  color: var(--color-primary);
+  font-size: clamp(0.625rem, 2vw, 0.75rem);
   text-decoration: none;
-  font-weight: 600;
+  font-weight: var(--font-semibold);
+  transition: opacity var(--transition-base);
 }
 
-/* Botão Principal */
-.btn-primary {
-  width: 100%;
-  height: 3.5rem;
-  background-color: var(--primary);
-  color: white;
-  border: none;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  font-weight: 700;
-  cursor: pointer;
-  margin-top: 1.5rem;
-  box-shadow: var(--shadow-logo);
-  transition: transform 0.1s, filter 0.2s;
-}
-
-.btn-primary:active {
-  transform: scale(0.98);
-}
-
-.btn-primary:hover {
-  filter: brightness(1.1);
-}
-
-/* Rodapé */
-.footer {
-  margin-top: 2rem;
-  text-align: center;
-  max-width: 350px;
-}
-
-.footer p {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  line-height: 1.6;
-}
-
-.link-bold {
-  color: var(--text-main);
-  font-weight: 600;
-  text-decoration: underline;
-}
-
-/* Prompt de Cadastro abaixo do botão */
-.signup-prompt {
-  text-align: center;
-  margin-top: 1.5rem;
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-}
-
-.signup-prompt a {
-  color: var(--primary);
-  font-weight: 700;
-  text-decoration: none;
-  margin-left: 4px;
-  transition: opacity 0.2s;
-}
-
-.signup-prompt a:hover {
+.forgot-password a:hover {
   text-decoration: underline;
   opacity: 0.8;
 }
 
 /* Error Message */
 .error-message {
-  color: #ff3333;
-  font-size: 0.875rem;
-  margin-bottom: 1rem;
-  min-height: 1.2em; /* Prevent layout shift */
+  color: var(--color-danger);
+  font-size: clamp(0.75rem, 2.5vw, 0.875rem);
+  margin-bottom: var(--space-md);
+  min-height: 1.2em;
   text-align: center;
+  font-weight: var(--font-medium);
 }
 
-/* Loading Spinner */
+/* Submit Button (uses global .btn .btn-primary) */
+.btn-primary {
+  width: 100%;
+  height: clamp(3rem, 10vw, 3.5rem);
+  margin-top: clamp(1rem, 3.5vw, 1.5rem);
+  font-size: clamp(0.875rem, 3vw, 1rem);
+}
+
+/* Loading State */
 .btn-loading {
   position: relative;
-  color: transparent !important; /* Hide text */
+  color: transparent !important;
   pointer-events: none;
 }
 
@@ -216,7 +241,7 @@ label {
   height: 20px;
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
-  border-top-color: #fff;
+  border-top-color: var(--text-white);
   animation: spin 0.8s linear infinite;
   transform: translate(-50%, -50%);
 }
@@ -224,5 +249,56 @@ label {
 @keyframes spin {
   to {
     transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+/* Footer */
+.login-footer {
+  margin-top: clamp(1.5rem, 5vw, 2rem);
+  text-align: center;
+  max-width: 350px;
+}
+
+.login-footer p {
+  font-size: clamp(0.625rem, 2vw, 0.75rem);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.link-bold {
+  color: var(--text-primary);
+  font-weight: var(--font-semibold);
+  text-decoration: underline;
+  transition: opacity var(--transition-base);
+}
+
+.link-bold:hover {
+  opacity: 0.8;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 360px) {
+  .page-wrapper {
+    padding: clamp(1rem, 4vw, 1.5rem) var(--space-sm);
+  }
+
+  .login-card {
+    padding: var(--space-lg) var(--space-md);
+  }
+
+  .logo-box {
+    width: 60px;
+    height: 60px;
+  }
+
+  .icon-main {
+    font-size: 36px !important;
+  }
+}
+
+@media (min-width: 481px) {
+  .page-wrapper {
+    padding: 2rem;
   }
 }

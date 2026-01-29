@@ -11,14 +11,55 @@ let searchTerm = '';
 const searchInput = document.querySelector('.search-input');
 const addButton = document.querySelector('.add-btn');
 const usersList = document.querySelector('.users-list');
+const darkModeToggle = document.getElementById('darkModeToggle');
+const menuBtn = document.getElementById('menuBtn');
+const userBtn = document.getElementById('userBtn');
+const logoImage = document.getElementById('logoImage');
 
 /**
  * Initialize page
  */
 async function init() {
+  initDarkMode();
   await loadUsers();
   renderUsers();
   setupEventListeners();
+}
+
+/**
+ * Initialize dark mode
+ */
+function initDarkMode() {
+  const savedTheme = localStorage.getItem('theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  
+  if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+    document.body.classList.add('dark-mode');
+    updateDarkModeIcon(true);
+  } else {
+    updateDarkModeIcon(false);
+  }
+}
+
+/**
+ * Toggle dark mode
+ */
+function toggleDarkMode() {
+  const isDark = document.body.classList.toggle('dark-mode');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  updateDarkModeIcon(isDark);
+}
+
+/**
+ * Update dark mode icon
+ */
+function updateDarkModeIcon(isDark) {
+  if (darkModeToggle) {
+    const icon = darkModeToggle.querySelector('.material-symbols-outlined');
+    if (icon) {
+      icon.textContent = isDark ? 'dark_mode' : 'light_mode';
+    }
+  }
 }
 
 /**
@@ -137,6 +178,10 @@ function getUserInitials(name) {
   }
   return name.substring(0, 2).toUpperCase();
 }
+
+/**
+ * Get role label in Portuguese
+ */
 function getRoleLabel(role) {
   const labels = {
     'admin': 'Administrador',
@@ -290,16 +335,46 @@ async function deleteUser(user) {
  * Setup event listeners
  */
 function setupEventListeners() {
+  // Dark mode toggle
+  if (darkModeToggle) {
+    darkModeToggle.addEventListener('click', toggleDarkMode);
+  }
+  
+  // Menu button
+  if (menuBtn) {
+    menuBtn.addEventListener('click', () => {
+      console.log('Menu clicked');
+    });
+  }
+  
+  // User button
+  if (userBtn) {
+    userBtn.addEventListener('click', () => {
+      console.log('User profile clicked');
+    });
+  }
+  
+  // Logo
+  if (logoImage) {
+    logoImage.addEventListener('click', () => {
+      console.log('Logo clicked');
+    });
+  }
+  
   // Search functionality
-  searchInput.addEventListener('input', (e) => {
-    searchTerm = e.target.value.trim();
-    renderUsers();
-  });
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      searchTerm = e.target.value.trim();
+      renderUsers();
+    });
+  }
   
   // Add button
-  addButton.addEventListener('click', () => {
-    window.location.href = '/create_user/createUser.html';
-  });
+  if (addButton) {
+    addButton.addEventListener('click', () => {
+      window.location.href = '/create_user/createUser.html';
+    });
+  }
 }
 
 /**
@@ -359,4 +434,8 @@ function showError(message) {
 }
 
 // Initialize on page load
-document.addEventListener('DOMContentLoaded', init);
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}

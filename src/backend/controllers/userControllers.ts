@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import { hashPassword } from '../utils/passwordHash';
 import { UserModel } from '../models/userModel';
 import type { CreateUserDTO, UpdateUserDTO } from '../../shared/dtos/userDto';
-import { UserValidator } from '../utils/validators/userValidator';
 
 type IdParam = { id: string };
 
@@ -64,12 +63,8 @@ class UsersController {
     try {
       const { name, username, password, role } = req.body;
 
-      const validation = UserValidator.validate(req.body);
-      if (!validation.valido) {
-        return res.status(400).json({
-          message: 'Erro de validação',
-          errors: validation.error
-        });
+      if (!name || !username || !password || !role) {
+        return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
       }
 
       // Check if user already exists

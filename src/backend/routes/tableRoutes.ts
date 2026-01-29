@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { tableController } from '../controllers/tableControllers';
 import { isAdminOrManager } from '../middlewares/roleAuth';
+import { authenticateToken } from '../middlewares/jwtAuth';
 
 const tablesRoutes = Router();
 

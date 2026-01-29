@@ -41,7 +41,13 @@ class OrdersController {
 
   async store(req: Request, res: Response): Promise<Response> {
     try {
-      const { table_id, user_id } = req.body;
+      const { table_id } = req.body;
+      const user_id = req.user?.id;
+      
+      if (!user_id) {
+        return res.status(401).json({ message: 'Usuário não autenticado' });
+      }
+      
       const newOrder = await OrderModel.create({ table_id, user_id });
 
       return res.status(201).json({

@@ -1,0 +1,67 @@
+import { Request, Response } from 'express';
+import { getDb } from '../config/database';
+import { verifyPassword } from '../utils/passwordHash';
+import jwt from 'jsonwebtoken';
+
+class AuthController {
+  async login(req: Request, res: Response): Promise<Response> {
+    try {
+      const { username, password } = req.body;
+
+      if (!username || !password) {
+        return res.status(400).json({ message: 'Username e password são obrigatórios' });
+      }
+
+      const db = await getDb();
+      const user = await db.get('SELECT * FROM users WHERE username = ?', [username]);
+
+      if (!user) {
+        return res.status(401).json({ message: 'Credenciais inválidas' });
+      }
+
+      const isPasswordValid = await verifyPassword(password, user.password_hash);
+
+      if (!isPasswordValid) {
+        return res.status(401).json({ message: 'Credenciais inválidas' });
+      }
+
+      const secret = process.env.JWT_SECRET;
+      
+      if (!secret) {
+        console.error('JWT_SECRET is not defined');
+        return res.status(500).json({ message: 'Erro interno do servidor' });
+      }
+
+      const token = jwt.sign(
+        { id: user.id, email: user.username, role: user.role },
+        secret,
+        { expiresIn: '1h' }
+      );
+
+   
+      const { password_hash, ...userSafe } = user;
+
+     
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 3600000 // 1 hora
+      });
+
+      return res.status(200).json({
+        message: 'Login realizado com sucesso',
+        token,
+        user: userSafe
+      });
+
+    } catch (error) {
+        console.error('Login error:', error);
+        return res.status(500).json({
+            message: 'Erro ao realizar login',
+            error: error instanceof Error ? error.message : 'Erro desconhecido'
+        });
+    }
+  }
+}
+
+export default new AuthController();

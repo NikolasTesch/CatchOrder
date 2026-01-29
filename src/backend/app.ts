@@ -39,6 +39,6 @@ app.get('/', (req, res) => {
   res.redirect('/pages/landingPage.html');
 });
 
-app.use(routes);
+app.use('/api', routes);
 
 export { app };

@@ -1,7 +1,79 @@
-// WaiterMain - JavaScript for waiter interface
-// Integrates with existing backend API
 
-const API_BASE = '/api';
+function initDarkMode() {
+  const savedTheme = localStorage.getItem('theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  
+  if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+    document.body.classList.add('dark-mode');
+    updateDarkModeIcon(true);
+  } else {
+    updateDarkModeIcon(false);
+  }
+}
+
+function toggleDarkMode() {
+  const isDark = document.body.classList.toggle('dark-mode');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  updateDarkModeIcon(isDark);
+}
+
+
+function updateDarkModeIcon(isDark) {
+  const darkModeToggle = document.getElementById('darkModeToggle');
+  if (darkModeToggle) {
+    const icon = darkModeToggle.querySelector('.material-symbols-outlined');
+    if (icon) {
+      icon.textContent = isDark ? 'dark_mode' : 'light_mode';
+    }
+  }
+}
+
+/**
+ * Setup UI event listeners
+ */
+function setupEventListeners() {
+  // Dark mode toggle
+  const darkModeToggle = document.getElementById('darkModeToggle');
+  if (darkModeToggle) {
+    darkModeToggle.addEventListener('click', toggleDarkMode);
+  }
+
+  // Menu button
+  const menuBtn = document.getElementById('menuBtn');
+  if (menuBtn) {
+    menuBtn.addEventListener('click', () => {
+      console.log('Menu clicked');
+      // TODO: Open navigation menu
+    });
+  }
+
+  // User button
+  const userBtn = document.getElementById('userBtn');
+  if (userBtn) {
+    userBtn.addEventListener('click', () => {
+      console.log('User profile clicked');
+      // TODO: Navigate to user profile
+    });
+  }
+
+  // Logo click
+  const logoImage = document.getElementById('logoImage');
+  if (logoImage) {
+    logoImage.addEventListener('click', () => {
+      console.log('Logo clicked');
+      // TODO: Navigate to home
+    });
+  }
+
+  // New order button
+  const newOrderBtn = document.getElementById('newOrderBtn');
+  if (newOrderBtn) {
+    newOrderBtn.addEventListener('click', () => {
+      console.log('New order clicked');
+      // TODO: Navigate to order creation
+    });
+  }
+}
 
 // Load tables from backend
 async function loadTables() {
@@ -35,11 +107,15 @@ function renderOccupiedTables(tables) {
   
   container.innerHTML = tables.length > 0
     ? tables.map(table => `
-        <div class="table-card occupied" data-table-id="${table.id}">
+        <button class="table-card occupied" data-table-id="${table.id}" aria-label="Mesa ${table.number}">
           <span class="table-number">${table.number}</span>
-        </div>
+        </button>
       `).join('')
     : '<p class="empty-message">Nenhuma mesa ocupada</p>';
+  
+  container.querySelectorAll('.table-card').forEach(card => {
+    card.addEventListener('click', () => handleTableClick(card.dataset.tableId));
+  });
 }
 
 function renderAllTables(tables) {
@@ -47,9 +123,9 @@ function renderAllTables(tables) {
   if (!container) return;
   
   container.innerHTML = tables.map(table => `
-    <div class="table-card ${table.status.toLowerCase()}" data-table-id="${table.id}">
+    <button class="table-card ${table.status.toLowerCase()}" data-table-id="${table.id}" aria-label="Mesa ${table.number}">
       <span class="table-number">${table.number}</span>
-    </div>
+    </button>
   `).join('');
   
   // Add click listeners
@@ -59,7 +135,6 @@ function renderAllTables(tables) {
 }
 
 function handleTableClick(tableId) {
-  // TODO: Implement table selection and order management
   console.log('Table clicked:', tableId);
 }
 
@@ -96,20 +171,23 @@ async function loadSummary() {
   }
 }
 
-// New order button
-document.querySelector('.btn-new-order')?.addEventListener('click', () => {
-  // TODO: Navigate to order creation or open modal
-  console.log('New order clicked');
-});
 
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
+function init() {
+  initDarkMode();
+  setupEventListeners();
   loadTables();
   loadSummary();
-  
-  // Refresh every 30 seconds
   setInterval(() => {
     loadTables();
     loadSummary();
   }, 30000);
-});
+  
+  console.log('WaiterMain page initialized');
+}
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}

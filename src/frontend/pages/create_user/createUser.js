@@ -1,5 +1,3 @@
-// Close Order Page - JavaScript Functionality
-
 
 function initDarkMode() {
   const savedTheme = localStorage.getItem('theme');
@@ -13,17 +11,18 @@ function initDarkMode() {
   }
 }
 
-
+/**
+ * Toggle dark mode on/off
+ */
 function toggleDarkMode() {
   const isDark = document.body.classList.toggle('dark-mode');
   localStorage.setItem('theme', isDark ? 'dark' : 'light');
   updateDarkModeIcon(isDark);
-  
-  // Optional: Add visual feedback
-  console.log(isDark ? 'Modo escuro ativado' : 'Modo claro ativado');
 }
 
-
+/**
+ * Update dark mode toggle button icon
+ */
 function updateDarkModeIcon(isDark) {
   const darkModeToggle = document.getElementById('darkModeToggle');
   if (darkModeToggle) {
@@ -34,7 +33,9 @@ function updateDarkModeIcon(isDark) {
   }
 }
 
-
+/**
+ * Setup event listeners
+ */
 function setupEventListeners() {
   // Dark mode toggle
   const darkModeToggle = document.getElementById('darkModeToggle');
@@ -42,12 +43,12 @@ function setupEventListeners() {
     darkModeToggle.addEventListener('click', toggleDarkMode);
   }
 
-  // Menu button
-  const menuBtn = document.getElementById('menuBtn');
-  if (menuBtn) {
-    menuBtn.addEventListener('click', () => {
-      console.log('Menu clicked');
-      // TODO: Implement menu navigation
+  // Back button
+  const backBtn = document.getElementById('backBtn');
+  if (backBtn) {
+    backBtn.addEventListener('click', () => {
+      console.log('Back button clicked');
+      window.history.back();
     });
   }
 
@@ -56,21 +57,42 @@ function setupEventListeners() {
   if (userBtn) {
     userBtn.addEventListener('click', () => {
       console.log('User profile clicked');
-      // TODO: Navigate to user profile or show user menu
+      // TODO: Navigate to user profile
     });
   }
 
-  // Logo click (optional)
+  // Logo click
   const logoImage = document.getElementById('logoImage');
   if (logoImage) {
     logoImage.addEventListener('click', () => {
       console.log('Logo clicked');
-      // TODO: Navigate to home or dashboard
+      // TODO: Navigate to home
+    });
+  }
+
+  // Photo upload button
+  const photoUploadBtn = document.getElementById('photoUploadBtn');
+  if (photoUploadBtn) {
+    photoUploadBtn.addEventListener('click', () => {
+      console.log('Photo upload clicked');
+      // TODO: Open file picker
+    });
+  }
+
+  // Form submission
+  const userForm = document.getElementById('userForm');
+  if (userForm) {
+    userForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      console.log('User form submitted');
+      // TODO: Handle form submission
     });
   }
 }
 
-
+/**
+ * Initialize page
+ */
 function init() {
   // Initialize dark mode first (must be before any early returns)
   initDarkMode();
@@ -78,8 +100,7 @@ function init() {
   // Setup UI event listeners (must be second)
   setupEventListeners();
   
-  // Page-specific initialization here
-  console.log('Close Order page initialized');
+  console.log('Create User page initialized');
 }
 
 // Initialize when DOM is ready

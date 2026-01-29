@@ -2,93 +2,105 @@
 <html lang="pt-br">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CatchOrder - Fechar Comanda</title>
-    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CatchOrder - Fechar Comanda</title>
+  
+  <!-- Noto Sans JP Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Material Icons -->
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 
 <body>
-    <!-- Header Fixo -->
-    <header class="main-header">
-        <button class="icon-btn">
-            <span class="material-symbols-outlined">menu</span>
-        </button>
-        <div class="logo-container">
-            <!-- Logo Text based on reference -->
-            <span class="logo-text">CatchOrder</span>
+  <!-- Header Fixo -->
+  <header class="main-header">
+    <button class="icon-btn" aria-label="Menu de navegação" id="menuBtn">
+      <span class="material-symbols-outlined">menu</span>
+      <span class="header-title">Comanda</span>
+    </button>
+
+    <div class="header-center">
+      <img src="/img/logoName.svg" alt="CatchOrder Logo" class="logo-image" id="logoImage">
+    </div>
+
+    <nav class="header-actions" aria-label="Ações do cabeçalho">
+      <button class="icon-btn-small" aria-label="Alternar modo escuro" id="darkModeToggle">
+        <span class="material-symbols-outlined">light_mode</span>
+      </button>
+      <button class="icon-btn-small" aria-label="Acessar perfil do usuário" id="userBtn">
+        <span class="material-symbols-outlined">account_circle</span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main class="page-wrapper">
+    <!-- Summary Section -->
+    <section class="summary-section card" aria-label="Resumo da comanda">
+      <h1 class="page-title">Comanda da mesa</h1>
+
+      <!-- Large Red X Box -->
+      <div class="close-icon-container">
+        <div class="close-box">
+          <span class="close-symbol">X</span>
         </div>
-        <div class="header-actions">
-            <!-- Profile Picture User Placeholder -->
-            <div class="user-avatar"></div>
-        </div>
-    </header>
+      </div>
+    </section>
 
-    <div class="page-wrapper">
-
-        <div class="content-container">
-            <h1 class="page-title">Comanda da mesa</h1>
-
-            <!-- Large Red X Box -->
-            <div class="close-icon-container">
-                <div class="close-box">
-                    <span class="close-symbol">X</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Consumido Section -->
-        <section class="consumed-section">
+    <!-- Consumido Section -->
+    <section class="consumed-section" aria-label="Itens consumidos">
             <div class="section-header">
                 <h2 class="section-title">Consumido <span
                         class="material-symbols-outlined arrow-icon">arrow_forward</span></h2>
             </div>
 
             <div class="consumed-list">
-                <!-- Item 1 -->
-                <div class="consumed-item">
-                    <div class="item-header">
-                        <span class="item-price">R$20,00</span>
-                    </div>
-                    <div class="item-details">
-                        <span class="item-name">Prato feito - Lasanha de frango</span>
-                    </div>
-                    <div class="item-divider"></div>
-                </div>
+        <!-- Item 1 -->
+        <article class="consumed-item">
+          <div class="item-header">
+            <span class="item-price">R$20,00</span>
+          </div>
+          <div class="item-details">
+            <span class="item-name">Prato feito - Lasanha de frango</span>
+          </div>
+          <div class="item-divider"></div>
+        </article>
 
-                <!-- Item 2 -->
-                <div class="consumed-item">
-                    <div class="item-header">
-                        <span class="item-price">R$21,00</span>
-                    </div>
-                    <div class="item-details">
-                        <span class="item-name">Prato feito - Alcatra com fritas</span>
-                    </div>
-                    <div class="item-divider"></div>
-                </div>
+        <!-- Item 2 -->
+        <article class="consumed-item">
+          <div class="item-header">
+            <span class="item-price">R$21,00</span>
+          </div>
+          <div class="item-details">
+            <span class="item-name">Prato feito - Alcatra com fritas</span>
+          </div>
+          <div class="item-divider"></div>
+        </article>
 
-                <!-- Item 3 -->
-                <div class="consumed-item">
-                    <div class="item-header">
-                        <span class="item-price">R$12,00</span>
-                    </div>
-                    <div class="item-details">
-                        <span class="item-name">Coca-Cola 2 Litros</span>
-                    </div>
-                    <div class="item-divider"></div>
-                </div>
+        <!-- Item 3 -->
+        <article class="consumed-item">
+          <div class="item-header">
+            <span class="item-price">R$12,00</span>
+          </div>
+          <div class="item-details">
+            <span class="item-name">Coca-Cola 2 Litros</span>
+          </div>
+          <div class="item-divider"></div>
+        </article>
             </div>
-        </section>
+    </section>
 
-        <!-- Action Buttons -->
-        <div class="actions-container">
-            <button class="btn btn-secondary">Adicionar item</button>
-            <button class="btn btn-primary">Fechar comanda</button>
-        </div>
-
-    </div>
+    <!-- Action Buttons -->
+    <section class="actions-section" aria-label="Ações">
+      <div class="actions-container">
+        <button class="btn btn-secondary">Adicionar item</button>
+        <button class="btn btn-primary">Fechar comanda</button>
+      </div>
+    </section>
+  </main>
 
     <!-- Bottom Bar with Total -->
     <footer class="bottom-bar">
@@ -98,9 +110,9 @@
         <button class="cart-btn">
             <span class="material-symbols-outlined">shopping_cart</span>
         </button>
-    </footer>
+  </footer>
 
-    <script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 
 </html>

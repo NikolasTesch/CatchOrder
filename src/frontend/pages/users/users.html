@@ -5,41 +5,49 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CatchOrder - Usuários</title>
-  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  
+  <!-- Noto Sans JP Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Material Icons -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 
 <body>
   <!-- Header Fixo -->
   <header class="main-header">
-    <button class="icon-btn">
+    <button class="icon-btn" aria-label="Menu e título" id="menuBtn">
       <span class="material-symbols-outlined">menu</span>
       <span class="header-title">Usuários</span>
     </button>
 
-    <div class="header-actions">
-      <button class="icon-btn-round">
-        <span class="material-symbols-outlined">notifications</span>
+    <div class="header-center">
+      <img src="/img/logoName.svg" alt="CatchOrder Logo" class="logo-image" id="logoImage">
+    </div>
+
+    <nav class="header-actions" aria-label="Ações do cabeçalho">
+      <button class="icon-btn-small" aria-label="Alternar modo escuro" id="darkModeToggle">
+        <span class="material-symbols-outlined">light_mode</span>
       </button>
-      <button class="icon-btn-round">
+      <button class="icon-btn-small" aria-label="Acessar perfil do usuário" id="userBtn">
         <span class="material-symbols-outlined">account_circle</span>
       </button>
-    </div>
+    </nav>
   </header>
 
-  <div class="page-wrapper">
+  <!-- Main Content -->
+  <main class="page-wrapper">
     <!-- Barra de Busca -->
     <div class="search-container">
       <span class="material-symbols-outlined search-icon">search</span>
-      <input type="text" class="search-input" placeholder="Buscar">
-      <button class="add-btn">
+      <input type="text" class="search-input" placeholder="Buscar" id="searchInput" aria-label="Buscar usuários">
+      <button class="add-btn" id="addUserBtn" aria-label="Adicionar usuário">
         <span class="material-symbols-outlined">add</span>
       </button>
     </div>
 
     <!-- Lista de Usuários -->
-    <div class="users-list">
+    <div class="users-list" id="usersList">
       <!-- Card de Usuário -->
       <div class="user-card">
         <div class="user-avatar"></div>
@@ -47,7 +55,7 @@
           <h3 class="user-name">Colaborador Fulano (cargo)</h3>
           <p class="user-email">Emaildecadastro@doFulano.com</p>
         </div>
-        <button class="btn-config">
+        <button class="btn-config" aria-label="Configurar usuário">
           Configurar
           <span class="material-symbols-outlined">chevron_right</span>
         </button>
@@ -60,7 +68,7 @@
           <h3 class="user-name">Colaborador Cicrano (cargo)</h3>
           <p class="user-email">Emaildecadastro@doCicrano.com</p>
         </div>
-        <button class="btn-config">
+        <button class="btn-config" aria-label="Configurar usuário">
           Configurar
           <span class="material-symbols-outlined">chevron_right</span>
         </button>
@@ -73,7 +81,7 @@
           <h3 class="user-name">Colaborador Beltrano (cargo)</h3>
           <p class="user-email">Emaildecadastro@doBeltrano.com</p>
         </div>
-        <button class="btn-config">
+        <button class="btn-config" aria-label="Configurar usuário">
           Configurar
           <span class="material-symbols-outlined">chevron_right</span>
         </button>
@@ -86,13 +94,15 @@
           <h3 class="user-name">Colaborador Sicrano (cargo)</h3>
           <p class="user-email">Emaildecadastro@doSicrano.com</p>
         </div>
-        <button class="btn-config">
+        <button class="btn-config" aria-label="Configurar usuário">
           Configurar
           <span class="material-symbols-outlined">chevron_right</span>
         </button>
       </div>
     </div>
-  </div>
+  </main>
+
+  <script src="script.js"></script>
 </body>
 
 </html>

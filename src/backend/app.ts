@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { routes } from './routes';
-import path from 'path';
+import { staticRoutes } from './routes/staticRoutes';
 
 const app = express();
 
@@ -34,10 +34,9 @@ app.use(
 // Middlewares
 app.use(express.json());
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, '../../public')));
-app.get('/', (req, res) => {
-  res.redirect('/pages/landingPage.html');
-});
+
+// Static & Page Routes
+app.use(staticRoutes);
 
 app.use('/api', routes);
 

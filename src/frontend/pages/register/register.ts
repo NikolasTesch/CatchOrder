@@ -1,3 +1,4 @@
+import './style.css';
 
 document.addEventListener('DOMContentLoaded', () => {
     const nameInput = document.getElementById('name') as HTMLInputElement | null;

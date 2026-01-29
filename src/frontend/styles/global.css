@@ -177,54 +177,43 @@ img {
   --z-tooltip: 700;
 }
 
-/* ========================================
-   DARK MODE SUPPORT
-   ======================================== */
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* Primary Colors - Slightly lighter for dark mode */
-    --color-primary: #2a7a8f;
-    --color-primary-light: #3a9ab5;
-    --color-primary-dark: #1e5a6a;
-    
-    /* Secondary Colors */
-    --color-secondary: #F4AC45;
-    --color-secondary-light: #f6bc66;
-    --color-secondary-dark: #e69a2a;
-    
-    /* Status Colors */
-    --color-success: #48c765;
-    --color-danger: #e74c3c;
-    --color-warning: #f39c12;
-    --color-info: #3498db;
-    
-    /* Background Colors - Inverted */
-    --bg-primary: #1a1a1a;
-    --bg-secondary: #2d2d2d;
-    --bg-white: #242424;
-    --bg-card: #2d2d2d;
-    --bg-overlay: rgba(0, 0, 0, 0.7);
-    
-    /* Text Colors - Inverted */
-    --text-primary: #FFFFFF;
-    --text-secondary: #CCCCCC;
-    --text-tertiary: #999999;
-    --text-white: #FFFFFF;
-    --text-on-primary: #FFFFFF;
-    --text-on-secondary: #000000;
-    
-    /* Border Colors */
-    --border-light: #3d3d3d;
-    --border-medium: #4d4d4d;
-    --border-dark: #666666;
-    
-    /* Shadows - Lighter for dark mode */
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
-    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.3);
-    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.4);
-  }
+/* Manual dark mode toggle via JavaScript */
+body.dark-mode {
+  --color-primary: #2a7a8f;
+  --color-primary-light: #3a9ab5;
+  --color-primary-dark: #1e5a6a;
+  
+  --color-secondary: #F4AC45;
+  --color-secondary-light: #f6bc66;
+  --color-secondary-dark: #e69a2a;
+  
+  --color-success: #48c765;
+  --color-danger: #e74c3c;
+  --color-warning: #f39c12;
+  --color-info: #3498db;
+  
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-white: #242424;
+  --bg-card: #2d2d2d;
+  --bg-overlay: rgba(0, 0, 0, 0.7);
+  
+  --text-primary: #FFFFFF;
+  --text-secondary: #CCCCCC;
+  --text-tertiary: #999999;
+  --text-white: #FFFFFF;
+  --text-on-primary: #FFFFFF;
+  --text-on-secondary: #000000;
+  
+  --border-light: #3d3d3d;
+  --border-medium: #4d4d4d;
+  --border-dark: #666666;
+  
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.4);
 }
 
 .text-xs { font-size: var(--text-xs); }

@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { TableModel } from '../models/tableModel';
 import { TableStatus } from '../../shared/types/table';
+import { OrderModel } from '../models/order';
 
 class TablesController {
   /**
@@ -183,6 +184,34 @@ class TablesController {
   }
 
   /**
+   * Get tables for the current waiter
+   * GET /tables/mine
+   */
+  async indexMine(req: Request, res: Response): Promise<Response> {
+    try {
+      const waiterId = req.user?.id;
+
+      if (!waiterId) {
+        return res.status(401).json({
+          message: 'User ID not found in token',
+          data: null,
+        });
+      }
+
+      const tables = await TableModel.findByWaiterId(waiterId);
+      return res.status(200).json({
+        message: 'My tables retrieved successfully',
+        data: tables,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: 'Error retrieving my tables',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+  }
+
+  /**
    * Update table status
    * PATCH /tables/:id/status
    */
@@ -198,7 +227,20 @@ class TablesController {
         });
       }
 
-      const table = await TableModel.updateStatus(id, status);
+      // STRICT RULE: Cannot manually set to AVAILABLE if there is an OPEN order
+      if (status === TableStatus.AVAILABLE) {
+        const openOrder = await OrderModel.findOpenByTableId(id);
+        if (openOrder) {
+          return res.status(400).json({
+            message: 'Cannot release table with an open order. Please close the order first.',
+            data: null,
+          });
+        }
+      }
+
+      const waiterId = req.user?.id;
+      // Pass waiterId to model so it can be bound if status is OCCUPIED
+      const table = await TableModel.updateStatus(id, status, waiterId);
 
       if (!table) {
         return res.status(404).json({

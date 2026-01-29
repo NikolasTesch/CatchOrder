@@ -13,6 +13,11 @@ export class OrderModel {
         return db.get<OrderDTO>('SELECT * FROM orders WHERE id = ?', [id]);
     }
 
+    static async findOpenByTableId(tableId: string): Promise<OrderDTO | undefined> {
+        const db = await getDb();
+        return db.get<OrderDTO>("SELECT * FROM orders WHERE table_id = ? AND status = 'OPEN'", [tableId]);
+    }
+
     static async create(data: CreateOrderDTO): Promise<OrderDTO> {
         const db = await getDb();
         const id = uuidv4();
@@ -92,11 +97,6 @@ export class OrderModel {
         await db.run(
             `UPDATE orders SET status = 'CLOSED', closed_at = ? WHERE id = ?`,
             [closed_at, id]
-        );
-
-        await db.run(
-            `UPDATE restaurant_tables SET status = 'AVAILABLE' WHERE id = ?`,
-            [order.table_id]
         );
 
         return OrderModel.findById(id);

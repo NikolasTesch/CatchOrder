@@ -12,7 +12,10 @@ tablesRoutes.get('/', tableController.index);
 // Lista apenas mesas disponíveis para uso
 tablesRoutes.get('/available', tableController.indexAvailable);
 
+tablesRoutes.get('/mine', authenticateToken, tableController.indexMine);
+
 // Lista mesas filtradas por status (ocupada, disponível, reservada)
+
 tablesRoutes.get('/status/:status', tableController.indexByStatus);
 
 // Busca uma mesa específica por ID

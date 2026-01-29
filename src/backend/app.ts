@@ -35,11 +35,10 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../../public')));
-app.use(routes);
-
-// Catch-all route for SPA - using named parameter for path-to-regexp v8+
-app.get('/{*catchall}', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../public/index.html'));
+app.get('/', (req, res) => {
+  res.redirect('/pages/landingPage.html');
 });
+
+app.use(routes);
 
 export { app };

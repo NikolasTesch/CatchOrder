@@ -27,18 +27,25 @@
       <h1 class="card-title">Crie sua conta</h1>
 
       <div class="form-group">
-        <label for="owner-name">Seu Nome</label>
-        <input type="text" id="owner-name" placeholder="Como podemos te chamar?" class="input-field">
+        <label for="name">Seu Nome</label>
+        <input type="text" id="name" placeholder="Como podemos te chamar?" class="input-field">
       </div>
 
       <div class="form-group">
-        <label for="restaurant-name">Nome do Restaurante</label>
-        <input type="text" id="restaurant-name" placeholder="Ex: Cantina do Samuel" class="input-field">
+        <label for="username">Nome de Usuário</label>
+        <input type="text" id="username" placeholder="Crie seu usuário de acesso" class="input-field">
       </div>
 
       <div class="form-group">
-        <label for="email">E-mail Profissional</label>
-        <input type="email" id="email" placeholder="seu@email.com" class="input-field">
+        <label for="role">Cargo</label>
+        <div class="select-wrapper">
+          <select id="role" class="input-field">
+            <option value="" disabled selected>Selecione seu cargo</option>
+            <option value="admin">Administrador</option>
+            <option value="waiter">Garçom</option>
+            <option value="kitchen">Cozinha</option>
+          </select>
+        </div>
       </div>
 
       <div class="form-group">
@@ -46,10 +53,12 @@
         <input type="password" id="password" placeholder="Mínimo 8 caracteres" class="input-field">
       </div>
 
+      <div id="register-error" class="error-message"></div>
+
       <button class="btn btn-primary">Finalizar Cadastro</button>
 
       <div class="switch-prompt">
-        Já tem uma conta? <a href="../landing_page/index.html">Fazer login</a>
+        Já tem uma conta? <a href="../landing_page/landingPage.html">Fazer login</a>
       </div>
     </main>
 

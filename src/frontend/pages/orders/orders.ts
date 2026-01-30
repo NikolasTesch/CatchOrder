@@ -170,8 +170,8 @@ function createOrderCard(order: Order, type: 'open' | 'finished'): HTMLElement {
 
     // Items Summary
     const itemsDescription = order.items && order.items.length > 0
-        ? `${order.items.length} itens`
-        : 'Ver detalhes';
+        ? order.items.map(item => `${item.quantity}x ${item.product_name || 'Item'}`).join(', ')
+        : 'Sem itens';
 
     // Observations
     const obs = order.observations || '';

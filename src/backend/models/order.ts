@@ -6,6 +6,8 @@ import type {
   UpdateOrderDTO,
   OrderItemDTO,
 } from '../../shared/dtos/orderDto';
+import { TableModel } from './tableModel';
+import { TableStatus } from '../../shared/types/table';
 
 export class OrderModel {
   static async findAll(): Promise<OrderDTO[]> {
@@ -65,6 +67,13 @@ export class OrderModel {
         0,
         opened_at,
       ],
+    );
+
+    // Atualizar status da mesa para ocupada e vincular o garçom
+    await TableModel.updateStatus(
+      data.table_id,
+      TableStatus.OCCUPIED,
+      data.user_id,
     );
 
     const order = await OrderModel.findById(id);
@@ -163,9 +172,6 @@ export class OrderModel {
     const order = await OrderModel.findById(id);
 
     if (!order || order.status !== 'OPEN') return undefined;
-
-    const closed_at = new Date().toISOString();
-    const tipValue = tip || 0;
 
     await db.run(
       `UPDATE orders SET status = 'CLOSED' WHERE id = ?`,

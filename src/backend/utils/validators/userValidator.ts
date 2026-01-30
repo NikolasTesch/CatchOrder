@@ -42,6 +42,20 @@ export class UserValidator {
       }
     }
 
+    // Validação opcional de image_url
+    if (user.image_url !== undefined && user.image_url !== null) {
+      if (typeof user.image_url !== 'string') {
+        error.push("URL da imagem deve ser uma string");
+      } else if (user.image_url.trim().length > 0) {
+        // Validação básica de URL
+        try {
+          new URL(user.image_url);
+        } catch {
+          error.push("URL da imagem inválida");
+        }
+      }
+    }
+
     return {
       valido: error.length === 0,
       error,

@@ -7,14 +7,14 @@ export class UserModel {
 
   async findAll(): Promise<Omit<User, 'password_hash'>[]> {
     const db = await getDb();
-    const users = await db.all<User[]>('SELECT id, name, username, role, created_at, updated_at FROM users');
+    const users = await db.all<User[]>('SELECT id, name, username, role, image_url, created_at, updated_at FROM users');
     return users;
   }
 
   async findById(id: string): Promise<Omit<User, 'password_hash'> | undefined> {
     const db = await getDb();
     const user = await db.get<User>(
-      'SELECT id, name, username, role, created_at, updated_at FROM users WHERE id = ?',
+      'SELECT id, name, username, role, image_url, created_at, updated_at FROM users WHERE id = ?',
       [id]
     );
     return user;
@@ -30,8 +30,8 @@ export class UserModel {
     const db = await getDb();
     const id = uuidv4();
     await db.run(
-      `INSERT INTO users (id, name, username, password_hash, role) VALUES (?, ?, ?, ?, ?)`,
-      [id, user.name, user.username, user.password_hash, user.role]
+      `INSERT INTO users (id, name, username, password_hash, role, image_url) VALUES (?, ?, ?, ?, ?, ?)`,
+      [id, user.name, user.username, user.password_hash, user.role, user.image_url || null]
     );
     return id;
   }
@@ -58,6 +58,10 @@ export class UserModel {
     if (user.password_hash) {
       fields.push('password_hash = ?');
       values.push(user.password_hash);
+    }
+    if (user.image_url !== undefined) {
+      fields.push('image_url = ?');
+      values.push(user.image_url);
     }
 
     if (fields.length === 0) return false;

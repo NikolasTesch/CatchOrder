@@ -62,7 +62,7 @@ class UsersController {
    */
   async store(req: Request, res: Response): Promise<Response> {
     try {
-      const { name, username, password, role } = req.body;
+      const { name, username, password, role, image_url } = req.body;
 
       const validation = UserValidator.validate(req.body);
       if (!validation.valido) {
@@ -84,14 +84,15 @@ class UsersController {
         name,
         username,
         password_hash,
-        role
+        role,
+        image_url
       };
 
       const userId = await userModel.create(newUser);
 
       return res.status(201).json({
         message: 'Usuário criado com sucesso',
-        data: { id: userId, name, username, role }
+        data: { id: userId, name, username, role, image_url }
       });
     } catch (error) {
       return res.status(500).json({

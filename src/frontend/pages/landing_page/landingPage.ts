@@ -85,13 +85,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             console.log('Sending request to /auth/login...'); // Debug 7
+            
+            interface LoginResponse {
+                user: {
+                    id: string;
+                    username: string;
+                    role: string;
+                };
+                token: string;
+            }
+
             // Using ApiService for consistent request handling
-            await ApiService.post('/auth/login', { username, password });
+            const response = await ApiService.post<LoginResponse>('/auth/login', { username, password });
 
-            console.log('Login successful');
+            console.log('Login successful', response);
 
-            // Redirect to orders page
-            window.location.href = './orders.html';
+            // Store user data if returned (ApiService might verify token but we need role)
+            if (response && response.user) {
+                console.log('User Role:', response.user.role); // Debug
+                localStorage.setItem('user', JSON.stringify(response.user));
+                if (response.token) {
+                    localStorage.setItem('token', response.token);
+                }
+                
+                const role = response.user.role.toUpperCase();
+                
+                // Redirect based on role
+                if (role === 'WAITER') {
+                    console.log('Redirecting to Waiter Page...');
+                    window.location.href = '/pages/waiterMain.html';
+                    return;
+                } else if (role === 'MANAGER' || role === 'ADMIN') {
+                    window.location.href = '/pages/gestMain.html';
+                    return;
+                } else {
+                    console.log('Redirecting to Default Orders Page...');
+                    window.location.href = '/pages/orders.html';
+                    return;
+                }
+            } else {
+                 // Fallback if no role info
+                 window.location.href = '/pages/orders.html';
+            }
 
         } catch (error: any) {
             console.error('Login error:', error);

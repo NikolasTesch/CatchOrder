@@ -16,6 +16,37 @@
 </head>
 
 <body>
+  <!-- Overlay -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- Sidebar Menu -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h2 class="sidebar-title">Menu</h2>
+      <button class="icon-btn" id="closeSidebarBtn" aria-label="Fechar menu">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="/pages/waiterMain.html" class="sidebar-link active">
+        <span class="material-symbols-outlined">home</span>
+        Início
+      </a>
+      <a href="/pages/createOrder.html" class="sidebar-link">
+        <span class="material-symbols-outlined">add_circle</span>
+        Novo Pedido
+      </a>
+      <a href="#tablesGrid" class="sidebar-link">
+        <span class="material-symbols-outlined">table_restaurant</span>
+        Mesas
+      </a>
+      <button class="sidebar-link" id="sidebarLogoutBtn">
+        <span class="material-symbols-outlined">logout</span>
+        Sair
+      </button>
+    </nav>
+  </aside>
+
   <!-- Cabeçalho Principal -->
   <header class="main-header">
     <button class="icon-btn" aria-label="Menu" id="menuBtn">
@@ -26,13 +57,26 @@
       <img src="/img/logoName.svg" alt="CatchOrder Logo" class="logo-image" id="logoImage">
     </div>
 
-    <nav class="header-actions" aria-label="Ações do cabeçalho">
+    <nav class="header-actions" aria-label="Ações do cabeçalho" style="position: relative;">
       <button class="icon-btn-small" aria-label="Alternar modo escuro" id="darkModeToggle">
         <span class="material-symbols-outlined">light_mode</span>
       </button>
       <button class="icon-btn-small" aria-label="Acessar perfil do usuário" id="userBtn">
         <span class="material-symbols-outlined">account_circle</span>
       </button>
+
+      <!-- User Dropdown -->
+      <div class="user-dropdown" id="userDropdown">
+        <div class="dropdown-header">
+            <span class="user-name" id="userNameDisplay">Usuário</span>
+            <span class="user-role" id="userRoleDisplay">Garçom</span>
+        </div>
+        <div class="dropdown-divider"></div>
+        <button class="dropdown-item" id="userLogoutBtn">
+          <span class="material-symbols-outlined">logout</span>
+          Sair
+        </button>
+      </div>
     </nav>
   </header>
 
@@ -46,20 +90,27 @@
       <button class="btn btn-primary btn-full" id="newOrderBtn">Novo Pedido</button>
     </section>
 
-    <!-- Seção: Mesas Ocupadas -->
-    <section class="tables-section" aria-label="Mesas ocupadas">
-      <h3 class="section-title">Mesas Ocupadas <span class="material-symbols-outlined icon-arrow">arrow_forward</span>
+    <!-- Seção: Pedidos em Andamento (NOVO) -->
+    <section class="tables-section" aria-label="Pedidos em andamento">
+      <h3 class="section-title">
+        Pedidos em Andamento
+        <span class="material-symbols-outlined icon-arrow">arrow_forward</span>
       </h3>
-      <div class="occupied-scroll">
-        <!-- Tables injected by script -->
+      <div class="orders-scroll" id="activeOrdersList">
+        <!-- Active orders injected by script -->
+        <p class="loading-text">Nenhum pedido em andamento</p>
       </div>
     </section>
 
-    <!-- Seção: Todas as Mesas -->
-    <section class="tables-section" aria-label="Todas as mesas">
-      <h3 class="section-title">Mesas <span class="material-symbols-outlined icon-arrow">arrow_forward</span></h3>
-      <div class="tables-grid">
+    <!-- Seção: Mesas (Consolidada) -->
+    <section class="tables-section" aria-label="Mesas">
+      <h3 class="section-title">
+        Mesas
+        <span class="material-symbols-outlined icon-arrow">arrow_forward</span>
+      </h3>
+      <div class="tables-grid" id="tablesGrid">
         <!-- Tables injected by script -->
+        <p class="loading-text">Carregando mesas...</p>
       </div>
     </section>
   </main>

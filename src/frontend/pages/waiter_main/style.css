@@ -1,5 +1,159 @@
 ﻿/* Page Wrapper */
 .page-wrapper {
+
+/* --- Sidebar Styling --- */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 280px;
+  background-color: var(--bg-white);
+  z-index: 1000; /* Above header */
+  transform: translateX(-100%);
+  transition: transform var(--transition-base);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar.active {
+  transform: translateX(0);
+}
+
+.sidebar-header {
+  padding: var(--space-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.sidebar-title {
+  font-size: 1.25rem;
+  font-weight: var(--font-bold);
+  color: var(--color-primary);
+}
+
+.sidebar-nav {
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  text-decoration: none;
+  font-weight: var(--font-medium);
+  transition: background-color var(--transition-base);
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.sidebar-link:hover, .sidebar-link.active {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary);
+}
+
+.sidebar-link .material-symbols-outlined {
+  font-size: 24px;
+}
+
+/* --- User Dropdown Styling --- */
+.user-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: var(--space-xs);
+  background-color: var(--bg-white);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  min-width: 200px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all var(--transition-base);
+  z-index: 1001; /* Above header elements */
+  border: 1px solid var(--border-light);
+}
+
+.user-dropdown.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdown-header {
+  padding: var(--space-md);
+}
+
+.user-name {
+  display: block;
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+}
+
+.user-role {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background-color: var(--border-light);
+  margin: 0;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  border: none;
+  background: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background-color 0.2s;
+  text-align: left;
+}
+
+.dropdown-item:hover {
+  background-color: var(--bg-secondary);
+  color: var(--color-danger);
+}
+
+/* --- Overlay --- */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999; /* Below sidebar, above page */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--transition-base);
+}
+
+.overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
   padding: var(--space-md);
   padding-top: clamp(4rem, 12vw, 5rem);
   width: 100%;
@@ -254,4 +408,42 @@ body.dark-mode .logo-image {
     width: 52px;
     height: 52px;
   }
+}
+
+/* Local Fix for Inputs */
+input, select, textarea {
+  box-sizing: border-box;
+}
+
+/* Orders Section - Horizontal Scroll (similar to occupied-scroll) */
+.orders-scroll {
+  display: flex;
+  gap: var(--space-md);
+  overflow-x: auto;
+  padding-bottom: var(--space-sm);
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-medium) transparent;
+  min-height: 100px; /* Placeholder height */
+}
+
+.orders-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.orders-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.orders-scroll::-webkit-scrollbar-thumb {
+  background-color: var(--border-medium);
+  border-radius: var(--radius-sm);
+}
+
+.order-card-monitor {
+  min-width: 200px;
+  background: var(--bg-secondary);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
 }

@@ -83,52 +83,76 @@ function updateDarkModeIcon(isDark) {
  * Setup UI event listeners
  */
 function setupEventListeners() {
-  // Dark mode toggle
+  // Elements
+  const menuBtn = document.getElementById('menuBtn');
+  const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+  
+  const userBtn = document.getElementById('userBtn');
+  const userDropdown = document.getElementById('userDropdown');
+  
+  const newOrderBtn = document.getElementById('newOrderBtn');
+  const sidebarLogoutBtn = document.getElementById('sidebarLogoutBtn');
+  const userLogoutBtn = document.getElementById('userLogoutBtn');
   const darkModeToggle = document.getElementById('darkModeToggle');
+
+  // Sidebar Toggles
+  function toggleSidebar() {
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+    // Close dropdown if open
+    userDropdown.classList.remove('active');
+  }
+
+  function closeAll() {
+    sidebar.classList.remove('active');
+    userDropdown.classList.remove('active');
+    overlay.classList.remove('active');
+  }
+
+  if (menuBtn) menuBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleSidebar();
+  });
+
+  if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', closeAll);
+  if (overlay) overlay.addEventListener('click', closeAll);
+
+  // User Dropdown Check
+  if (userBtn) userBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    userDropdown.classList.toggle('active');
+    // Close sidebar if open
+    sidebar.classList.remove('active');
+    overlay.classList.remove('active');
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (userDropdown && !userDropdown.contains(e.target) && !userBtn.contains(e.target)) {
+      userDropdown.classList.remove('active');
+    }
+  });
+
+  // Dark mode
   if (darkModeToggle) {
     darkModeToggle.addEventListener('click', toggleDarkMode);
   }
 
-  // Menu button
-  const menuBtn = document.getElementById('menuBtn');
-  if (menuBtn) {
-    menuBtn.addEventListener('click', () => {
-      console.log('Menu clicked');
-      // TODO: Open navigation menu
-    });
-  }
-
-  // User button
-  const userBtn = document.getElementById('userBtn');
-  if (userBtn) {
-    userBtn.addEventListener('click', () => {
-      console.log('User profile clicked');
-      // TODO: Navigate to user profile
-    });
-  }
-
-  // Logo click
-  const logoImage = document.getElementById('logoImage');
-  if (logoImage) {
-    logoImage.addEventListener('click', () => {
-      console.log('Logo clicked');
-      // TODO: Navigate to home
-    });
-  }
-
-  // New order button
-  const newOrderBtn = document.getElementById('newOrderBtn');
+  // Redirections
   if (newOrderBtn) {
     newOrderBtn.addEventListener('click', () => {
-      window.location.href = '/pages/create_order/createOrder.html';
+      window.location.href = '/pages/createOrder.html';
     });
   }
+
+  // Logout
+  if (sidebarLogoutBtn) sidebarLogoutBtn.addEventListener('click', handleLogout);
+  if (userLogoutBtn) userLogoutBtn.addEventListener('click', handleLogout);
   
-  // Logout functionality
-  const logoutBtn = document.getElementById('logoutBtn');
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', handleLogout);
-  }
+  // Fill user info
+  displayUserInfo();
 }
 
 /**
@@ -140,75 +164,45 @@ function handleLogout() {
   window.location.href = '/pages/landingPage.html';
 }
 
-// Load tables from backend
-async function loadTables() {
-  try {
-    const response = await fetch(`${API_BASE}/tables`, {
-      method: 'GET',
-      headers: getAuthHeaders(),
-      credentials: 'include'
-    });
-    
-    if (!response.ok) {
-      handleApiError(new Error('Failed to load tables'), response);
-      return;
+/**
+ * Display user info
+ */
+function displayUserInfo() {
+  const userStr = localStorage.getItem('user');
+  console.log('DisplayUserInfo - Raw:', userStr);
+  if (userStr) {
+    try {
+      const user = JSON.parse(userStr);
+      console.log('DisplayUserInfo - Parsed:', user);
+      
+      const nameDisplay = document.getElementById('userNameDisplay');
+      const roleDisplay = document.getElementById('userRoleDisplay');
+      
+      if (nameDisplay) {
+        nameDisplay.textContent = user.username || 'Usuário';
+        console.log('Set Name:', nameDisplay.textContent);
+      }
+      if (roleDisplay) {
+        // Capitalize role
+        const role = user.role ? (user.role.charAt(0).toUpperCase() + user.role.slice(1).toLowerCase()) : 'Garçom';
+        roleDisplay.textContent = role;
+        console.log('Set Role:', roleDisplay.textContent);
+      }
+      
+    } catch (error) {
+      console.error('Error parsing user data:', error);
     }
-    
-    const data = await response.json();
-    const tables = data.data || [];
-    
-    // Render occupied tables
-    renderOccupiedTables(tables.filter(t => t.status === 'OCCUPIED'));
-    
-    // Render all tables
-    renderAllTables(tables);
-    
-  } catch (error) {
-    handleApiError(error, null);
   }
-}
-
-function renderOccupiedTables(tables) {
-  const container = document.querySelector('.occupied-scroll');
-  if (!container) return;
-  
-  container.innerHTML = tables.length > 0
-    ? tables.map(table => `
-        <button class="table-card occupied" data-table-id="${table.id}" aria-label="Mesa ${table.number}">
-          <span class="table-number">${table.number}</span>
-        </button>
-      `).join('')
-    : '<p class="empty-message">Nenhuma mesa ocupada</p>';
-  
-  container.querySelectorAll('.table-card').forEach(card => {
-    card.addEventListener('click', () => handleTableClick(card.dataset.tableId));
-  });
-}
-
-function renderAllTables(tables) {
-  const container = document.querySelector('.tables-grid');
-  if (!container) return;
-  
-  container.innerHTML = tables.map(table => `
-    <button class="table-card ${table.status.toLowerCase()}" data-table-id="${table.id}" aria-label="Mesa ${table.number}">
-      <span class="table-number">${table.number}</span>
-    </button>
-  `).join('');
-  
-  // Add click listeners
-  container.querySelectorAll('.table-card').forEach(card => {
-    card.addEventListener('click', () => handleTableClick(card.dataset.tableId));
-  });
 }
 
 function handleTableClick(tableId) {
   console.log('Table clicked:', tableId);
-  // Navigate to table details/orders page
-  window.location.href = `/pages/orders/orders.html?tableId=${tableId}`;
+  // Navigate to order details page
+  window.location.href = `/pages/orders.html?tableId=${tableId}`;
 }
 
-// Load summary data
-async function loadSummary() {
+// Load active orders and summary
+async function loadOrdersAndSummary() {
   try {
     const response = await fetch(`${API_BASE}/orders`, {
       method: 'GET',
@@ -217,33 +211,69 @@ async function loadSummary() {
     });
     
     if (!response.ok) {
-      handleApiError(new Error('Failed to load summary'), response);
+      handleApiError(new Error('Failed to load orders'), response);
       return;
     }
     
     const data = await response.json();
     const orders = data.data || [];
     
-    // Calculate today's total
-    const today = new Date().toDateString();
-    const todayOrders = orders.filter(o => {
-      const orderDate = new Date(o.created_at).toDateString();
-      return orderDate === today && o.status === 'CLOSED';
-    });
+    // 1. Update Summary (Today's Total)
+    updateSummary(orders);
     
-    const total = todayOrders.reduce((sum, order) => sum + (order.total || 0), 0);
-    
-    // Update UI
-    const valueEl = document.querySelector('.summary-value');
-    const subtitleEl = document.querySelector('.summary-subtitle');
-    
-    if (valueEl) valueEl.textContent = `R$ ${total.toFixed(2)}`;
-    if (subtitleEl) subtitleEl.textContent = `${todayOrders.length} mesa${todayOrders.length !== 1 ? 's' : ''} atendida${todayOrders.length !== 1 ? 's' : ''} hoje`;
+    // 2. Render Active Orders
+    renderActiveOrders(orders);
     
   } catch (error) {
     handleApiError(error, null);
   }
 }
+
+function updateSummary(orders) {
+  const today = new Date().toDateString();
+  const todayOrders = orders.filter(o => {
+    const orderDate = new Date(o.created_at).toDateString();
+    return orderDate === today && o.status === 'CLOSED';
+  });
+  
+  const total = todayOrders.reduce((sum, order) => sum + (order.total || 0), 0);
+  
+  const valueEl = document.querySelector('.summary-value');
+  const subtitleEl = document.querySelector('.summary-subtitle');
+  
+  if (valueEl) valueEl.textContent = `R$ ${total.toFixed(2)}`;
+  if (subtitleEl) subtitleEl.textContent = `${todayOrders.length} mesa${todayOrders.length !== 1 ? 's' : ''} atendida${todayOrders.length !== 1 ? 's' : ''} hoje`;
+}
+
+function renderActiveOrders(orders) {
+  const container = document.getElementById('activeOrdersList');
+  if (!container) return;
+
+  // Filter for active orders (OPEN or IN_PROGRESS)
+  // TODO: Add filter by current user if backend supports separate endpoint or user_id in response
+  const activeOrders = orders.filter(o => o.status !== 'CLOSED' && o.status !== 'CANCELLED');
+
+  if (activeOrders.length === 0) {
+    container.innerHTML = '<p class="empty-message">Nenhum pedido em andamento</p>';
+    return;
+  }
+
+  container.innerHTML = activeOrders.map(order => `
+    <div class="order-card-monitor" onclick="window.location.href='/pages/orders.html?orderId=${order.id}'" style="cursor: pointer;">
+      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+        <span style="font-weight: bold;">#${order.id.toString().slice(0, 8)}</span>
+        <span style="color: var(--color-primary); font-weight: bold;">R$ ${order.total ? order.total.toFixed(2) : '0.00'}</span>
+      </div>
+      <div style="font-size: 0.875rem; color: var(--text-secondary);">
+        Mesa ${order.table_id ? '...' : '?'} <!-- Ideal seria ter o numero da mesa -->
+      </div>
+      <div style="margin-top: 8px;">
+         <span class="badge" style="background: var(--bg-primary); padding: 4px 8px; border-radius: 4px; font-size: 0.75rem;">${order.status}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
 
 /**
  * Display user info
@@ -271,12 +301,12 @@ function init() {
   initDarkMode();
   setupEventListeners();
   loadTables();
-  loadSummary();
+  loadOrdersAndSummary();
   
   // Auto-refresh every 30 seconds
   setInterval(() => {
     loadTables();
-    loadSummary();
+    loadOrdersAndSummary();
   }, 30000);
   
   console.log('WaiterMain page initialized');

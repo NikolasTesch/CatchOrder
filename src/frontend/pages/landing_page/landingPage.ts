@@ -1,11 +1,22 @@
 import './style.css';
+import { ApiService } from '../../services/apiService';
+
+console.log('Landing Page Script Loaded'); // Debug 1
 
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM Content Loaded'); // Debug 2
+
     const usernameInput = document.getElementById('username') as HTMLInputElement | null;
     const passwordInput = document.getElementById('password') as HTMLInputElement | null;
     const togglePasswordBtn = document.querySelector('.password-toggle') as HTMLElement | null;
     const loginButton = document.querySelector('.btn-primary') as HTMLElement | null;
     const errorContainer = document.getElementById('login-error') as HTMLElement | null;
+
+    console.log('Elements found:', {
+        usernameInput: !!usernameInput,
+        passwordInput: !!passwordInput,
+        loginButton: !!loginButton
+    }); // Debug 3
 
     init();
 
@@ -20,7 +31,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (loginButton) {
+            console.log('Attaching click listener to login button'); // Debug 4
             loginButton.addEventListener('click', handleLogin);
+        } else {
+            console.error('Login button NOT found'); // Debug Error
         }
 
         // Clear error on input
@@ -42,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function handleLogin(e: Event): Promise<void> {
+        console.log('Login button clicked'); // Debug 5
         if (e) e.preventDefault();
 
         if (!usernameInput || !passwordInput) return;
@@ -49,10 +64,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const username = usernameInput.value.trim();
         const password = passwordInput.value.trim();
 
+        console.log('Values:', { username, password }); // Debug 6
+
         // Reset error
         clearError();
 
-        // Validation
+        // Validation - Backend Match: Both required
         if (!username) {
             showError('Por favor, insira seu usuário.');
             return;
@@ -67,28 +84,18 @@ document.addEventListener('DOMContentLoaded', () => {
         setLoadingState(true);
 
         try {
-            const response = await fetch('http://localhost:3000/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username, password }),
-            });
+            console.log('Sending request to /auth/login...'); // Debug 7
+            // Using ApiService for consistent request handling
+            await ApiService.post('/auth/login', { username, password });
 
-            const data = await response.json();
+            console.log('Login successful');
 
-            if (response.ok) {
-                // Assuming cookie is set by backend (httpOnly), but checking for token just in case
-                console.log('Login successful');
+            // Redirect to orders page
+            window.location.href = '../orders/orders.html';
 
-                // Redirect to orders page
-                window.location.href = '../orders/orders.html';
-            } else {
-                showError(data.message || 'Falha no login. Verifique suas credenciais.');
-            }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Login error:', error);
-            showError('Erro ao conectar com o servidor. Tente novamente mais tarde.');
+            showError(error.message || 'Falha no login. Verifique suas credenciais.');
         } finally {
             setLoadingState(false);
         }
@@ -97,12 +104,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function showError(message: string): void {
         if (errorContainer) {
             errorContainer.textContent = message;
+            errorContainer.style.display = 'block';
         }
     }
 
     function clearError(): void {
         if (errorContainer) {
             errorContainer.textContent = '';
+            errorContainer.style.display = 'none';
         }
     }
 
@@ -111,6 +120,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (isLoading) {
             loginButton.classList.add('btn-loading');
+
+            // Create and append spinner if it doesn't exist
+            if (!loginButton.querySelector('.btn-label')) {
+                // Backup original text if necessary, for now assuming it's replaced
+            }
 
             // Create and append spinner if it doesn't exist
             if (!loginButton.querySelector('.spinner')) {

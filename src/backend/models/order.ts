@@ -6,6 +6,8 @@ import type {
   UpdateOrderDTO,
   OrderItemDTO,
 } from '../../shared/dtos/orderDto';
+import { TableModel } from './tableModel';
+import { TableStatus } from '../../shared/types/table';
 
 export class OrderModel {
   static async findAll(): Promise<OrderDTO[]> {
@@ -46,6 +48,13 @@ export class OrderModel {
         0,
         opened_at,
       ],
+    );
+
+    // Atualizar status da mesa para ocupada e vincular o garçom
+    await TableModel.updateStatus(
+      data.table_id,
+      TableStatus.OCCUPIED,
+      data.user_id,
     );
 
     const order = await OrderModel.findById(id);
@@ -120,12 +129,23 @@ export class OrderModel {
 
     if (!order || order.status !== 'OPEN') return undefined;
 
-    const closed_at = new Date().toISOString();
-    const tipValue = tip || 0;
+    // Calcular o total baseado nos order_items
+    const result = await db.get<{ total: number }>(
+      `SELECT COALESCE(SUM(quantity * unit_price), 0) as total FROM order_items WHERE order_id = ?`,
+      [id],
+    );
+    const calculatedTotal = result?.total || 0;
 
+    const closed_at = new Date().toISOString();
+
+    // Calcular tip como porcentagem do total (padrão 10%)
+    const tipPercentage = tip ?? 10;
+    const tipValue = Math.round((calculatedTotal * tipPercentage) / 100);
+
+    // Atualizar order com total recalculado, tip e status CLOSED
     await db.run(
-      `UPDATE orders SET status = 'CLOSED', tip = ?, closed_at = ? WHERE id = ?`,
-      [tipValue, closed_at, id],
+      `UPDATE orders SET status = 'CLOSED', total = ?, tip = ?, closed_at = ? WHERE id = ?`,
+      [calculatedTotal, tipValue, closed_at, id],
     );
 
     return OrderModel.findById(id);

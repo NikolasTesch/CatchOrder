@@ -116,13 +116,35 @@ class OrdersController {
 
       return res.status(200).json({
         message: 'Comanda fechada com sucesso',
-        total: closedOrder.total,
-        tip: closedOrder.tip
+        status: closedOrder.status
       });
 
     } catch (error) {
+      console.error('Error closing order:', error); // Debug logging
       return res.status(500).json({
         message: 'Erro ao fechar comanda',
+        error: error instanceof Error ? error.message : 'Erro desconhecido'
+      });
+    }
+  }
+
+  async removeItem(req: Request, res: Response): Promise<Response> {
+    try {
+      const order_id = req.params.id as string;
+      const item_id = req.params.itemId as string;
+
+      const success = await OrderModel.removeItem(order_id, item_id);
+
+      if (!success) {
+        return res.status(404).json({ message: 'Item n\u00e3o encontrado no pedido' });
+      }
+
+      return res.status(200).json({
+        message: 'Item removido com sucesso'
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: 'Erro ao remover item',
         error: error instanceof Error ? error.message : 'Erro desconhecido'
       });
     }
@@ -134,7 +156,7 @@ class OrdersController {
       const success = await OrderModel.delete(id);
 
       if (!success) {
-        return res.status(404).json({ message: 'Pedido não encontrado' });
+        return res.status(404).json({ message: 'Pedido n\u00e3o encontrado' });
       }
 
       return res.status(200).json({

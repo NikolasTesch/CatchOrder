@@ -1,7 +1,6 @@
 import { getDb } from '../../config/database';
 import { v4 as uuidv4 } from 'uuid';
 import { userRole } from '../../../shared/types/user';
-import { hashPassword } from '../../utils/passwordHash';
 
 // Gerar IDs com UUID
 const categoryBebidasId = uuidv4();
@@ -18,15 +17,15 @@ const users = [
     id: uuidv4(),
     name: 'Admin Sistema',
     username: 'admin',
-    password: 'admin123',
+    password: '$2b$10$7Eza21Fe8x3X9UoSAE9pVOgTbNqglUWZPEqv7Hev/WYT1.D6jQUgG',
     role: userRole.ADMIN,
   },
   {
     id: uuidv4(),
     name: 'Waiter',
     username: 'waiter',
-    password: 'waiter123',
-    role: userRole.WAITER,
+    password: '$2b$10$/IdOKaMwfdGfvX4IkX4sIeYPzVZwKWQO7ku.n4ZykbCik6zU/DD7K',
+    role: userRole.ADMIN,
   }
 ];
 
@@ -56,11 +55,10 @@ export const runSeeds = async () => {
 
     // Inserir usuários com senhas hasheadas
     for (const user of users) {
-      const password_hash = await hashPassword(user.password);
       await db.run(
         `INSERT INTO users (id, name, username, password_hash, role)
          VALUES (?, ?, ?, ?, ?)`,
-        [user.id, user.name, user.username, password_hash, user.role],
+        [user.id, user.name, user.username, user.password, user.role],
       );
     }
     console.log('✓ Usuários inseridos');

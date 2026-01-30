@@ -7,6 +7,17 @@ export interface Order {
   closed_at?: Date | string | null;
 }
 
+export interface OrderCreationData {
+  table_id: string;
+  user_id: string;
+}
+
+export interface OrderUpdateData {
+  status?: string;
+  total?: number;
+  closed_at?: Date | string | null;
+}
+
 export class OrderValidator {
   private static statusValidos = [
     'ABERTA',

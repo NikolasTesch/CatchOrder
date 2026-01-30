@@ -5,6 +5,11 @@ export interface OrderItem {
   price: number;
 }
 
+export interface OrderItemAddData {
+  product_id: string;
+  quantity: number;
+}
+
 export class OrderItemValidator {
   static validate(orderItem: OrderItem): { valido: boolean; error: string[] } {
     const error: string[] = [];
@@ -29,6 +34,40 @@ export class OrderItemValidator {
       error.push('Preço deve ser um número');
     } else if (!Number.isInteger(orderItem.price)) {
       error.push('Preço deve ser um número inteiro (em centavos)');
+    }
+
+    return {
+      valido: error.length === 0,
+      error,
+    };
+  }
+
+  static validateAddItem(item: any): { valido: boolean; error: string[] } {
+    const error: string[] = [];
+
+    // Validar product_id (UUID)
+    if (!item.product_id || typeof item.product_id !== 'string') {
+      error.push('ID do produto é obrigatório');
+    } else {
+      const uuidRegex =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      if (!uuidRegex.test(item.product_id)) {
+        error.push('ID do produto deve ser um UUID válido');
+      }
+    }
+
+    // Validar quantity
+    if (item.quantity === undefined || item.quantity === null) {
+      error.push('Quantidade é obrigatória');
+    } else {
+      const quantity = Number(item.quantity);
+      if (!Number.isInteger(quantity)) {
+        error.push('Quantidade deve ser um número inteiro');
+      } else if (quantity < 1) {
+        error.push('Quantidade deve ser pelo menos 1');
+      } else if (quantity > 999) {
+        error.push('Quantidade não pode exceder 999');
+      }
     }
 
     return {

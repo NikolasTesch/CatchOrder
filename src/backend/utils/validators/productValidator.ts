@@ -7,6 +7,24 @@ export interface Product {
   active: boolean;
 }
 
+export interface ProductCreationData {
+  category_id: string;
+  name: string;
+  description: string;
+  price: number;
+  image_path?: string;
+  is_active?: boolean;
+}
+
+export interface ProductUpdateData {
+  category_id?: string;
+  name?: string;
+  description?: string;
+  price?: number;
+  image_path?: string;
+  is_active?: boolean;
+}
+
 export class ProductValidator {
   static validate(product: Product): { valido: boolean; error: string[] } {
     const error: string[] = [];

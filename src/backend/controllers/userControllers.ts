@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import { hashPassword } from '../utils/passwordHash';
 import { UserModel } from '../models/userModel';
 import type { CreateUserDTO, UpdateUserDTO } from '../../shared/dtos/userDto';
-import { UserValidator } from '../utils/validators/userValidator';
 
 type IdParam = { id: string };
 
@@ -63,14 +62,6 @@ class UsersController {
   async store(req: Request, res: Response): Promise<Response> {
     try {
       const { name, username, password, role, image_url } = req.body;
-
-      const validation = UserValidator.validate(req.body);
-      if (!validation.valido) {
-        return res.status(400).json({
-          message: 'Erro de validação',
-          errors: validation.error
-        });
-      }
 
       // Check if user already exists
       const existingUser = await userModel.findByUsername(username);

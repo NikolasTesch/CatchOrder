@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Login successful');
 
             // Redirect to orders page
-            window.location.href = '../orders/orders.html';
+            window.location.href = './orders.html';
 
         } catch (error: any) {
             console.error('Login error:', error);

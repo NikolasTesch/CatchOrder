@@ -68,4 +68,62 @@ export class ProductValidator {
       error,
     };
   }
+
+  static validateCreation(data: ProductCreationData): {
+    valido: boolean;
+    error: string[];
+  } {
+    const error: string[] = [];
+
+    if (!data.name || data.name.trim().length === 0) {
+      error.push('Nome é obrigatório');
+    } else if (data.name.trim().length < 3) {
+      error.push('Nome deve ter pelo menos 3 caracteres');
+    }
+
+    if (!data.description || data.description.trim().length === 0) {
+      error.push('Descrição é obrigatória');
+    }
+
+    if (data.price === undefined || data.price === null) {
+      error.push('Preço é obrigatório');
+    } else if (data.price <= 0) {
+      error.push('Preço deve ser maior que 0');
+    } else if (!Number.isInteger(data.price)) {
+      error.push('Preço deve ser um número inteiro (em centavos)');
+    }
+
+    if (!data.category_id) {
+      error.push('ID da categoria é obrigatório');
+    }
+
+    return {
+      valido: error.length === 0,
+      error,
+    };
+  }
+
+  static validateUpdate(data: ProductUpdateData): {
+    valido: boolean;
+    error: string[];
+  } {
+    const error: string[] = [];
+
+    if (data.name !== undefined) {
+      if (!data.name || data.name.trim().length < 3) {
+        error.push('Nome deve ter pelo menos 3 caracteres');
+      }
+    }
+
+    if (data.price !== undefined) {
+      if (data.price <= 0) {
+        error.push('Preço deve ser maior que 0');
+      }
+    }
+
+    return {
+      valido: error.length === 0,
+      error,
+    };
+  }
 }

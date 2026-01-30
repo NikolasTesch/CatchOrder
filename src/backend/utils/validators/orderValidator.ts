@@ -73,4 +73,55 @@ export class OrderValidator {
       error,
     };
   }
+
+  static validateCreation(data: OrderCreationData): {
+    valido: boolean;
+    error: string[];
+  } {
+    const error: string[] = [];
+
+    if (!data.table_id || typeof data.table_id !== 'string') {
+      error.push('ID da mesa é obrigatório');
+    }
+    // TODO: Adicionar validação de UUID se necessário
+
+    if (!data.user_id || typeof data.user_id !== 'string') {
+      error.push('ID do usuário é obrigatório');
+    }
+
+    return {
+      valido: error.length === 0,
+      error,
+    };
+  }
+
+  static validateUpdate(data: OrderUpdateData): {
+    valido: boolean;
+    error: string[];
+  } {
+    const error: string[] = [];
+
+    if (data.status !== undefined) {
+      if (!data.status || data.status.trim().length === 0) {
+        error.push('Status não pode ser vazio');
+      } else if (!this.statusValidos.includes(data.status)) {
+        error.push(
+          'Status deve ser um dos seguintes: ' + this.statusValidos.join(', '),
+        );
+      }
+    }
+
+    if (data.total !== undefined) {
+      if (data.total <= 0) {
+        error.push('Total deve ser maior que 0');
+      } else if (!Number.isInteger(data.total)) {
+        error.push('Total deve ser um número inteiro (em centavos)');
+      }
+    }
+
+    return {
+      valido: error.length === 0,
+      error,
+    };
+  }
 }

@@ -1,6 +1,13 @@
 import { Router } from 'express';
 import { tableController } from '../controllers/tableControllers';
 import { isAdminOrManager } from '../middlewares/roleAuth';
+import {
+  validateTableCreation,
+  validateTableUpdate,
+  validateTableStatus,
+  validateTableId,
+  validateStatusParam,
+} from '../middlewares/validateTable';
 
 const tablesRoutes = Router();
 
@@ -12,11 +19,15 @@ tablesRoutes.get('/', tableController.index);
 // Lista apenas mesas disponíveis para uso
 tablesRoutes.get('/available', tableController.indexAvailable);
 
-tablesRoutes.get('/mine', authenticateToken, tableController.indexMine);
+// Lista mesas do usuário atual
+tablesRoutes.get('/mine', tableController.indexMine);
 
 // Lista mesas filtradas por status (ocupada, disponível, reservada)
-
-tablesRoutes.get('/status/:status', tableController.indexByStatus);
+tablesRoutes.get(
+  '/status/:status',
+  validateStatusParam,
+  tableController.indexByStatus,
+);
 
 // Busca uma mesa específica por ID
 tablesRoutes.get('/:id', tableController.show);

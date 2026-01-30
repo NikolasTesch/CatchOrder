@@ -1,7 +1,7 @@
-require('./style.css');
+import './style.css';
 import { ApiService } from "../../services/apiService";
 
-export {};
+export { };
 
 interface Category {
   id: string;

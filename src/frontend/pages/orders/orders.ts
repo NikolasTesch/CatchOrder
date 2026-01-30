@@ -255,23 +255,48 @@ function setupHeaderListeners() {
     if (darkModeToggle) darkModeToggle.addEventListener('click', toggleDarkMode);
 
     const menuBtn = document.getElementById('menuBtn');
-    if (menuBtn) {
+    const sidebar = document.getElementById('sidebar');
+    if (menuBtn && sidebar) {
         menuBtn.addEventListener('click', () => {
-            console.log('Menu clicked');
+            sidebar.classList.toggle('active');
         });
     }
 
     const userBtn = document.getElementById('userBtn');
     if (userBtn) {
         userBtn.addEventListener('click', () => {
+            // Optional: Navigate to profile
             console.log('User profile clicked');
         });
     }
 
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                await ApiService.post('/auth/logout', {});
+            } catch (e) {
+                console.error('Logout error', e);
+            } finally {
+                localStorage.removeItem('user');
+                window.location.href = '/pages/landingPage.html';
+            }
+        });
+    }
+
+    // Sidebar Links
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const dest = (item as HTMLElement).dataset.href;
+            if (dest) window.location.href = dest;
+        });
+    });
+
     const logo = document.querySelector('.logo-image');
     if (logo) {
         logo.addEventListener('click', () => {
-            window.location.href = '/';
+            window.location.href = '/pages/waiterMain.html';
         });
     }
 }

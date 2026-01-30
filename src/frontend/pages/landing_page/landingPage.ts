@@ -1,4 +1,4 @@
-require('./style.css');
+import './style.css';
 import { ApiService } from '../../services/apiService';
 
 console.log('Landing Page Script Loaded'); // Debug 1
@@ -88,6 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Using ApiService for consistent request handling
             const response = await ApiService.post<{ user: { role: string; id: string; name: string; username: string } }>('/auth/login', { username, password });
 
+            console.log('Login successful', response);
             console.log('Login successful', response);
 
             // Redirect based on role

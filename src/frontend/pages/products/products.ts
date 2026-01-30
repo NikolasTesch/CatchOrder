@@ -1,7 +1,7 @@
 // Make this file a module to avoid global scope contamination
-export {};
+export { };
 
-require("./style.css");
+import "./style.css";
 
 // API Configuration
 const API_BASE = "http://localhost:3000/api";
@@ -102,11 +102,23 @@ function closeUserModal(): void {
 /**
  * Handle user logout
  */
-function handleLogout(): void {
-  if (confirm("Tem certeza que deseja sair?")) {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    window.location.href = "../landing_page/landingPage.html";
+/**
+ * Handle user logout
+ */
+async function handleLogout(): Promise<void> {
+  if (confirm('Tem certeza que deseja sair?')) {
+    try {
+      const response = await fetch(`${API_BASE}/auth/logout`, {
+        method: 'POST',
+        headers: getAuthHeaders()
+      });
+    } catch (e) {
+      console.error("Logout API call failed", e);
+    } finally {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/pages/landingPage.html';
+    }
   }
 }
 

@@ -580,6 +580,52 @@ function setupEventListeners() {
     if (darkModeToggle) {
         darkModeToggle.onclick = toggleDarkMode;
     }
+
+    // Sidebar & Navigation
+    const menuBtn = document.getElementById('menuBtn');
+    const sidebar = document.getElementById('sidebar');
+    if (menuBtn && sidebar) {
+        menuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+    }
+
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                await ApiService.post('/auth/logout', {});
+            } catch (e) {
+                console.error('Logout error', e);
+            } finally {
+                localStorage.removeItem('user');
+                window.location.href = '/pages/landingPage.html';
+            }
+        });
+    }
+
+    // Sidebar Links
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const dest = (item as HTMLElement).dataset.href;
+            if (dest) window.location.href = dest;
+        });
+    });
+
+    const logo = document.getElementById('logoImage');
+    if (logo) {
+        logo.addEventListener('click', () => {
+            window.location.href = '/pages/waiterMain.html';
+        });
+    }
+
+    const userBtn = document.getElementById('userBtn');
+    if (userBtn) {
+        userBtn.addEventListener('click', () => {
+            console.log('User profile clicked');
+        });
+    }
 }
 
 // --- Dark Mode (Shared Logic) ---

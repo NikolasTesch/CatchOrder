@@ -1,4 +1,4 @@
-require ('./style.css');
+require('./style.css');
 import { ApiService } from '../../services/apiService';
 
 console.log('Landing Page Script Loaded'); // Debug 1
@@ -86,12 +86,17 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             console.log('Sending request to /auth/login...'); // Debug 7
             // Using ApiService for consistent request handling
-            await ApiService.post('/auth/login', { username, password });
+            const response = await ApiService.post<{ user: { role: string; id: string; name: string; username: string } }>('/auth/login', { username, password });
 
-            console.log('Login successful');
+            console.log('Login successful', response);
 
-            // Redirect to orders page
-            window.location.href = './orders.html';
+            // Redirect based on role
+            if (response.user.role === 'waiter') {
+                window.location.href = '/pages/waiterMain.html';
+            } else {
+                // Default for admin, manager, kitchen, etc.
+                window.location.href = '/pages/gestMain.html';
+            }
 
         } catch (error: any) {
             console.error('Login error:', error);

@@ -340,16 +340,16 @@ body.dark-mode .logo-image {
 
 /* Dark Mode Support */
 body.dark-mode {
-  background-color: var(--bg-dark);
+  background-color: var(--bg-primary);
 }
 
 body.dark-mode .page-wrapper {
-  background-color: var(--bg-dark);
+  background-color: var(--bg-primary);
 }
 
 body.dark-mode .search-input {
-  background-color: var(--bg-card-dark);
-  color: var(--text-dark);
+  background-color: var(--bg-card);
+  color: var(--text-primary);
   border-color: var(--color-primary);
 }
 
@@ -358,26 +358,26 @@ body.dark-mode .search-input::placeholder {
 }
 
 body.dark-mode .order-card {
-  background-color: var(--bg-card-dark);
-  box-shadow: var(--shadow-dark);
+  background-color: var(--bg-card);
+  box-shadow: var(--shadow-sm); /* or shadow-dark if defined, but shadow-sm usually adapts if using rgba */
 }
 
 body.dark-mode .order-card:hover {
-  box-shadow: var(--shadow-dark-md);
+  box-shadow: var(--shadow-md);
 }
 
 body.dark-mode .order-description,
 body.dark-mode .order-obs {
-  color: var(--text-dark-secondary);
+  color: var(--text-secondary);
 }
 
 body.dark-mode .btn-waiter {
-  background-color: var(--bg-card-dark);
+  background-color: var(--bg-card);
   border-color: var(--border-dark);
 }
 
 body.dark-mode .btn-waiter:hover {
-  background-color: var(--bg-secondary-dark);
+  background-color: var(--bg-secondary);
   border-color: var(--color-primary);
 }
 

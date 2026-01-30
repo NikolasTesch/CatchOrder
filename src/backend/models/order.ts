@@ -10,12 +10,31 @@ import type {
 export class OrderModel {
   static async findAll(): Promise<OrderDTO[]> {
     const db = await getDb();
-    return db.all<OrderDTO[]>('SELECT * FROM orders');
+    // Dynamically calculate total from items to ensure accuracy
+    // Using LEFT JOIN to sum stored prices.
+    return db.all<OrderDTO[]>(`
+      SELECT 
+        o.*, 
+        COALESCE(SUM(oi.quantity * oi.unit_price), 0) as total
+      FROM orders o
+      LEFT JOIN order_items oi ON o.id = oi.order_id
+      GROUP BY o.id
+    `);
   }
 
   static async findById(id: string): Promise<OrderDTO | undefined> {
     const db = await getDb();
-    return db.get<OrderDTO>('SELECT * FROM orders WHERE id = ?', [id]);
+    const order = await db.get<OrderDTO>('SELECT * FROM orders WHERE id = ?', [id]);
+
+    if (order) {
+      const items = await db.all<OrderItemDTO[]>(
+        'SELECT oi.id, oi.order_id, oi.product_id, oi.quantity, oi.unit_price, (oi.quantity * oi.unit_price) as total_item, p.name as product_name FROM order_items oi LEFT JOIN products p ON oi.product_id = p.id WHERE oi.order_id = ?',
+        [id]
+      );
+      order.items = items;
+    }
+
+    return order;
   }
 
   static async findOpenByTableId(
@@ -73,6 +92,8 @@ export class OrderModel {
 
   static async delete(id: string): Promise<boolean> {
     const db = await getDb();
+    // Cascade delete handling depends on DB config, but explicit is safer
+    await db.run('DELETE FROM order_items WHERE order_id = ?', [id]);
     const result = await db.run('DELETE FROM orders WHERE id = ?', [id]);
     return (result.changes ?? 0) > 0;
   }
@@ -114,6 +135,29 @@ export class OrderModel {
     };
   }
 
+  static async removeItem(orderId: string, itemId: string): Promise<boolean> {
+    const db = await getDb();
+
+    // Get item to know price
+    // total_item column likely doesn't exist, calculate it
+    const item = await db.get<{ quantity: number, unit_price: number, order_id: string }>(
+      'SELECT quantity, unit_price, order_id FROM order_items WHERE id = ?',
+      [itemId]
+    );
+
+    if (!item || item.order_id !== orderId) return false;
+
+    const totalToDelete = item.quantity * item.unit_price;
+
+    // Delete item
+    await db.run('DELETE FROM order_items WHERE id = ?', [itemId]);
+
+    // Update total (subtract)
+    await db.run('UPDATE orders SET total = total - ? WHERE id = ?', [totalToDelete, orderId]);
+
+    return true;
+  }
+
   static async close(id: string, tip?: number): Promise<OrderDTO | undefined> {
     const db = await getDb();
     const order = await OrderModel.findById(id);
@@ -124,8 +168,8 @@ export class OrderModel {
     const tipValue = tip || 0;
 
     await db.run(
-      `UPDATE orders SET status = 'CLOSED', tip = ?, closed_at = ? WHERE id = ?`,
-      [tipValue, closed_at, id],
+      `UPDATE orders SET status = 'CLOSED' WHERE id = ?`,
+      [id],
     );
 
     return OrderModel.findById(id);

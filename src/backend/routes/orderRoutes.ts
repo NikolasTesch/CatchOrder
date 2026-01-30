@@ -29,8 +29,15 @@ ordersRoutes.post(
   orderController.addItem,
 );
 
+// Remove item do pedido
+ordersRoutes.delete(
+  '/:id/items/:itemId',
+  validateOrderId,
+  orderController.removeItem,
+);
+
 // Fecha um pedido e gera a conta
-ordersRoutes.post('/:id/close', validateOrderId, orderController.closeOrder);
+ordersRoutes.patch('/:id/close', validateOrderId, orderController.closeOrder);
 
 // Atualiza os dados de um pedido
 ordersRoutes.put(

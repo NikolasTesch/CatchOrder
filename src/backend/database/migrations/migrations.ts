@@ -60,6 +60,8 @@ export const runMigrations = async () => {
     // Ignore if column already exists
   }
 
+
+
   // Tabela de Pedidos (Orders)
   await db.exec(`
     CREATE TABLE IF NOT EXISTS orders (

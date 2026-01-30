@@ -23,7 +23,7 @@ interface Order {
 
 interface Table {
     id: string;
-    table_number: number;
+    number: number;
 }
 
 interface User {
@@ -123,7 +123,7 @@ function filterOrders(): Order[] {
     return orders.filter(order => {
         const table = tables.find(t => t.id === order.table_id);
         // Search by table number
-        return table && table.table_number.toString().includes(searchTerm);
+        return table && table.number.toString().includes(searchTerm);
     });
 }
 
@@ -158,7 +158,7 @@ function createOrderCard(order: Order, type: 'open' | 'finished'): HTMLElement {
     const table = tables.find(t => t.id === order.table_id);
     const user = users.find(u => u.id === order.user_id);
 
-    const tableNumber = table ? table.table_number : '?';
+    const tableNumber = table ? table.number : '?';
     const userName = user ? (user.username || user.name) : 'Desconhecido';
 
     // Format price
@@ -193,7 +193,13 @@ function createOrderCard(order: Order, type: 'open' | 'finished'): HTMLElement {
   `;
 
     card.addEventListener('click', () => {
-        viewOrderDetails(order);
+        console.log(`Open details for order ${order.id}`);
+
+        if (table) {
+            window.location.href = `./createOrder.html?table_id=${table.id}&order_id=${order.id}`;
+        } else {
+            showError('Erro: Mesa não encontrada para este pedido.');
+        }
     });
 
     return card;
@@ -215,10 +221,13 @@ function initDarkMode() {
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
+    console.log('Init Dark Mode:', { savedTheme, prefersDark });
+
     if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
         document.body.classList.add('dark-mode');
         updateDarkModeIcon(true);
     } else {
+        document.body.classList.remove('dark-mode');
         updateDarkModeIcon(false);
     }
 }
@@ -234,9 +243,11 @@ function updateDarkModeIcon(isDark: boolean) {
 }
 
 function toggleDarkMode() {
+    console.log('Toggling Dark Mode');
     const isDark = document.body.classList.toggle('dark-mode');
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
     updateDarkModeIcon(isDark);
+    console.log('Dark Mode is now:', isDark);
 }
 
 function setupHeaderListeners() {
@@ -276,98 +287,15 @@ function setupEventListeners() {
 
     if (newOrderButton) {
         newOrderButton.addEventListener('click', () => {
-            window.location.href = '../waiter_main/waiterMain.html';
+            window.location.href = '/pages/waiterMain.html';
         });
     }
 }
 
-async function viewOrderDetails(order: Order) {
-    try {
-        const response = await ApiService.get<{ data: Order }>(`/orders/${order.id}`);
-        const fullOrder = response.data;
-
-        console.log('Detalhes da ordem:', fullOrder);
-        showSuccess(`Ordem #${order.id.substring(0, 8)} - Status: ${getStatusLabel(order.status)}`);
-
-    } catch (error) {
-        console.error('Erro ao carregar detalhes:', error);
-        showError('Erro ao carregar detalhes do pedido');
-    }
-}
-
-function showSuccess(message: string) {
-    const toast = document.createElement('div');
-    toast.className = 'toast toast-success';
-    toast.textContent = message;
-    toast.style.cssText = `
-    position: fixed;
-    top: 80px;
-    right: 20px;
-    background: #10b981;
-    color: white;
-    padding: 1rem 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    z-index: 9999;
-    animation: slideIn 0.3s ease;
-  `;
-
-    document.body.appendChild(toast);
-
-    setTimeout(() => {
-        toast.style.animation = 'slideOut 0.3s ease';
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
-}
-
 function showError(message: string) {
     const toast = document.createElement('div');
-    toast.className = 'toast toast-error';
     toast.textContent = message;
-    toast.style.cssText = `
-    position: fixed;
-    top: 80px;
-    right: 20px;
-    background: #ef4444;
-    color: white;
-    padding: 1rem 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    z-index: 9999;
-    animation: slideIn 0.3s ease;
-  `;
-
+    toast.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#ef4444;color:#fff;padding:10px;border-radius:5px;z-index:9999';
     document.body.appendChild(toast);
-
-    setTimeout(() => {
-        toast.style.animation = 'slideOut 0.3s ease';
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
+    setTimeout(() => toast.remove(), 3000);
 }
-
-// Add CSS animations
-const style = document.createElement('style');
-style.textContent = `
-  @keyframes slideIn {
-    from {
-      transform: translateX(100%);
-      opacity: 0;
-    }
-    to {
-      transform: translateX(0);
-      opacity: 1;
-    }
-  }
-  
-  @keyframes slideOut {
-    from {
-      transform: translateX(0);
-      opacity: 1;
-    }
-    to {
-      transform: translateX(100%);
-      opacity: 0;
-    }
-  }
-`;
-document.head.appendChild(style);

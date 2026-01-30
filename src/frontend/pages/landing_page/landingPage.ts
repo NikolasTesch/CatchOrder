@@ -90,9 +90,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             console.log('Login successful', response);
 
-            // Save user to localStorage
-            localStorage.setItem('user', JSON.stringify(response.user));
-
             // Redirect based on role
             if (response.user.role === 'waiter') {
                 window.location.href = '/pages/waiterMain.html';

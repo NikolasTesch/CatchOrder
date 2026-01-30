@@ -1,3 +1,4 @@
+require('./style.css');
 // Users Page - JavaScript Functionality
 // Displays and manages system users with backend integration
 

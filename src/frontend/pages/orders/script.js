@@ -1,3 +1,4 @@
+require ('./style.css');
 // Orders Page - JavaScript Functionality
 // Displays and manages orders with backend integration
 

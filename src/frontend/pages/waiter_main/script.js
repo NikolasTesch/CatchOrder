@@ -1,3 +1,4 @@
+require('./style.css');
 
 function initDarkMode() {
   const savedTheme = localStorage.getItem('theme');

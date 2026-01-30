@@ -79,14 +79,6 @@ class TablesController {
     try {
       const status = req.params.status as TableStatus;
 
-      if (!Object.values(TableStatus).includes(status)) {
-        return res.status(400).json({
-          message:
-            'Invalid status. Valid values: AVAILABLE, OCCUPIED, RESERVED',
-          data: null,
-        });
-      }
-
       const tables = await TableModel.findByStatus(status);
       return res.status(200).json({
         message: 'Tables by status retrieved successfully',
@@ -107,13 +99,6 @@ class TablesController {
   async store(req: Request, res: Response): Promise<Response> {
     try {
       const { number, status } = req.body;
-
-      if (!number) {
-        return res.status(400).json({
-          message: 'Table number is required',
-          data: null,
-        });
-      }
 
       // Check if table number already exists
       const existingTable = await TableModel.findByNumber(number);
@@ -220,27 +205,7 @@ class TablesController {
       const id = req.params.id as string;
       const { status } = req.body;
 
-      if (!status || !Object.values(TableStatus).includes(status)) {
-        return res.status(400).json({
-          message: 'Valid status is required (AVAILABLE, OCCUPIED, RESERVED)',
-          data: null,
-        });
-      }
-
-      // STRICT RULE: Cannot manually set to AVAILABLE if there is an OPEN order
-      if (status === TableStatus.AVAILABLE) {
-        const openOrder = await OrderModel.findOpenByTableId(id);
-        if (openOrder) {
-          return res.status(400).json({
-            message: 'Cannot release table with an open order. Please close the order first.',
-            data: null,
-          });
-        }
-      }
-
-      const waiterId = req.user?.id;
-      // Pass waiterId to model so it can be bound if status is OCCUPIED
-      const table = await TableModel.updateStatus(id, status, waiterId);
+      const table = await TableModel.updateStatus(id, status);
 
       if (!table) {
         return res.status(404).json({

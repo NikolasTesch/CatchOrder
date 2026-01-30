@@ -65,9 +65,9 @@ class OrdersController {
   async update(req: Request, res: Response): Promise<Response> {
     try {
       const id = req.params.id as string;
-      const { status, total, closed_at } = req.body;
+      const { status, total, tip, closed_at } = req.body;
 
-      const updatedOrder = await OrderModel.update(id, { status, total, closed_at });
+      const updatedOrder = await OrderModel.update(id, { status, total, tip, closed_at });
 
       if (!updatedOrder) {
         return res.status(404).json({ message: 'Pedido não encontrado' });
@@ -112,8 +112,9 @@ class OrdersController {
   async closeOrder(req: Request, res: Response): Promise<Response> {
     try {
       const id = req.params.id as string;
+      const { tip } = req.body;
 
-      const closedOrder = await OrderModel.close(id);
+      const closedOrder = await OrderModel.close(id, tip);
 
       if (!closedOrder) {
         return res.status(400).json({ message: 'Não foi possível fechar o pedido (Pedido não encontrado ou já fechado)' });
@@ -121,7 +122,8 @@ class OrdersController {
 
       return res.status(200).json({
         message: 'Comanda fechada com sucesso',
-        total: closedOrder.total
+        total: closedOrder.total,
+        tip: closedOrder.tip
       });
 
     } catch (error) {

@@ -20,7 +20,7 @@ export const runMigrations = async () => {
       category_id TEXT NOT NULL,
       name TEXT NOT NULL,
       description TEXT,
-      price REAL NOT NULL,
+      price INTEGER NOT NULL,
       image_path TEXT,
       is_active BOOLEAN DEFAULT 1,
       FOREIGN KEY (category_id) REFERENCES categories(id)
@@ -35,6 +35,7 @@ export const runMigrations = async () => {
       username TEXT UNIQUE NOT NULL,
       password_hash TEXT NOT NULL,
       role TEXT NOT NULL,
+      image_url TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME
     )
@@ -52,7 +53,9 @@ export const runMigrations = async () => {
   `);
 
   try {
-    await db.exec(`ALTER TABLE restaurant_tables ADD COLUMN waiter_id TEXT REFERENCES users(id)`);
+    await db.exec(
+      `ALTER TABLE restaurant_tables ADD COLUMN waiter_id TEXT REFERENCES users(id)`,
+    );
   } catch (error) {
     // Ignore if column already exists
   }
@@ -64,7 +67,8 @@ export const runMigrations = async () => {
       table_id TEXT NOT NULL,
       user_id TEXT NOT NULL,
       status TEXT NOT NULL DEFAULT 'OPEN',
-      total REAL DEFAULT 0,
+      total INTEGER DEFAULT 0,
+      tip INTEGER DEFAULT 0,
       opened_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       closed_at DATETIME,
       FOREIGN KEY (table_id) REFERENCES restaurant_tables(id),
@@ -79,7 +83,7 @@ export const runMigrations = async () => {
       order_id TEXT NOT NULL,
       product_id TEXT NOT NULL,
       quantity INTEGER NOT NULL,
-      unit_price REAL NOT NULL,
+      unit_price INTEGER NOT NULL,
       FOREIGN KEY (order_id) REFERENCES orders(id),
       FOREIGN KEY (product_id) REFERENCES products(id)
     )

@@ -1,6 +1,12 @@
 import { Router } from 'express';
 import { productsController } from '../controllers/productControllers';
 import { isAdminOrManager } from '../middlewares/roleAuth';
+import {
+  validateProductCreation,
+  validateProductUpdate,
+  validateProductId,
+  validateCategoryId,
+} from '../middlewares/validateProduct';
 
 const productsRoutes = Router();
 
@@ -16,33 +22,51 @@ productsRoutes.get('/active', productsController.indexActive);
 productsRoutes.get('/search', productsController.search);
 
 // Lista todos os produtos de uma categoria específica
-productsRoutes.get('/category/:categoryId', productsController.indexByCategory);
+productsRoutes.get(
+  '/category/:categoryId',
+  validateCategoryId,
+  productsController.indexByCategory,
+);
 
 // Lista produtos ativos de uma categoria específica
 productsRoutes.get(
   '/category/:categoryId/active',
+  validateCategoryId,
   productsController.indexActiveByCat,
 );
 
 // Busca um produto específico por ID
-productsRoutes.get('/:id', productsController.show);
+productsRoutes.get('/:id', validateProductId, productsController.show);
 
 // Rotas restritas - apenas Admin ou Manager podem acessar
 productsRoutes.use(isAdminOrManager);
 
 // Cria um novo produto no cardápio
-productsRoutes.post('/', productsController.store);
+productsRoutes.post('/', validateProductCreation, productsController.store);
 
 // Atualiza os dados de um produto existente
-productsRoutes.put('/:id', productsController.update);
+productsRoutes.put(
+  '/:id',
+  validateProductId,
+  validateProductUpdate,
+  productsController.update,
+);
 
 // Desativa um produto (remove da venda sem deletar)
-productsRoutes.patch('/:id/deactivate', productsController.deactivate);
+productsRoutes.patch(
+  '/:id/deactivate',
+  validateProductId,
+  productsController.deactivate,
+);
 
 // Reativa um produto anteriormente desativado
-productsRoutes.patch('/:id/activate', productsController.activate);
+productsRoutes.patch(
+  '/:id/activate',
+  validateProductId,
+  productsController.activate,
+);
 
 // Remove permanentemente um produto do sistema
-productsRoutes.delete('/:id', productsController.delete);
+productsRoutes.delete('/:id', validateProductId, productsController.delete);
 
 export { productsRoutes };

@@ -20,8 +20,8 @@ const config: webpack.Configuration = {
       if (dirent.isDirectory()) {
         const pagePath = path.join(pagesDir, dirent.name);
         const files = fs.readdirSync(pagePath);
-        // Busca por .ts ou .js (dando preferência para o que ele achar primeiro na leitura)
-        const entryFile = files.find(file => file.endsWith('.ts') || file.endsWith('.js'));
+        // Busca por .ts primeiro
+        const entryFile = files.find(file => file.endsWith('.ts')) || files.find(file => file.endsWith('.js'));
 
         if (entryFile) {
           entries[dirent.name] = path.join(pagePath, entryFile);

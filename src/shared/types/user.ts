@@ -1,7 +1,7 @@
 export enum userRole {
-  ADMIN = "admin",
-  MANAGER = "manager",
-  WAITER = "waiter",
+  ADMIN = 'admin',
+  MANAGER = 'manager',
+  WAITER = 'waiter',
 }
 export interface User {
   id: string;
@@ -9,6 +9,7 @@ export interface User {
   username: string;
   password_hash: string;
   role: userRole;
+  image_url?: string;
   created_at?: string;
   updated_at?: string;
 }

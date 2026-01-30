@@ -1,9 +1,8 @@
-/* Page Wrapper */
+﻿/* Page Wrapper */
 .page-wrapper {
   padding: var(--space-md);
   padding-top: clamp(4rem, 12vw, 5rem);
   width: 100%;
-  max-width: min(95vw, 480px);
   margin: 0 auto;
   background-color: var(--bg-primary);
   min-height: 100vh;
@@ -17,7 +16,6 @@
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
-  max-width: min(95vw, 480px);
   height: clamp(54px, 15vw, 60px);
   background-color: var(--bg-secondary);
   display: flex;

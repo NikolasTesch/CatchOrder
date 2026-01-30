@@ -8,10 +8,6 @@ class AuthController {
     try {
       const { username, password } = req.body;
 
-      if (!username || !password) {
-        return res.status(400).json({ message: 'Username e password são obrigatórios' });
-      }
-
       const db = await getDb();
       const user = await db.get('SELECT * FROM users WHERE username = ?', [username]);
 

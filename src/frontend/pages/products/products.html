@@ -5,45 +5,53 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CatchOrder - Produtos</title>
-  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet">
-  <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  
+  <!-- Noto Sans JP Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Material Icons -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 
 <body>
   <!-- Header -->
   <header class="main-header">
     <div class="header-left">
-      <button class="icon-btn">
+      <button class="icon-btn" aria-label="Menu" id="menuBtn">
         <span class="material-symbols-outlined">menu</span>
       </button>
       <h1 class="page-title">Produtos</h1>
     </div>
 
     <div class="header-center">
-      <span class="brand-text">CatchOrder</span>
+      <img src="/img/logoName.svg" alt="CatchOrder Logo" class="logo-image" id="logoImage">
     </div>
 
-    <div class="header-right">
-      <div class="user-avatar"></div>
-    </div>
+    <nav class="header-right" aria-label="Ações do cabeçalho">
+      <button class="icon-btn-small" aria-label="Alternar modo escuro" id="darkModeToggle">
+        <span class="material-symbols-outlined">light_mode</span>
+      </button>
+      <button class="icon-btn-small" aria-label="Acessar perfil do usuário" id="userBtn">
+        <span class="material-symbols-outlined">account_circle</span>
+      </button>
+    </nav>
   </header>
 
-  <div class="content-wrapper">
+  <!-- Main Content -->
+  <main class="content-wrapper">
     <!-- Search Bar -->
     <div class="search-container">
       <span class="material-symbols-outlined search-icon">search</span>
-      <input type="text" class="search-input" placeholder="Buscar">
+      <input type="text" class="search-input" placeholder="Buscar" id="searchInput" aria-label="Buscar produtos">
     </div>
 
     <!-- Action Button -->
     <div class="actions-container">
-      <button class="btn-add-product">Adicionar Produto</button>
+      <button class="btn btn-primary btn-full" id="addProductBtn">Adicionar Produto</button>
     </div>
 
     <!-- Products Grid -->
-    <div class="products-grid">
+    <div class="products-grid" id="productsGrid">
 
       <!-- Product Card 1 -->
       <div class="product-card">
@@ -66,9 +74,9 @@
       </div>
 
       <!-- Add New Placeholder Card -->
-      <div class="product-card add-card">
+      <button class="product-card add-card" aria-label="Adicionar novo produto" id="addCardBtn">
         <span class="material-symbols-outlined add-icon">add</span>
-      </div>
+      </button>
 
       <!-- More Placeholders to fill grid like image -->
       <div class="product-card placeholder-only"></div>
@@ -79,8 +87,9 @@
       <div class="product-card placeholder-only"></div>
 
     </div>
-  </div>
+  </main>
 
+  <script src="script.js"></script>
 </body>
 
 </html>

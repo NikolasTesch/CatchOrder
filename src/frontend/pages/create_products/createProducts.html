@@ -5,37 +5,47 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CatchOrder - Novo Produto</title>
-  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Noto Sans JP Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Material Icons -->
   <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 
 <body>
   <!-- Header -->
   <header class="main-header">
-    <div class="header-left">
-      <button class="icon-btn">
-        <span class="material-symbols-outlined">arrow_back_ios</span>
-      </button>
-      <h1 class="page-title">Novo produto</h1>
-    </div>
-    <button class="btn-ai">
-      <span class="material-symbols-outlined ai-icon">auto_awesome</span>
-      Criar com IA
+    <button class="icon-btn" aria-label="Voltar" id="backBtn">
+      <span class="material-symbols-outlined">arrow_back</span>
+      <span class="header-title">Novo Produto</span>
     </button>
+
+    <div class="header-center">
+      <img src="/img/logoName.svg" alt="CatchOrder Logo" class="logo-image" id="logoImage">
+    </div>
+
+    <nav class="header-actions" aria-label="Ações do cabeçalho">
+      <button class="icon-btn-small" aria-label="Alternar modo escuro" id="darkModeToggle">
+        <span class="material-symbols-outlined">light_mode</span>
+      </button>
+      <button class="icon-btn-small" aria-label="Acessar perfil do usuário" id="userBtn">
+        <span class="material-symbols-outlined">account_circle</span>
+      </button>
+    </nav>
   </header>
 
   <!-- Tabs -->
-  <div class="tabs-container">
-    <div class="tab active">CADASTRO</div>
-    <div class="tab">ESTOQUE</div>
-  </div>
+  <nav class="tabs-container" role="tablist" aria-label="Abas de cadastro">
+    <button class="tab active" role="tab" aria-selected="true" id="cadastroTab">CADASTRO</button>
+    <button class="tab" role="tab" aria-selected="false" id="estoqueTab">ESTOQUE</button>
+  </nav>
 
   <!-- Main Content -->
-  <div class="content-wrapper">
-
+  <main class="page-wrapper">
     <!-- Product Preview Section -->
-    <div class="product-preview-section">
+    <section class="preview-section" aria-label="Pré-visualização do produto">
       <div class="color-picker-placeholder"></div>
 
       <div class="product-card-preview">
@@ -48,58 +58,60 @@
         </div>
       </div>
 
-      <button class="icon-btn gallery-btn">
+      <button class="icon-btn gallery-btn" aria-label="Abrir galeria">
         <span class="material-symbols-outlined">image</span>
       </button>
-    </div>
+    </section>
 
     <!-- Form Inputs -->
-    <div class="form-container">
-      <div class="input-group">
-        <input type="text" id="name" placeholder="Nome do Produto" class="form-input">
-      </div>
+    <section class="form-section" aria-label="Formulário de cadastro">
+      <div class="form-container">
+        <div class="input-group">
+          <input type="text" id="name" placeholder="Nome do Produto" class="form-input" aria-label="Nome do Produto">
+        </div>
 
-      <div class="input-group">
-        <input type="number" id="price" placeholder="Preço de Venda" class="form-input" step="0.01">
-      </div>
+        <div class="input-group">
+          <input type="number" id="price" placeholder="Preço de Venda" class="form-input" step="0.01" aria-label="Preço de Venda">
+        </div>
 
-      <div class="input-group">
-        <div class="select-wrapper">
-          <select id="category" class="form-input">
-            <option value="" disabled selected>Selecione a Categoria</option>
-            <!-- Populated by JS -->
-          </select>
+        <div class="input-group">
+          <div class="select-wrapper">
+            <select id="category" class="form-input" aria-label="Categoria">
+              <option value="" disabled selected>Selecione a Categoria</option>
+              <!-- Populated by JS -->
+            </select>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
 
     <!-- Optionals Section -->
-    <div class="section-container">
+    <section class="section-container" aria-label="Opcionais">
       <div class="section-header-row">
         <h3 class="section-title">Opcionais</h3>
         <span class="material-symbols-outlined chevron">expand_more</span>
       </div>
       <p class="section-subtitle">Experimente a descrição gerada com IA</p>
-    </div>
+    </section>
 
     <!-- Variants Section -->
-    <div class="section-container variants-section">
+    <section class="section-container variants-section" aria-label="Variantes">
       <div class="section-header-row">
         <div class="title-badge-group">
           <h3 class="section-title">Variantes</h3>
           <span class="badge-new">NOVO</span>
         </div>
-        <button class="btn-text-action">ADICIONAR</button>
+        <button class="btn-text-action" aria-label="Adicionar variante">ADICIONAR</button>
       </div>
-    </div>
-
-  </div>
+    </section>
+  </main>
 
   <!-- Footer Action -->
-  <div class="footer-action">
-    <button class="btn-submit">Adicionar produto</button>
-  </div>
+  <footer class="footer-action">
+    <button class="btn btn-primary btn-full" id="submitBtn">Adicionar produto</button>
+  </footer>
 
+  <script src="createProducts.js"></script>
 </body>
 
 </html>

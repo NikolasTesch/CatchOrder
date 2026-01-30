@@ -8,4 +8,5 @@ export interface Table {
   id: string;
   number: number;
   status: TableStatus;
+  waiter_id?: string;
 }

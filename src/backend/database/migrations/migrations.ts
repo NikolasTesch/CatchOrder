@@ -45,9 +45,17 @@ export const runMigrations = async () => {
     CREATE TABLE IF NOT EXISTS restaurant_tables (
       id TEXT PRIMARY KEY,
       number INTEGER UNIQUE NOT NULL,
-      status TEXT NOT NULL DEFAULT 'AVAILABLE'
+      status TEXT NOT NULL DEFAULT 'AVAILABLE',
+      waiter_id TEXT,
+      FOREIGN KEY (waiter_id) REFERENCES users(id)
     )
   `);
+
+  try {
+    await db.exec(`ALTER TABLE restaurant_tables ADD COLUMN waiter_id TEXT REFERENCES users(id)`);
+  } catch (error) {
+    // Ignore if column already exists
+  }
 
   // Tabela de Pedidos (Orders)
   await db.exec(`

@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { TableModel } from '../models/tableModel';
 import { TableStatus } from '../../shared/types/table';
+import { OrderModel } from '../models/order';
 
 class TablesController {
   /**
@@ -162,6 +163,34 @@ class TablesController {
     } catch (error) {
       return res.status(500).json({
         message: 'Error updating table',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+  }
+
+  /**
+   * Get tables for the current waiter
+   * GET /tables/mine
+   */
+  async indexMine(req: Request, res: Response): Promise<Response> {
+    try {
+      const waiterId = req.user?.id;
+
+      if (!waiterId) {
+        return res.status(401).json({
+          message: 'User ID not found in token',
+          data: null,
+        });
+      }
+
+      const tables = await TableModel.findByWaiterId(waiterId);
+      return res.status(200).json({
+        message: 'My tables retrieved successfully',
+        data: tables,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: 'Error retrieving my tables',
         error: error instanceof Error ? error.message : 'Unknown error',
       });
     }

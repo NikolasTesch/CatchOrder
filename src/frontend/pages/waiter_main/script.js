@@ -1,3 +1,53 @@
+// API Configuration
+const API_BASE = 'http://localhost:3000/api';
+
+/**
+ * Check if user is authenticated
+ */
+function checkAuth() {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    window.location.href = '/pages/landingPage.html';
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Get authorization headers
+ */
+function getAuthHeaders() {
+  const token = localStorage.getItem('token');
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  };
+}
+
+/**
+ * Handle API errors
+ */
+function handleApiError(error, response) {
+  console.error('API Error:', error);
+  
+  if (response && response.status === 401) {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = '/pages/landingPage.html';
+    return;
+  }
+  
+  // Show error message to user
+  showNotification('Erro ao carregar dados. Tente novamente.', 'error');
+}
+
+/**
+ * Show notification
+ */
+function showNotification(message, type = 'info') {
+  // TODO: Implement a proper notification system
+  console.log(`[${type.toUpperCase()}] ${message}`);
+}
 
 function initDarkMode() {
   const savedTheme = localStorage.getItem('theme');
@@ -69,21 +119,37 @@ function setupEventListeners() {
   const newOrderBtn = document.getElementById('newOrderBtn');
   if (newOrderBtn) {
     newOrderBtn.addEventListener('click', () => {
-      console.log('New order clicked');
-      // TODO: Navigate to order creation
+      window.location.href = '/pages/create_order/createOrder.html';
     });
   }
+  
+  // Logout functionality
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', handleLogout);
+  }
+}
+
+/**
+ * Handle user logout
+ */
+function handleLogout() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  window.location.href = '/pages/landingPage.html';
 }
 
 // Load tables from backend
 async function loadTables() {
   try {
     const response = await fetch(`${API_BASE}/tables`, {
+      method: 'GET',
+      headers: getAuthHeaders(),
       credentials: 'include'
     });
     
     if (!response.ok) {
-      console.error('Error loading tables');
+      handleApiError(new Error('Failed to load tables'), response);
       return;
     }
     
@@ -97,7 +163,7 @@ async function loadTables() {
     renderAllTables(tables);
     
   } catch (error) {
-    console.error('Error:', error);
+    handleApiError(error, null);
   }
 }
 
@@ -136,16 +202,23 @@ function renderAllTables(tables) {
 
 function handleTableClick(tableId) {
   console.log('Table clicked:', tableId);
+  // Navigate to table details/orders page
+  window.location.href = `/pages/orders/orders.html?tableId=${tableId}`;
 }
 
 // Load summary data
 async function loadSummary() {
   try {
     const response = await fetch(`${API_BASE}/orders`, {
+      method: 'GET',
+      headers: getAuthHeaders(),
       credentials: 'include'
     });
     
-    if (!response.ok) return;
+    if (!response.ok) {
+      handleApiError(new Error('Failed to load summary'), response);
+      return;
+    }
     
     const data = await response.json();
     const orders = data.data || [];
@@ -164,19 +237,42 @@ async function loadSummary() {
     const subtitleEl = document.querySelector('.summary-subtitle');
     
     if (valueEl) valueEl.textContent = `R$ ${total.toFixed(2)}`;
-    if (subtitleEl) subtitleEl.textContent = `${todayOrders.length} mesas atendidas hoje`;
+    if (subtitleEl) subtitleEl.textContent = `${todayOrders.length} mesa${todayOrders.length !== 1 ? 's' : ''} atendida${todayOrders.length !== 1 ? 's' : ''} hoje`;
     
   } catch (error) {
-    console.error('Error loading summary:', error);
+    handleApiError(error, null);
   }
 }
 
+/**
+ * Display user info
+ */
+function displayUserInfo() {
+  const userStr = localStorage.getItem('user');
+  if (userStr) {
+    try {
+      const user = JSON.parse(userStr);
+      console.log('Logged in as:', user.username);
+      // TODO: Display user name in UI if needed
+    } catch (error) {
+      console.error('Error parsing user data:', error);
+    }
+  }
+}
 
 function init() {
+  // Check authentication first
+  if (!checkAuth()) {
+    return;
+  }
+  
+  displayUserInfo();
   initDarkMode();
   setupEventListeners();
   loadTables();
   loadSummary();
+  
+  // Auto-refresh every 30 seconds
   setInterval(() => {
     loadTables();
     loadSummary();

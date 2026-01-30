@@ -57,24 +57,82 @@ function togglePasswordVisibility() {
  */
 function setupEventListeners() {
   // Dark mode toggle
-  const darkModeToggle = document.getElementById('darkModeToggle');
+  const darkModeToggle = document.getElementById("darkModeToggle");
   if (darkModeToggle) {
-    darkModeToggle.addEventListener('click', toggleDarkMode);
+    darkModeToggle.addEventListener("click", toggleDarkMode);
   }
 
   // Password visibility toggle
-  const passwordToggle = document.getElementById('passwordToggle');
+  const passwordToggle = document.getElementById("passwordToggle");
   if (passwordToggle) {
-    passwordToggle.addEventListener('click', togglePasswordVisibility);
+    passwordToggle.addEventListener("click", togglePasswordVisibility);
   }
 
-  // Form submission (if not handled by TypeScript)
-  const loginForm = document.getElementById('loginForm');
-  if (loginForm) {
-    loginForm.addEventListener('submit', (e) => {
-      // Let TypeScript handle the actual login logic
-      // This is just for fallback
-      console.log('Login form submitted');
+  // Setup form validation
+  const loginForm = document.getElementById("loginForm");
+  if (loginForm && window.FormValidator) {
+    // Define validation rules
+    const validationConfig = {
+      username: [
+        { rule: "required", message: "Nome de usuário é obrigatório" },
+        {
+          rule: "minLength",
+          params: [3],
+          message: "Nome de usuário deve ter no mínimo 3 caracteres",
+        },
+      ],
+      password: [
+        { rule: "required", message: "Senha é obrigatória" },
+        {
+          rule: "minLength",
+          params: [6],
+          message: "Senha deve ter no mínimo 6 caracteres",
+        },
+      ],
+    };
+
+    // Setup real-time validation
+    FormValidator.setupForm(loginForm, validationConfig);
+
+    // Handle valid form submission
+    loginForm.addEventListener("formValid", async (e) => {
+      const form = e.detail.form;
+      const submitBtn = form.querySelector('button[type="submit"]');
+
+      // Show loading state
+      if (window.LoadingHelper) {
+        LoadingHelper.setButtonLoading(submitBtn, true);
+      }
+
+      try {
+        // Get form data
+        const username = form.querySelector("#username").value;
+        const password = form.querySelector("#password").value;
+
+        // Simulate API call (replace with actual login logic)
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        // Example: successful login
+        if (window.toast) {
+          toast.success("Login realizado com sucesso!");
+        }
+
+        // Redirect to dashboard (replace with actual logic)
+        setTimeout(() => {
+          // window.location.href = '/pages/gest_main/gestMain.html';
+          console.log("Redirecting to dashboard...");
+        }, 500);
+      } catch (error) {
+        console.error("Login error:", error);
+        if (window.toast) {
+          toast.error("Erro ao fazer login. Verifique suas credenciais.");
+        }
+      } finally {
+        // Remove loading state
+        if (window.LoadingHelper) {
+          LoadingHelper.setButtonLoading(submitBtn, false);
+        }
+      }
     });
   }
 }
@@ -85,11 +143,11 @@ function setupEventListeners() {
 function init() {
   // Initialize dark mode first (must be before any early returns)
   initDarkMode();
-  
+
   // Setup UI event listeners
   setupEventListeners();
-  
-  console.log('Landing page (Login) initialized');
+
+  console.log("Landing page (Login) initialized with form validation");
 }
 
 // Initialize when DOM is ready

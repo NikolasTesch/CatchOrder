@@ -1,5 +1,8 @@
 require('./style.css');
 
+// API Configuration
+const API_BASE = 'http://localhost:3000/api';
+
 interface Product {
   id: string;
   name: string;
@@ -7,6 +10,114 @@ interface Product {
   price: number;
   image_path?: string;
   is_active: boolean;
+}
+
+/**
+ * Check if user is authenticated
+ */
+function checkAuth(): boolean {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    window.location.href = '../landing_page/landingPage.html';
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Get authorization headers
+ */
+function getAuthHeaders(): HeadersInit {
+  const token = localStorage.getItem('token');
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  };
+}
+
+/**
+ * Get current user ID from localStorage
+ */
+function getUserId(): string | null {
+  const userStr = localStorage.getItem('user');
+  if (userStr) {
+    try {
+      const user = JSON.parse(userStr);
+      return user.id || null;
+    } catch (error) {
+      console.error('Error parsing user data:', error);
+      return null;
+    }
+  }
+  return null;
+}
+
+/**
+ * Toggle sidebar navigation
+ */
+function toggleSidebar(): void {
+  document.body.classList.toggle('sidebar-open');
+}
+
+/**
+ * Close sidebar navigation
+ */
+function closeSidebar(): void {
+  document.body.classList.remove('sidebar-open');
+}
+
+/**
+ * Open user modal and display user info
+ */
+function openUserModal(): void {
+  const userStr = localStorage.getItem('user');
+  if (userStr) {
+    try {
+      const user = JSON.parse(userStr);
+      
+      // Update modal with user data
+      const nameEl = document.getElementById('modalUserName');
+      const roleEl = document.getElementById('modalUserRole');
+      
+      if (nameEl) nameEl.textContent = user.name || 'Usuário';
+      if (roleEl) roleEl.textContent = formatRole(user.role || '');
+      
+      document.body.classList.add('user-modal-open');
+    } catch (error) {
+      console.error('Error parsing user data:', error);
+    }
+  }
+}
+
+/**
+ * Close user modal
+ */
+function closeUserModal(): void {
+  document.body.classList.remove('user-modal-open');
+}
+
+/**
+ * Handle user logout
+ */
+function handleLogout(): void {
+  if (confirm('Tem certeza que deseja sair?')) {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = '../landing_page/landingPage.html';
+  }
+}
+
+/**
+ * Format role for display
+ */
+function formatRole(role: string): string {
+  const roleMap: { [key: string]: string } = {
+    'admin': 'Administrador',
+    'manager': 'Gerente',
+    'waiter': 'Garçom',
+    'kitchen': 'Cozinha'
+  };
+  return roleMap[role] || role;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -28,6 +139,11 @@ document.addEventListener('DOMContentLoaded', () => {
   init();
 
   function init(): void {
+    // Check authentication first
+    if (!checkAuth()) {
+      return;
+    }
+    
     initDarkMode();
     setupEventListeners();
     fetchProducts();
@@ -83,19 +199,60 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const menuBtn = document.getElementById('menuBtn');
     if (menuBtn) {
-      menuBtn.addEventListener('click', () => {
-        console.log('Menu clicked');
-        // TODO: Implement menu navigation
-      });
+      menuBtn.addEventListener('click', toggleSidebar);
     }
+
+    // Sidebar close handlers
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    if (sidebarOverlay) {
+      sidebarOverlay.addEventListener('click', closeSidebar);
+    }
+
+    const closeSidebarBtn = document.getElementById('closeSidebar');
+    if (closeSidebarBtn) {
+      closeSidebarBtn.addEventListener('click', closeSidebar);
+    }
+
+    // ESC key to close sidebar
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && document.body.classList.contains('sidebar-open')) {
+        closeSidebar();
+      }
+    });
 
     const userBtn = document.getElementById('userBtn');
     if (userBtn) {
-      userBtn.addEventListener('click', () => {
-        console.log('User profile clicked');
-        // TODO: Navigate to profile
-      });
+      userBtn.addEventListener('click', openUserModal);
     }
+
+    // User modal close handlers
+    const userModalOverlay = document.getElementById('userModalOverlay');
+    if (userModalOverlay) {
+      userModalOverlay.addEventListener('click', closeUserModal);
+    }
+
+    const closeUserModalBtn = document.getElementById('closeUserModal');
+    if (closeUserModalBtn) {
+      closeUserModalBtn.addEventListener('click', closeUserModal);
+    }
+
+    // Logout button
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', handleLogout);
+    }
+
+    // ESC key listeners
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (document.body.classList.contains('sidebar-open')) {
+          closeSidebar();
+        }
+        if (document.body.classList.contains('user-modal-open')) {
+          closeUserModal();
+        }
+      }
+    });
 
     const logoImage = document.getElementById('logoImage');
     if (logoImage) {
@@ -111,13 +268,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function fetchProducts(): Promise<void> {
     try {
-      const response = await fetch('http://localhost:3000/api/products');
+      const response = await fetch(`${API_BASE}/products`, {
+        method: 'GET',
+        headers: getAuthHeaders(),
+      });
+      
       const data = await response.json();
 
       if (response.ok) {
         products = data.data || [];
         renderProducts(products);
       } else {
+        // Handle 401 Unauthorized
+        if (response.status === 401) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          window.location.href = '../landing_page/landingPage.html';
+          return;
+        }
         console.error('Failed to fetch products:', data.message);
       }
     } catch (error) {

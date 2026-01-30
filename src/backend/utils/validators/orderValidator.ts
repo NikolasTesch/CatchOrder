@@ -73,6 +73,7 @@ export class OrderValidator {
       error,
     };
   }
+
   static validateCreation(data: any): { valido: boolean; error: string[] } {
     const error: string[] = [];
 

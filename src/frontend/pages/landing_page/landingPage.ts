@@ -108,6 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 showError('Erro ao processar resposta do servidor.');
             }
 
+
         } catch (error: any) {
             console.error('Login error:', error);
             showError(error.message || 'Falha no login. Verifique suas credenciais.');

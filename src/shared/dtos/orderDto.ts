@@ -7,6 +7,7 @@ export interface OrderDTO {
   tip: number;
   opened_at: string;
   closed_at?: string;
+  items?: OrderItemDTO[];
 }
 
 export interface CreateOrderDTO {
@@ -28,4 +29,5 @@ export interface OrderItemDTO {
   quantity: number;
   unit_price: number;
   total_item: number;
+  product_name?: string;
 }

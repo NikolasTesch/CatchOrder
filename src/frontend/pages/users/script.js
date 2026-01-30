@@ -89,10 +89,10 @@ function renderUsers() {
   
   if (filteredUsers.length === 0) {
     const emptyMessage = document.createElement('p');
+    emptyMessage.className = 'empty-message';
     emptyMessage.textContent = searchTerm 
       ? 'Nenhum usuário encontrado' 
       : 'Nenhum usuário cadastrado';
-    emptyMessage.style.cssText = 'text-align: center; padding: 2rem; color: var(--neutral-60);';
     usersList.appendChild(emptyMessage);
     return;
   }
@@ -129,7 +129,7 @@ function createUserCard(user) {
   const userRole = getRoleLabel(user.role);
   
   card.innerHTML = `
-    <div class="user-avatar" style="${getUserAvatarStyle(user)}"></div>
+    <div class="user-avatar">${getUserAvatarContent(user)}</div>
     <div class="user-info">
       <h3 class="user-name">${userName} (${userRole})</h3>
       <p class="user-email">@${user.username || 'username'}</p>
@@ -148,23 +148,15 @@ function createUserCard(user) {
 }
 
 /**
- * Get user avatar style
+ * Get user avatar content
  */
-function getUserAvatarStyle(user) {
+function getUserAvatarContent(user) {
   if (user.photo_url) {
-    return `background-image: url('${user.photo_url}'); background-size: cover; background-position: center;`;
+    return `<img src="${user.photo_url}" alt="${user.username}" />`;
   }
   // Default placeholder with initials
   const initials = getUserInitials(user.username);
-  return `
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--primary-50, #f0f9ff);
-    color: var(--primary-500, #0ea5e9);
-    font-weight: 600;
-    font-size: 1.25rem;
-  `;
+  return `<span class="avatar-initials">${initials}</span>`;
 }
 
 /**
@@ -211,55 +203,21 @@ function showActionModal(user, actions) {
   // Create modal overlay
   const modal = document.createElement('div');
   modal.className = 'modal-overlay';
-  modal.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0,0,0,0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    animation: fadeIn 0.2s ease;
-  `;
   
   // Create modal content
   const modalContent = document.createElement('div');
-  modalContent.style.cssText = `
-    background: white;
-    border-radius: 12px;
-    padding: 1.5rem;
-    min-width: 300px;
-    max-width: 400px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-  `;
+  modalContent.className = 'modal-content';
   
   modalContent.innerHTML = `
-    <h3 style="margin: 0 0 1rem 0; font-size: 1.25rem;">${user.name || user.username}</h3>
-    <p style="margin: 0 0 1.5rem 0; color: #666;">@${user.username}</p>
+    <h3 class="modal-title">${user.name || user.username}</h3>
+    <p class="modal-subtitle">@${user.username}</p>
   `;
   
   // Add action buttons
   actions.forEach(action => {
     const button = document.createElement('button');
+    button.className = action.danger ? 'modal-btn modal-btn-danger' : 'modal-btn modal-btn-primary';
     button.textContent = action.label;
-    button.style.cssText = `
-      width: 100%;
-      padding: 0.75rem;
-      margin-bottom: 0.5rem;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1rem;
-      background: ${action.danger ? '#ef4444' : '#0ea5e9'};
-      color: white;
-      transition: opacity 0.2s ease;
-    `;
-    
-    button.addEventListener('mouseover', () => button.style.opacity = '0.8');
-    button.addEventListener('mouseout', () => button.style.opacity = '1');
     button.addEventListener('click', () => {
       modal.remove();
       action.action();
@@ -270,17 +228,8 @@ function showActionModal(user, actions) {
   
   // Add cancel button
   const cancelButton = document.createElement('button');
+  cancelButton.className = 'modal-btn modal-btn-cancel';
   cancelButton.textContent = 'Cancelar';
-  cancelButton.style.cssText = `
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1rem;
-    background: white;
-    color: #666;
-  `;
   cancelButton.addEventListener('click', () => modal.remove());
   modalContent.appendChild(cancelButton);
   
@@ -384,23 +333,11 @@ function showSuccess(message) {
   const toast = document.createElement('div');
   toast.className = 'toast toast-success';
   toast.textContent = message;
-  toast.style.cssText = `
-    position: fixed;
-    top: 80px;
-    right: 20px;
-    background: #10b981;
-    color: white;
-    padding: 1rem 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    z-index: 9999;
-    animation: slideIn 0.3s ease;
-  `;
   
   document.body.appendChild(toast);
   
   setTimeout(() => {
-    toast.style.animation = 'slideOut 0.3s ease';
+    toast.classList.add('toast-out');
     setTimeout(() => toast.remove(), 300);
   }, 3000);
 }
@@ -412,23 +349,11 @@ function showError(message) {
   const toast = document.createElement('div');
   toast.className = 'toast toast-error';
   toast.textContent = message;
-  toast.style.cssText = `
-    position: fixed;
-    top: 80px;
-    right: 20px;
-    background: #ef4444;
-    color: white;
-    padding: 1rem 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    z-index: 9999;
-    animation: slideIn 0.3s ease;
-  `;
   
   document.body.appendChild(toast);
   
   setTimeout(() => {
-    toast.style.animation = 'slideOut 0.3s ease';
+    toast.classList.add('toast-out');
     setTimeout(() => toast.remove(), 300);
   }, 3000);
 }

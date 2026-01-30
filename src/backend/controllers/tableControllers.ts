@@ -78,14 +78,6 @@ class TablesController {
     try {
       const status = req.params.status as TableStatus;
 
-      if (!Object.values(TableStatus).includes(status)) {
-        return res.status(400).json({
-          message:
-            'Invalid status. Valid values: AVAILABLE, OCCUPIED, RESERVED',
-          data: null,
-        });
-      }
-
       const tables = await TableModel.findByStatus(status);
       return res.status(200).json({
         message: 'Tables by status retrieved successfully',
@@ -106,13 +98,6 @@ class TablesController {
   async store(req: Request, res: Response): Promise<Response> {
     try {
       const { number, status } = req.body;
-
-      if (!number) {
-        return res.status(400).json({
-          message: 'Table number is required',
-          data: null,
-        });
-      }
 
       // Check if table number already exists
       const existingTable = await TableModel.findByNumber(number);
@@ -190,13 +175,6 @@ class TablesController {
     try {
       const id = req.params.id as string;
       const { status } = req.body;
-
-      if (!status || !Object.values(TableStatus).includes(status)) {
-        return res.status(400).json({
-          message: 'Valid status is required (AVAILABLE, OCCUPIED, RESERVED)',
-          data: null,
-        });
-      }
 
       const table = await TableModel.updateStatus(id, status);
 

@@ -8,6 +8,7 @@ export class ApiService {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(data),
+            credentials: 'include', // Ensure cookies are sent
         });
 
         return this.handleResponse<T>(response);
@@ -19,6 +20,7 @@ export class ApiService {
             headers: {
                 'Content-Type': 'application/json',
             },
+            credentials: 'include', // Ensure cookies are sent
         });
 
         return this.handleResponse<T>(response);

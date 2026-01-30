@@ -40,33 +40,30 @@
   <!-- Main Content -->
   <main class="page-wrapper">
     <section class="user-form-section" aria-label="Formulário de cadastro de usuário">
-      <div class="photo-upload">
-        <button type="button" class="photo-circle" aria-label="Enviar foto do usuário" id="photoUploadBtn">
-          <span class="material-symbols-outlined camera-icon">photo_camera</span>
-        </button>
+      <div class="form-group">
+        <label for="image_url">URL da Foto (Opcional)</label>
+        <div class="input-wrapper">
+          <input type="url" id="image_url" placeholder="https://exemplo.com/foto.jpg" class="input-field"
+            aria-label="URL da imagem do usuário">
+          <span class="material-symbols-outlined input-icon">image</span>
+        </div>
+        <span class="error-message" id="image_url-error"></span>
       </div>
 
       <form class="user-form" id="userForm" novalidate>
         <div class="form-group">
-          <label for="full-name">Nome Completo</label>
-          <input type="text" id="full-name" placeholder="Nome Completo" class="input-field" aria-label="Nome completo">
-          <span class="error-message" id="full-name-error"></span>
+          <label for="name">Nome Completo</label>
+          <input type="text" id="name" placeholder="Nome Completo" class="input-field" aria-label="Nome completo">
+          <span class="error-message" id="name-error"></span>
         </div>
 
-        <div class="form-group">
-          <label for="phone">Telefone</label>
-          <div class="phone-input-wrapper">
-            <span class="phone-icon material-symbols-outlined">flag</span>
-            <input type="tel" id="phone" placeholder="+55 (00) 00000-0000" class="input-field phone-input"
-              aria-label="Telefone">
-          </div>
-          <span class="error-message" id="phone-error"></span>
-        </div>
+
 
         <div class="form-group">
-          <label for="email">Username</label>
-          <input type="text" id="email" placeholder="Username (min 4 chars)" class="input-field" aria-label="Username">
-          <span class="error-message" id="email-error"></span>
+          <label for="username">Username</label>
+          <input type="text" id="username" placeholder="Username (min 4 chars)" class="input-field"
+            aria-label="Username">
+          <span class="error-message" id="username-error"></span>
         </div>
 
         <div class="form-group">
@@ -82,7 +79,6 @@
             <option value="admin">Administrador</option>
             <option value="manager">Gerente</option>
             <option value="waiter">Garçom</option>
-            <option value="kitchen">Cozinha</option>
           </select>
           <span class="error-message" id="role-error"></span>
         </div>

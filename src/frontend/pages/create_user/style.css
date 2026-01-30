@@ -193,7 +193,27 @@ label {
   box-shadow: 0 1px 0 0 var(--color-primary);
 }
 
-/* Phone Input Wrapper */
+/* Text Input Wrapper with Icon */
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  right: 0;
+  font-size: 20px !important;
+  color: var(--text-secondary);
+  pointer-events: none;
+  margin-right: var(--space-xs);
+}
+
+.input-wrapper .input-field {
+    padding-right: 32px; /* Space for icon */
+}
+
+/* Phone Input Wrapper - Keeping for backward compatibility if needed, though replaced above mostly */
 .phone-input-wrapper {
   position: relative;
   display: flex;

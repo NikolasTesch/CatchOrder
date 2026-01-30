@@ -5,40 +5,51 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CatchOrder - Pedidos</title>
-  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Noto Sans JP Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Material Icons -->
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 
 <body>
-  <!-- Header Fixo -->
   <header class="main-header">
-    <button class="icon-btn">
+    <!-- Esquerda: Menu/Navegação -->
+    <button class="icon-btn" id="menuBtn" aria-label="Menu de navegação">
       <span class="material-symbols-outlined">menu</span>
       <span class="header-title">Pedidos</span>
     </button>
 
+    <!-- Centro: Logo -->
     <div class="header-center">
-      <h1 class="page-title">CatchOrder</h1>
+      <img src="/img/logoName.svg" alt="CatchOrder Logo" class="logo-image">
     </div>
 
-    <div class="header-actions">
-      <span class="status-indicator"></span>
-    </div>
+    <!-- Direita: Ações -->
+    <nav class="header-actions">
+      <button class="icon-btn-small" id="darkModeToggle" aria-label="Alternar modo escuro">
+        <span class="material-symbols-outlined">light_mode</span>
+      </button>
+      <button class="icon-btn-small" id="userBtn" aria-label="Perfil do usuário">
+        <span class="material-symbols-outlined">account_circle</span>
+      </button>
+    </nav>
   </header>
 
-  <div class="page-wrapper">
+  <main class="page-wrapper">
     <!-- Barra de Busca -->
-    <div class="search-container">
+    <div class="search-container" role="search" aria-label="Buscar pedidos por mesa">
       <span class="material-symbols-outlined search-icon">search</span>
-      <input type="text" class="search-input" placeholder="Buscar mesa">
+      <input type="text" class="search-input" placeholder="Buscar mesa" aria-label="Número da mesa">
     </div>
 
     <!-- Botão Novo Pedido -->
-    <button class="btn-new-order">Novo Pedido</button>
+    <button class="btn-new-order" aria-label="Criar novo pedido">Novo Pedido</button>
 
     <!-- Seção: Ordens Abertas -->
-    <section class="orders-section">
+    <section class="orders-section" aria-label="Ordens em aberto">
       <h2 class="section-title">Ordens abertas</h2>
 
       <!-- Card de Pedido -->
@@ -46,10 +57,10 @@
         <div class="order-header">
           <h3 class="order-title">Ordem x</h3>
           <span class="order-status status-open">Em aberto</span>
-          <span class="table-badge">1</span>
+          <span class="table-badge" aria-label="Mesa número 1">1</span>
         </div>
         <div class="order-info">
-          <p class="order-price">R$00,00</p>
+          <p class="order-price">R$ 00,00</p>
           <p class="order-description">Descrição do pedido (itens)</p>
         </div>
         <div class="order-footer">
@@ -63,10 +74,10 @@
         <div class="order-header">
           <h3 class="order-title">Ordem x</h3>
           <span class="order-status status-open">Em aberto</span>
-          <span class="table-badge">1</span>
+          <span class="table-badge" aria-label="Mesa número 1">1</span>
         </div>
         <div class="order-info">
-          <p class="order-price">R$00,00</p>
+          <p class="order-price">R$ 00,00</p>
           <p class="order-description">Descrição do pedido (itens)</p>
         </div>
         <div class="order-footer">
@@ -80,10 +91,10 @@
         <div class="order-header">
           <h3 class="order-title">Ordem x</h3>
           <span class="order-status status-open">Em aberto</span>
-          <span class="table-badge">1</span>
+          <span class="table-badge" aria-label="Mesa número 1">1</span>
         </div>
         <div class="order-info">
-          <p class="order-price">R$00,00</p>
+          <p class="order-price">R$ 00,00</p>
           <p class="order-description">Descrição do pedido (itens)</p>
         </div>
         <div class="order-footer">
@@ -97,10 +108,10 @@
         <div class="order-header">
           <h3 class="order-title">Ordem x</h3>
           <span class="order-status status-open">Em aberto</span>
-          <span class="table-badge">1</span>
+          <span class="table-badge" aria-label="Mesa número 1">1</span>
         </div>
         <div class="order-info">
-          <p class="order-price">R$00,00</p>
+          <p class="order-price">R$ 00,00</p>
           <p class="order-description">Descrição do pedido (itens)</p>
         </div>
         <div class="order-footer">
@@ -111,7 +122,7 @@
     </section>
 
     <!-- Seção: Ordens Finalizadas -->
-    <section class="orders-section">
+    <section class="orders-section" aria-label="Ordens finalizadas">
       <h2 class="section-title">Ordens finalizadas</h2>
 
       <!-- Card de Pedido Finalizado -->
@@ -119,10 +130,10 @@
         <div class="order-header">
           <h3 class="order-title">Ordem x</h3>
           <span class="order-status status-finished">Finalizado</span>
-          <span class="table-badge">1</span>
+          <span class="table-badge" aria-label="Mesa número 1">1</span>
         </div>
         <div class="order-info">
-          <p class="order-price">R$00,00</p>
+          <p class="order-price">R$ 00,00</p>
           <p class="order-description">Descrição do pedido (itens)</p>
         </div>
         <div class="order-footer">
@@ -136,10 +147,10 @@
         <div class="order-header">
           <h3 class="order-title">Ordem x</h3>
           <span class="order-status status-finished">Finalizado</span>
-          <span class="table-badge">1</span>
+          <span class="table-badge" aria-label="Mesa número 1">1</span>
         </div>
         <div class="order-info">
-          <p class="order-price">R$00,00</p>
+          <p class="order-price">R$ 00,00</p>
           <p class="order-description">Descrição do pedido (itens)</p>
         </div>
         <div class="order-footer">
@@ -153,10 +164,10 @@
         <div class="order-header">
           <h3 class="order-title">Ordem x</h3>
           <span class="order-status status-finished">Finalizado</span>
-          <span class="table-badge">1</span>
+          <span class="table-badge" aria-label="Mesa número 1">1</span>
         </div>
         <div class="order-info">
-          <p class="order-price">R$00,00</p>
+          <p class="order-price">R$ 00,00</p>
           <p class="order-description">Descrição do pedido (itens)</p>
         </div>
         <div class="order-footer">
@@ -165,7 +176,7 @@
         </div>
       </div>
     </section>
-  </div>
+  </main>
 
   <script src="script.js"></script>
 </body>

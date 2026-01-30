@@ -35,7 +35,10 @@ export class ApiService {
         }
 
         if (!response.ok) {
-            throw new Error(data.message || 'Erro na requisição');
+            const errorMessage = data.errors && Array.isArray(data.errors)
+                ? `${data.message}: ${data.errors.join(', ')}`
+                : (data.message || 'Erro na requisição');
+            throw new Error(errorMessage);
         }
 
         return data as T;

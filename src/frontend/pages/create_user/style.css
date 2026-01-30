@@ -212,6 +212,20 @@ label {
   padding-left: clamp(1.75rem, 6vw, 2rem);
 }
 
+/* Error Message */
+.error-message {
+  color: #ef4444;
+  /* Red color */
+  font-size: 0.75rem;
+  margin-top: 4px;
+  display: none;
+  font-weight: 500;
+}
+
+.input-field.error {
+  border-bottom-color: #ef4444;
+}
+
 /* Submit Button uses global .btn .btn-primary .btn-full */
 
 /* Dark mode logo filter */

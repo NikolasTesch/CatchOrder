@@ -56,8 +56,7 @@ body {
   width: auto;
   cursor: pointer;
   transition: transform var(--transition-base);
-  filter: brightness(0) saturate(100%) invert(25%) sepia(12%) 
-          saturate(2476%) hue-rotate(147deg) brightness(95%) contrast(93%);
+  filter: brightness(0) saturate(100%) invert(25%) sepia(12%) saturate(2476%) hue-rotate(147deg) brightness(95%) contrast(93%);
 }
 
 .logo-image:hover {
@@ -65,8 +64,7 @@ body {
 }
 
 body.dark-mode .logo-image {
-  filter: brightness(0) saturate(100%) invert(59%) sepia(53%) 
-          saturate(434%) hue-rotate(147deg) brightness(93%) contrast(88%);
+  filter: brightness(0) saturate(100%) invert(59%) sepia(53%) saturate(434%) hue-rotate(147deg) brightness(93%) contrast(88%);
 }
 
 .page-title {
@@ -185,6 +183,7 @@ body.dark-mode .logo-image {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -786,6 +785,7 @@ body.dark-mode .logo-image {
     transform: translateY(30px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
@@ -898,6 +898,7 @@ body.dark-mode .logo-image {
     transform: translateX(100%);
     opacity: 0;
   }
+
   to {
     transform: translateX(0);
     opacity: 1;
@@ -1060,7 +1061,7 @@ body.dark-mode .data-table tbody tr:hover {
     width: 95%;
     max-height: 85vh;
   }
-  
+
   .section-header {
     flex-direction: column;
     align-items: flex-start;

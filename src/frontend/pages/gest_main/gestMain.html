@@ -6,8 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CatchOrder - Gestão</title>
   <!-- Noto Sans JP Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
   <!-- Material Icons -->
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
@@ -75,11 +76,11 @@
 
   <!-- Main Content -->
   <main class="main-content">
-    
+
     <!-- Dashboard Section -->
     <section id="dashboard-section" class="content-section active">
       <h2 class="section-title">Visão Geral</h2>
-      
+
       <!-- Cards de Métricas -->
       <div class="metrics-grid">
         <div class="metric-card">
@@ -113,6 +114,16 @@
         </div>
 
         <div class="metric-card">
+          <div class="metric-icon" style="background: #e0f7fa;">
+            <span class="material-symbols-outlined" style="color: #006064;">payments</span>
+          </div>
+          <div class="metric-info">
+            <span class="metric-label">Vendas Hoje</span>
+            <span class="metric-value" id="dailySales">R$ 0,00</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
           <div class="metric-icon" style="background: #fff3e0;">
             <span class="material-symbols-outlined" style="color: #f57c00;">receipt_long</span>
           </div>
@@ -140,12 +151,31 @@
               <span class="status-badge reserved">Reservada</span>
               <span class="status-count" id="reservedTables">--</span>
             </div>
+
+
           </div>
         </div>
 
         <div class="dashboard-card">
           <h3 class="card-title">Pedidos Recentes</h3>
           <div id="recentOrders" class="recent-list">
+            <p class="loading-text">Carregando...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Analytics Grid -->
+      <div class="dashboard-grid" style="margin-top: 2rem;">
+        <div class="dashboard-card">
+          <h3 class="card-title">Top Produtos Mais Vendidos</h3>
+          <div id="topProducts" class="recent-list">
+            <p class="loading-text">Carregando...</p>
+          </div>
+        </div>
+
+        <div class="dashboard-card">
+          <h3 class="card-title">Maiores Vendas</h3>
+          <div id="biggestSales" class="recent-list">
             <p class="loading-text">Carregando...</p>
           </div>
         </div>
@@ -161,7 +191,7 @@
           Novo Usuário
         </button>
       </div>
-      
+
       <div class="search-bar">
         <span class="material-symbols-outlined">search</span>
         <input type="text" id="searchUsers" placeholder="Buscar usuários...">
@@ -196,7 +226,7 @@
           Novo Produto
         </button>
       </div>
-      
+
       <div class="filters-bar">
         <div class="search-bar">
           <span class="material-symbols-outlined">search</span>
@@ -226,7 +256,7 @@
           Nova Mesa
         </button>
       </div>
-      
+
       <div class="filters-bar">
         <select id="tableStatusFilter" class="filter-select">
           <option value="">Todos Status</option>
@@ -246,7 +276,7 @@
       <div class="section-header">
         <h2 class="section-title">Gerenciar Pedidos</h2>
       </div>
-      
+
       <div class="filters-bar">
         <select id="orderStatusFilter" class="filter-select">
           <option value="">Todos Status</option>
@@ -314,6 +344,7 @@
     <span class="toast-icon material-symbols-outlined"></span>
     <span class="toast-message"></span>
   </div>
+
 </body>
 
 </html>

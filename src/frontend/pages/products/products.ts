@@ -1,7 +1,10 @@
-require('./style.css');
+// Make this file a module to avoid global scope contamination
+export {};
+
+require("./style.css");
 
 // API Configuration
-const API_BASE = 'http://localhost:3000/api';
+const API_BASE = "http://localhost:3000/api";
 
 interface Product {
   id: string;
@@ -16,9 +19,9 @@ interface Product {
  * Check if user is authenticated
  */
 function checkAuth(): boolean {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   if (!token) {
-    window.location.href = '../landing_page/landingPage.html';
+    window.location.href = "../landing_page/landingPage.html";
     return false;
   }
   return true;
@@ -28,10 +31,10 @@ function checkAuth(): boolean {
  * Get authorization headers
  */
 function getAuthHeaders(): HeadersInit {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   return {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
   };
 }
 
@@ -39,13 +42,13 @@ function getAuthHeaders(): HeadersInit {
  * Get current user ID from localStorage
  */
 function getUserId(): string | null {
-  const userStr = localStorage.getItem('user');
+  const userStr = localStorage.getItem("user");
   if (userStr) {
     try {
       const user = JSON.parse(userStr);
       return user.id || null;
     } catch (error) {
-      console.error('Error parsing user data:', error);
+      console.error("Error parsing user data:", error);
       return null;
     }
   }
@@ -56,35 +59,35 @@ function getUserId(): string | null {
  * Toggle sidebar navigation
  */
 function toggleSidebar(): void {
-  document.body.classList.toggle('sidebar-open');
+  document.body.classList.toggle("sidebar-open");
 }
 
 /**
  * Close sidebar navigation
  */
 function closeSidebar(): void {
-  document.body.classList.remove('sidebar-open');
+  document.body.classList.remove("sidebar-open");
 }
 
 /**
  * Open user modal and display user info
  */
 function openUserModal(): void {
-  const userStr = localStorage.getItem('user');
+  const userStr = localStorage.getItem("user");
   if (userStr) {
     try {
       const user = JSON.parse(userStr);
-      
+
       // Update modal with user data
-      const nameEl = document.getElementById('modalUserName');
-      const roleEl = document.getElementById('modalUserRole');
-      
-      if (nameEl) nameEl.textContent = user.name || 'Usuário';
-      if (roleEl) roleEl.textContent = formatRole(user.role || '');
-      
-      document.body.classList.add('user-modal-open');
+      const nameEl = document.getElementById("modalUserName");
+      const roleEl = document.getElementById("modalUserRole");
+
+      if (nameEl) nameEl.textContent = user.name || "Usuário";
+      if (roleEl) roleEl.textContent = formatRole(user.role || "");
+
+      document.body.classList.add("user-modal-open");
     } catch (error) {
-      console.error('Error parsing user data:', error);
+      console.error("Error parsing user data:", error);
     }
   }
 }
@@ -93,17 +96,17 @@ function openUserModal(): void {
  * Close user modal
  */
 function closeUserModal(): void {
-  document.body.classList.remove('user-modal-open');
+  document.body.classList.remove("user-modal-open");
 }
 
 /**
  * Handle user logout
  */
 function handleLogout(): void {
-  if (confirm('Tem certeza que deseja sair?')) {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    window.location.href = '../landing_page/landingPage.html';
+  if (confirm("Tem certeza que deseja sair?")) {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    window.location.href = "../landing_page/landingPage.html";
   }
 }
 
@@ -112,27 +115,24 @@ function handleLogout(): void {
  */
 function formatRole(role: string): string {
   const roleMap: { [key: string]: string } = {
-    'admin': 'Administrador',
-    'manager': 'Gerente',
-    'waiter': 'Garçom',
-    'kitchen': 'Cozinha'
+    admin: "Administrador",
+    manager: "Gerente",
+    waiter: "Garçom",
+    kitchen: "Cozinha",
   };
   return roleMap[role] || role;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
   const productsGrid = document.getElementById(
-    'products-grid',
+    "products-grid",
   ) as HTMLElement | null;
   const searchInput = document.querySelector(
-    '.search-input',
+    ".search-input",
   ) as HTMLInputElement | null;
-  const btnAddProduct = document.querySelector(
-    '.btn-add-product',
+  const btnAddProduct = document.getElementById(
+    "addProductBtn",
   ) as HTMLButtonElement | null;
-  const btnAddCard = document.getElementById(
-    'btn-add-product',
-  ) as HTMLElement | null;
 
   let products: Product[] = [];
 
@@ -143,18 +143,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!checkAuth()) {
       return;
     }
-    
+
     initDarkMode();
     setupEventListeners();
     fetchProducts();
   }
 
   function initDarkMode() {
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const savedTheme = localStorage.getItem("theme");
+    const prefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)",
+    ).matches;
 
-    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-      document.body.classList.add('dark-mode');
+    if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+      document.body.classList.add("dark-mode");
       updateDarkModeIcon(true);
     } else {
       updateDarkModeIcon(false);
@@ -162,17 +164,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function toggleDarkMode() {
-    const isDark = document.body.classList.toggle('dark-mode');
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    const isDark = document.body.classList.toggle("dark-mode");
+    localStorage.setItem("theme", isDark ? "dark" : "light");
     updateDarkModeIcon(isDark);
   }
 
   function updateDarkModeIcon(isDark: boolean) {
-    const darkModeToggle = document.getElementById('darkModeToggle');
+    const darkModeToggle = document.getElementById("darkModeToggle");
     if (darkModeToggle) {
-      const icon = darkModeToggle.querySelector('.material-symbols-outlined');
+      const icon = darkModeToggle.querySelector(".material-symbols-outlined");
       if (icon) {
-        icon.textContent = isDark ? 'dark_mode' : 'light_mode';
+        icon.textContent = isDark ? "dark_mode" : "light_mode";
       }
     }
   }
@@ -180,99 +182,98 @@ document.addEventListener('DOMContentLoaded', () => {
   function setupEventListeners(): void {
     // Search & Products
     if (searchInput) {
-      searchInput.addEventListener('input', handleSearch);
+      searchInput.addEventListener("input", handleSearch);
     }
 
     if (btnAddProduct) {
-      btnAddProduct.addEventListener('click', navigateToCreate);
-    }
-
-    if (btnAddCard) {
-      btnAddCard.addEventListener('click', navigateToCreate);
+      btnAddProduct.addEventListener("click", navigateToCreate);
     }
 
     // Header & Navigation
-    const darkModeToggle = document.getElementById('darkModeToggle');
+    const darkModeToggle = document.getElementById("darkModeToggle");
     if (darkModeToggle) {
-      darkModeToggle.addEventListener('click', toggleDarkMode);
+      darkModeToggle.addEventListener("click", toggleDarkMode);
     }
 
-    const menuBtn = document.getElementById('menuBtn');
+    const menuBtn = document.getElementById("menuBtn");
     if (menuBtn) {
-      menuBtn.addEventListener('click', toggleSidebar);
+      menuBtn.addEventListener("click", toggleSidebar);
     }
 
     // Sidebar close handlers
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const sidebarOverlay = document.getElementById("sidebarOverlay");
     if (sidebarOverlay) {
-      sidebarOverlay.addEventListener('click', closeSidebar);
+      sidebarOverlay.addEventListener("click", closeSidebar);
     }
 
-    const closeSidebarBtn = document.getElementById('closeSidebar');
+    const closeSidebarBtn = document.getElementById("closeSidebar");
     if (closeSidebarBtn) {
-      closeSidebarBtn.addEventListener('click', closeSidebar);
+      closeSidebarBtn.addEventListener("click", closeSidebar);
     }
 
     // ESC key to close sidebar
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && document.body.classList.contains('sidebar-open')) {
+    document.addEventListener("keydown", (e) => {
+      if (
+        e.key === "Escape" &&
+        document.body.classList.contains("sidebar-open")
+      ) {
         closeSidebar();
       }
     });
 
-    const userBtn = document.getElementById('userBtn');
+    const userBtn = document.getElementById("userBtn");
     if (userBtn) {
-      userBtn.addEventListener('click', openUserModal);
+      userBtn.addEventListener("click", openUserModal);
     }
 
     // User modal close handlers
-    const userModalOverlay = document.getElementById('userModalOverlay');
+    const userModalOverlay = document.getElementById("userModalOverlay");
     if (userModalOverlay) {
-      userModalOverlay.addEventListener('click', closeUserModal);
+      userModalOverlay.addEventListener("click", closeUserModal);
     }
 
-    const closeUserModalBtn = document.getElementById('closeUserModal');
+    const closeUserModalBtn = document.getElementById("closeUserModal");
     if (closeUserModalBtn) {
-      closeUserModalBtn.addEventListener('click', closeUserModal);
+      closeUserModalBtn.addEventListener("click", closeUserModal);
     }
 
     // Logout button
-    const logoutBtn = document.getElementById('logoutBtn');
+    const logoutBtn = document.getElementById("logoutBtn");
     if (logoutBtn) {
-      logoutBtn.addEventListener('click', handleLogout);
+      logoutBtn.addEventListener("click", handleLogout);
     }
 
     // ESC key listeners
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        if (document.body.classList.contains('sidebar-open')) {
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        if (document.body.classList.contains("sidebar-open")) {
           closeSidebar();
         }
-        if (document.body.classList.contains('user-modal-open')) {
+        if (document.body.classList.contains("user-modal-open")) {
           closeUserModal();
         }
       }
     });
 
-    const logoImage = document.getElementById('logoImage');
+    const logoImage = document.getElementById("logoImage");
     if (logoImage) {
-      logoImage.addEventListener('click', () => {
-        window.location.href = '../landing_page/landingPage.html';
+      logoImage.addEventListener("click", () => {
+        window.location.href = "../landing_page/landingPage.html";
       });
     }
   }
 
   function navigateToCreate(): void {
-    window.location.href = '../create_products/createProducts.html';
+    window.location.href = "../create_products/createProducts.html";
   }
 
   async function fetchProducts(): Promise<void> {
     try {
       const response = await fetch(`${API_BASE}/products`, {
-        method: 'GET',
+        method: "GET",
         headers: getAuthHeaders(),
       });
-      
+
       const data = await response.json();
 
       if (response.ok) {
@@ -281,30 +282,30 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         // Handle 401 Unauthorized
         if (response.status === 401) {
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-          window.location.href = '../landing_page/landingPage.html';
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          window.location.href = "../landing_page/landingPage.html";
           return;
         }
-        console.error('Failed to fetch products:', data.message);
+        console.error("Failed to fetch products:", data.message);
       }
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error("Error fetching products:", error);
     }
   }
 
   function renderProducts(items: Product[]): void {
     if (!productsGrid) return;
 
-    productsGrid.innerHTML = '';
+    productsGrid.innerHTML = "";
 
     // Add "Add New" card
-    const addCard = document.createElement('div');
-    addCard.className = 'product-card add-card';
-    addCard.id = 'btn-add-product-card';
+    const addCard = document.createElement("div");
+    addCard.className = "product-card add-card";
+    addCard.id = "btn-add-product-card";
     addCard.innerHTML =
       '<span class="material-symbols-outlined add-icon">add</span>';
-    addCard.addEventListener('click', navigateToCreate);
+    addCard.addEventListener("click", navigateToCreate);
     productsGrid.appendChild(addCard);
 
     items.forEach((product) => {
@@ -318,14 +319,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function createProductCard(product: Product): HTMLElement {
-    const card = document.createElement('div');
-    card.className = 'product-card';
+    const card = document.createElement("div");
+    card.className = "product-card";
 
     // Placeholder image if none
     const bgImage = product.image_path
       ? `url('${product.image_path}')`
-      : 'none';
-    const bgColor = product.image_path ? 'transparent' : '#eee';
+      : "none";
+    const bgColor = product.image_path ? "transparent" : "#eee";
 
     card.innerHTML = `
       <div class="card-image" style="background-image: ${bgImage}; background-color: ${bgColor};"></div>

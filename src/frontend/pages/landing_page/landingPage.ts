@@ -86,24 +86,26 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             console.log('Sending request to /auth/login...'); // Debug 7
             // Using ApiService for consistent request handling
-            const response = await ApiService.post<{data: {token: string, user: any}}>('/auth/login', { username, password });
+            const response = await ApiService.post<{token: string, user: any}>('/auth/login', { username, password });
 
             console.log('Login successful', response);
             
             // Store token and user data in localStorage
-            if (response.data) {
-                localStorage.setItem('token', response.data.token);
-                localStorage.setItem('user', JSON.stringify(response.data.user));
+            if (response.token && response.user) {
+                localStorage.setItem('token', response.token);
+                localStorage.setItem('user', JSON.stringify(response.user));
                 
                 // Redirect based on user role
-                const role = response.data.user?.role;
+                const role = response.user?.role;
+                console.log('User role:', role);
                 if (role === 'waiter') {
                     window.location.href = '/pages/waiterMain.html';
                 } else {
                     window.location.href = '/pages/gestMain.html';
                 }
             } else {
-                window.location.href = '/pages/gestMain.html';
+                console.error('Invalid response structure:', response);
+                showError('Erro ao processar resposta do servidor.');
             }
 
         } catch (error: any) {

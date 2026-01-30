@@ -5,37 +5,59 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CatchOrder - Pagamento</title>
-  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Noto Sans JP Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Material Icons -->
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 
 <body>
-  <!-- Top Bar with Menu Icon -->
-  <div class="top-nav">
-    <button class="icon-btn">
+  <header class="main-header">
+    <!-- Esquerda: Menu/Navegação -->
+    <button class="icon-btn" id="menuBtn" aria-label="Menu de navegação">
       <span class="material-symbols-outlined">menu</span>
+      <span class="header-title">Pagamento</span>
     </button>
-  </div>
 
-  <!-- Main Price Header -->
-  <header class="price-header">
-    <h1 class="total-price">R$53,00</h1>
+    <!-- Centro: Logo -->
+    <div class="header-center">
+      <img src="/img/logoName.svg" alt="CatchOrder Logo" class="logo-image">
+    </div>
+
+    <!-- Direita: Ações -->
+    <nav class="header-actions">
+      <button class="icon-btn-small" id="darkModeToggle" aria-label="Alternar modo escuro">
+        <span class="material-symbols-outlined">light_mode</span>
+      </button>
+      <button class="icon-btn-small" id="userBtn" aria-label="Perfil do usuário">
+        <span class="material-symbols-outlined">account_circle</span>
+      </button>
+    </nav>
   </header>
 
-  <div class="page-wrapper">
+  <main class="page-wrapper">
+    <!-- Price Display Section -->
+    <section class="price-section" aria-label="Valor total">
+      <h1 class="total-price">R$ 53,00</h1>
+    </section>
 
     <!-- Consumido Section -->
-    <section class="consumed-card">
+    <section class="consumed-section" aria-label="Itens consumidos">
       <div class="section-header">
-        <h2 class="section-title">Consumido <span class="material-symbols-outlined arrow-icon">arrow_forward</span></h2>
+        <h2 class="section-title">
+          Consumido 
+          <span class="material-symbols-outlined arrow-icon">arrow_forward</span>
+        </h2>
       </div>
 
       <div class="consumed-list">
         <!-- Item 1 -->
         <div class="consumed-item">
           <div class="item-header">
-            <span class="item-price">R$20,00</span>
+            <span class="item-price">R$ 20,00</span>
           </div>
           <div class="item-details">
             <span class="item-name">Prato feito - Lasanha de frango</span>
@@ -46,7 +68,7 @@
         <!-- Item 2 -->
         <div class="consumed-item">
           <div class="item-header">
-            <span class="item-price">R$21,00</span>
+            <span class="item-price">R$ 21,00</span>
           </div>
           <div class="item-details">
             <span class="item-name">Prato feito - Alcatra com fritas</span>
@@ -57,7 +79,7 @@
         <!-- Item 3 -->
         <div class="consumed-item">
           <div class="item-header">
-            <span class="item-price">R$12,00</span>
+            <span class="item-price">R$ 12,00</span>
           </div>
           <div class="item-details">
             <span class="item-name">Coca-Cola 2 Litros</span>
@@ -67,32 +89,26 @@
       </div>
     </section>
 
-    <!-- Payment Methods -->
-    <div class="payment-methods-container">
-      <button class="payment-btn active">
-        <span class="material-symbols-outlined">credit_card</span>
-      </button>
-      <button class="payment-btn">
-        <span class="material-symbols-outlined">payments</span>
-      </button>
-      <button class="payment-btn">
-        <div class="pix-icon-container">
-          <span class="material-symbols-outlined">qr_code_2</span>
-          <!-- Using QR code as visual proxy for Pix if no SVG available, or text "Pix" -->
-          <span class="pix-text">pix</span>
-        </div>
-      </button>
-    </div>
+    <!-- Payment Methods Section -->
+    <section class="payment-section" aria-label="Métodos de pagamento">
+      <div class="payment-methods-container">
+        <button class="payment-btn active" aria-label="Pagar com cartão de crédito">
+          <span class="material-symbols-outlined">credit_card</span>
+        </button>
+        <button class="payment-btn" aria-label="Pagar com dinheiro">
+          <span class="material-symbols-outlined">payments</span>
+        </button>
+        <button class="payment-btn" aria-label="Pagar com Pix">
+          <div class="pix-icon-container">
+            <span class="material-symbols-outlined">qr_code_2</span>
+            <span class="pix-text">pix</span>
+          </div>
+        </button>
+      </div>
+    </section>
+  </main>
 
-  </div>
-
-  <!-- Footer Logo -->
-  <footer class="main-footer">
-    <div class="logo-container">
-      <span class="logo-text">CatchOrder</span>
-    </div>
-  </footer>
-
+  <script src="script.js"></script>
 </body>
 
 </html>

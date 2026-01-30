@@ -53,7 +53,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!nameInput || !priceInput || !categorySelect) return;
 
         const name = nameInput.value.trim();
-        const price = parseFloat(priceInput.value);
+        const priceInReais = parseFloat(priceInput.value);
+        const price = Math.round(priceInReais * 100); // Converter para centavos
         const category_id = categorySelect.value;
         const description = "Descricao automatica"; // Placeholder for now as UI doesn't have it explicitly mapped yet
 

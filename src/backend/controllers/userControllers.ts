@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import { hashPassword } from '../utils/passwordHash';
 import { UserModel } from '../models/userModel';
 import type { CreateUserDTO, UpdateUserDTO } from '../../shared/dtos/userDto';
-import { UserValidator } from '../utils/validators/userValidator';
 
 type IdParam = { id: string };
 
@@ -62,15 +61,7 @@ class UsersController {
    */
   async store(req: Request, res: Response): Promise<Response> {
     try {
-      const { name, username, password, role } = req.body;
-
-      const validation = UserValidator.validate(req.body);
-      if (!validation.valido) {
-        return res.status(400).json({
-          message: 'Erro de validação',
-          errors: validation.error
-        });
-      }
+      const { name, username, password, role, image_url } = req.body;
 
       // Check if user already exists
       const existingUser = await userModel.findByUsername(username);
@@ -84,14 +75,15 @@ class UsersController {
         name,
         username,
         password_hash,
-        role
+        role,
+        image_url
       };
 
       const userId = await userModel.create(newUser);
 
       return res.status(201).json({
         message: 'Usuário criado com sucesso',
-        data: { id: userId, name, username, role }
+        data: { id: userId, name, username, role, image_url }
       });
     } catch (error) {
       return res.status(500).json({

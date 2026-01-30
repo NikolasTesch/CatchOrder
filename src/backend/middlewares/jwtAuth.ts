@@ -26,3 +26,27 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
     return;
   }
 };
+
+export const authenticatePage = (req: Request, res: Response, next: NextFunction): void => {
+  const token = req.cookies.token;
+
+  if (!token) {
+    res.redirect('/pages/landingPage.html');
+    return;
+  }
+
+  try {
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      console.error('JWT_SECRET is not defined');
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+
+    jwt.verify(token, secret);
+    next();
+  } catch (error) {
+    res.redirect('/pages/landingPage.html');
+    return;
+  }
+};

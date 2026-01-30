@@ -1,5 +1,7 @@
 import './style.css';
-import { ApiService } from '../../services/apiService';
+
+// API Configuration
+const API_BASE = 'http://localhost:3000/api';
 
 // Interfaces
 interface Category {
@@ -38,6 +40,7 @@ interface Order {
     table_id: string;
     status: string;
     items?: OrderItem[];
+    observations?: string;
 }
 
 interface Table {
@@ -58,7 +61,8 @@ let existingOrderItems: OrderItem[] = [];
 
 // DOM Elements
 const infoBar = document.querySelector('.info-bar') as HTMLElement;
-const categoryContainer = document.querySelector('.page-wrapper') as HTMLElement;
+// Updated selector from .page-wrapper to .content-wrapper
+const categoryContainer = document.querySelector('.content-wrapper') as HTMLElement;
 const observationsTextarea = document.querySelector('.obs-textarea') as HTMLTextAreaElement;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -68,6 +72,9 @@ document.addEventListener('DOMContentLoaded', () => {
 async function init() {
     initDarkMode();
     setupEventListeners();
+
+    // Standard Auth Check
+    if (!checkAuth()) return;
 
     const urlParams = new URLSearchParams(window.location.search);
     currentTableId = urlParams.get('table_id');
@@ -96,13 +103,105 @@ async function init() {
     updateUIVisibility();
 }
 
+// --- Auth & Helpers (Standard Pattern) ---
+
+function checkAuth(): boolean {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        window.location.href = '../landing_page/landingPage.html';
+        return false;
+    }
+    return true;
+}
+
+function getAuthHeaders(): HeadersInit {
+    const token = localStorage.getItem('token');
+    return {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+    };
+}
+
+// --- UI Logic from Products Page (Sidebar, Modal) ---
+
+function toggleSidebar() {
+    document.body.classList.toggle('sidebar-open');
+}
+
+function closeSidebar() {
+    document.body.classList.remove('sidebar-open');
+}
+
+function openUserModal() {
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+        try {
+            const user = JSON.parse(userStr);
+            const nameEl = document.getElementById('modalUserName');
+            const roleEl = document.getElementById('modalUserRole');
+            if (nameEl) nameEl.textContent = user.name || 'Usuário';
+            if (roleEl) roleEl.textContent = formatRole(user.role || '');
+            document.body.classList.add('user-modal-open');
+        } catch (error) {
+            console.error('Error parsing user data:', error);
+        }
+    }
+}
+
+function closeUserModal() {
+    document.body.classList.remove('user-modal-open');
+}
+
+function handleLogout() {
+    if (confirm('Tem certeza que deseja sair?')) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '../landing_page/landingPage.html';
+    }
+}
+
+function formatRole(role: string): string {
+    const roleMap: { [key: string]: string } = {
+        admin: 'Administrador',
+        manager: 'Gerente',
+        waiter: 'Garçom',
+        kitchen: 'Cozinha',
+    };
+    return roleMap[role] || role;
+}
+
+// --- Business Logic (Refactored to fail-safe fetch) ---
+
+async function apiCall<T>(url: string, options: RequestInit = {}): Promise<T> {
+    const headers = getAuthHeaders();
+    const response = await fetch(`${API_BASE}${url}`, {
+        ...options,
+        headers: {
+            ...headers,
+            ...options.headers,
+        },
+    });
+
+    if (response.status === 401) {
+        localStorage.removeItem('token');
+        window.location.href = '../landing_page/landingPage.html';
+        throw new Error('Sessão expirada');
+    }
+
+    const data = await response.json();
+    if (!response.ok) {
+        throw new Error(data.message || 'Erro na requisição');
+    }
+    return data;
+}
+
 async function loadTableDetails(tableId: string) {
     try {
         try {
-            const response = await ApiService.get<{ data: Table }>(`/tables/${tableId}`);
+            const response = await apiCall<{ data: Table }>(`/tables/${tableId}`);
             if (response.data) currentTableNumber = response.data.number;
         } catch (e) {
-            const allTabs = await ApiService.get<{ data: Table[] }>('/tables');
+            const allTabs = await apiCall<{ data: Table[] }>('/tables');
             const found = allTabs.data.find(t => t.id === tableId);
             if (found) currentTableNumber = found.number;
         }
@@ -114,20 +213,18 @@ async function loadTableDetails(tableId: string) {
 
 async function loadOrderDetails(orderId: string) {
     try {
-        const response = await ApiService.get<{ data: Order }>(`/orders/${orderId}`);
+        const response = await apiCall<{ data: Order }>(`/orders/${orderId}`);
         if (response.data) {
             existingOrderItems = response.data.items || [];
-            currentOrderStatus = response.data.status; // Store status
+            currentOrderStatus = response.data.status;
 
             renderExistingItems();
 
             if (response.data.status === 'CLOSED') {
                 if (observationsTextarea) {
-                    observationsTextarea.value = (response.data as any).observations || '';
+                    observationsTextarea.value = response.data.observations || '';
                     observationsTextarea.disabled = true;
                 }
-                const inputs = document.querySelectorAll('input, button:not(.btn-back)');
-                // Disable adding new items? Maybe just hide the add buttons
             }
         }
     } catch (error) {
@@ -138,7 +235,7 @@ async function loadOrderDetails(orderId: string) {
 
 async function loadCategories() {
     try {
-        const response = await ApiService.get<{ data: Category[] }>('/categories');
+        const response = await apiCall<{ data: Category[] }>('/categories');
         categories = response.data || [];
     } catch (error) {
         showError('Erro ao carregar categorias');
@@ -147,16 +244,16 @@ async function loadCategories() {
 
 async function loadProducts() {
     try {
-        const response = await ApiService.get<{ data: Product[] }>('/products/active');
+        const response = await apiCall<{ data: Product[] }>('/products/active');
         if (!response.data) {
-            const allProdResponse = await ApiService.get<{ data: Product[] }>('/products');
-            products = (allProdResponse.data || []).filter(p => p.active);
+             const allProdResponse = await apiCall<{ data: Product[] }>('/products');
+             products = (allProdResponse.data || []).filter(p => p.active);
         } else {
             products = response.data || [];
         }
     } catch (error) {
         try {
-            const allProdResponse = await ApiService.get<{ data: Product[] }>('/products');
+            const allProdResponse = await apiCall<{ data: Product[] }>('/products');
             products = (allProdResponse.data || []).filter(p => p.active);
         } catch (e) {
             showError('Erro ao carregar produtos');
@@ -212,8 +309,8 @@ function createProductCard(product: Product): HTMLElement {
     const price = product.price ? parseFloat(product.price.toString()).toFixed(2) : '0.00';
 
     card.innerHTML = `
-        <div class="product-image" style="background-image: url('${imageUrl}');"></div>
-        <div class="product-info">
+        <div class="card-image" style="background-image: url('${imageUrl}');"></div>
+        <div class="card-info">
             <h3 class="product-name">${product.name}</h3>
             <p class="product-desc">${product.description || ''}</p>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
@@ -234,7 +331,6 @@ function createProductCard(product: Product): HTMLElement {
 
 function addToCart(product: Product) {
     const existingItem = cart.find((item) => item.product_id === product.id);
-
     if (existingItem) {
         existingItem.quantity++;
     } else {
@@ -245,7 +341,6 @@ function addToCart(product: Product) {
             quantity: 1,
         });
     }
-
     updateInfoBar();
     renderCartItems();
     showSuccess(`${product.name} adicionado ao pedido`);
@@ -257,7 +352,6 @@ function updateInfoBar() {
         (sum, item) => sum + item.price * item.quantity,
         0,
     );
-
     const displayTable = currentTableNumber ? `Mesa ${currentTableNumber}` : (currentTableId || 'Mesa ?');
 
     if (infoBar) {
@@ -297,7 +391,6 @@ function renderExistingItems() {
     }
 
     existingSection.style.display = 'block';
-
     const totalExisting = existingOrderItems.reduce((acc, item) => acc + (item.total_item || (item.unit_price * item.quantity)), 0);
 
     existingSection.innerHTML = `
@@ -377,6 +470,7 @@ function renderCartItems() {
         <h3 style="color: #10b981; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--border-light); padding-bottom: 0.5rem;">
             <span>Novos Itens (A Enviar)</span>
             <span style="font-size: 0.9rem; font-weight: normal;">Total: R$ ${totalCart.toFixed(2)}</span>
+            <button id="btn-clear-cart" style="background:none; border:none; color: #ef4444; font-size: 0.8rem; cursor: pointer;">Limpar</button>
         </h3>
         <ul style="list-style: none; padding: 0;">
             ${cart.map((item, index) => `
@@ -389,13 +483,32 @@ function renderCartItems() {
                             Vl. Unit: R$ ${item.price.toFixed(2)}
                          </div>
                     </div>
+                    <button class="btn-remove-new" data-index="${index}" style="color: #ef4444; background: none; border: none; cursor: pointer;">
+                        <span class="material-symbols-outlined">delete</span>
+                    </button>
                 </li>
             `).join('')}
         </ul>
     `;
-    // Removed remove buttons from cart for simplicity if requested, but logic remains if needed
-    // Adding back remove buttons logic
-    // ... code truncated for brevity, same as before ... 
+    
+    // Add event listeners for remove buttons
+    cartSection.querySelectorAll('.btn-remove-new').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent bubbling if needed
+            const index = parseInt((e.currentTarget as HTMLElement).dataset.index || '0');
+            removeFromCart(index);
+        });
+    });
+
+    const clearBtn = document.getElementById('btn-clear-cart');
+    if(clearBtn) {
+        clearBtn.addEventListener('click', (e) => {
+             e.stopPropagation();
+             cart = [];
+             updateInfoBar();
+             renderCartItems();
+        });
+    }
 }
 
 function removeFromCart(index: number) {
@@ -406,7 +519,7 @@ function removeFromCart(index: number) {
 
 async function removeOrderItem(orderId: string, itemId: string) {
     try {
-        await ApiService.delete(`/orders/${orderId}/items/${itemId}`);
+        await apiCall(`/orders/${orderId}/items/${itemId}`, { method: 'DELETE' });
         showSuccess('Item removido com sucesso!');
         await loadOrderDetails(orderId);
     } catch (error: any) {
@@ -431,18 +544,24 @@ async function saveItems() {
         let orderId = currentOrderId;
 
         if (!orderId) {
-            const orderResponse = await ApiService.post<{ data: Order }>('/orders', {
-                table_id: currentTableId,
-                user_id: getUserIdFromSession()
+            const orderResponse = await apiCall<{ data: Order }>('/orders', {
+                method: 'POST',
+                body: JSON.stringify({
+                    table_id: currentTableId,
+                    user_id: getUserIdFromSession()
+                })
             });
             orderId = orderResponse.data.id;
         }
 
         if (cart.length > 0) {
             for (const item of cart) {
-                await ApiService.post(`/orders/${orderId}/items`, {
-                    product_id: item.product_id,
-                    quantity: item.quantity
+                await apiCall(`/orders/${orderId}/items`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                         product_id: item.product_id,
+                         quantity: item.quantity
+                    })
                 });
             }
         }
@@ -450,8 +569,9 @@ async function saveItems() {
         if (observationsTextarea) {
             const obs = observationsTextarea.value.trim();
             if (obs) {
-                await ApiService.put(`/orders/${orderId}`, {
-                    observations: obs
+                await apiCall(`/orders/${orderId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ observations: obs })
                 });
             }
         }
@@ -460,7 +580,6 @@ async function saveItems() {
         cart = [];
 
         setTimeout(() => {
-            // If creating new, redirect to edit mode or same page
             window.location.href = `/pages/createOrder.html?table_id=${currentTableId}&order_id=${orderId}`;
         }, 1500);
 
@@ -485,7 +604,7 @@ async function finalizeOrder() {
     }
 
     try {
-        await ApiService.patch(`/orders/${currentOrderId}/close`, {});
+        await apiCall(`/orders/${currentOrderId}/close`, { method: 'PATCH' });
         showSuccess('Conta fechada com sucesso!');
         setTimeout(() => {
             window.location.href = '/pages/orders.html';
@@ -547,8 +666,7 @@ function updateUIVisibility() {
                 msg.className = 'alert alert-info';
                 msg.textContent = 'Este pedido já está fechado.';
                 msg.style.cssText = 'background: #e0f2fe; color: #0369a1; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; text-align: center; font-weight: bold; width: 100%;';
-                const main = document.querySelector('main');
-                if (main) main.prepend(msg);
+                if (categoryContainer) categoryContainer.prepend(msg);
             }
 
         } else {
@@ -580,6 +698,24 @@ function setupEventListeners() {
     if (darkModeToggle) {
         darkModeToggle.onclick = toggleDarkMode;
     }
+
+    // Sidebar & User Modal Events
+    document.getElementById('menuBtn')?.addEventListener('click', toggleSidebar);
+    document.getElementById('closeSidebar')?.addEventListener('click', closeSidebar);
+    document.getElementById('sidebarOverlay')?.addEventListener('click', closeSidebar);
+    
+    document.getElementById('userBtn')?.addEventListener('click', openUserModal);
+    document.getElementById('closeUserModal')?.addEventListener('click', closeUserModal);
+    document.getElementById('userModalOverlay')?.addEventListener('click', closeUserModal);
+    document.getElementById('logoutBtn')?.addEventListener('click', handleLogout);
+
+    // ESC key listener
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeSidebar();
+            closeUserModal();
+        }
+    });
 }
 
 // --- Dark Mode (Shared Logic) ---

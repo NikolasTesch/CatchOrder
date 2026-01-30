@@ -86,12 +86,25 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             console.log('Sending request to /auth/login...'); // Debug 7
             // Using ApiService for consistent request handling
-            await ApiService.post('/auth/login', { username, password });
+            const response = await ApiService.post<{data: {token: string, user: any}}>('/auth/login', { username, password });
 
-            console.log('Login successful');
-
-            // Redirect to orders page
-            window.location.href = '../orders/orders.html';
+            console.log('Login successful', response);
+            
+            // Store token and user data in localStorage
+            if (response.data) {
+                localStorage.setItem('token', response.data.token);
+                localStorage.setItem('user', JSON.stringify(response.data.user));
+                
+                // Redirect based on user role
+                const role = response.data.user?.role;
+                if (role === 'waiter') {
+                    window.location.href = '/pages/waiterMain.html';
+                } else {
+                    window.location.href = '/pages/gestMain.html';
+                }
+            } else {
+                window.location.href = '/pages/gestMain.html';
+            }
 
         } catch (error: any) {
             console.error('Login error:', error);

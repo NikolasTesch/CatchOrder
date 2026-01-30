@@ -254,8 +254,8 @@ function renderAllTables(tables) {
 
 function handleTableClick(tableId) {
   console.log("Table clicked:", tableId);
-  // Navigate to table details/orders page
-  window.location.href = `/pages/orders/orders.html?tableId=${tableId}`;
+  // Navigate to orders page with table filter
+  window.location.href = `/pages/orders.html?tableId=${tableId}`;
 }
 
 // Load summary data

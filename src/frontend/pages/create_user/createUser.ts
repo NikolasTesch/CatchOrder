@@ -55,6 +55,38 @@ function setupEventListeners() {
         });
     }
 
+    // Logo redirection
+    const logoImage = document.getElementById('logoImage');
+    if (logoImage) {
+        logoImage.style.cursor = 'pointer';
+        logoImage.addEventListener('click', () => {
+            window.location.href = '/pages/orders.html';
+        });
+    }
+
+    // Profile redirection
+    const userBtn = document.getElementById('userBtn');
+    if (userBtn) {
+        userBtn.addEventListener('click', () => {
+            const userStr = localStorage.getItem('user');
+            if (userStr) {
+                try {
+                    const user = JSON.parse(userStr);
+                    if (user.role === 'waiter') {
+                        window.location.href = '/pages/waiterMain.html';
+                    } else {
+                        window.location.href = '/pages/gestMain.html';
+                    }
+                } catch (e) {
+                    console.error('Error parsing user data:', e);
+                    window.location.href = '/pages/gestMain.html';
+                }
+            } else {
+                window.location.href = '/pages/gestMain.html';
+            }
+        });
+    }
+
     // Form submission
     const userForm = document.getElementById('userForm') as HTMLFormElement | null;
     if (userForm) {
@@ -77,18 +109,20 @@ async function handleCreateUser(e: Event) {
     // Clear all previous errors
     clearAllErrors();
 
-    const nameInput = document.getElementById('full-name') as HTMLInputElement;
-    const usernameInput = document.getElementById('email') as HTMLInputElement;
+    const nameInput = document.getElementById('name') as HTMLInputElement;
+    const usernameInput = document.getElementById('username') as HTMLInputElement;
     const passwordInput = document.getElementById('password') as HTMLInputElement;
     const roleInput = document.getElementById('role') as HTMLSelectElement;
+    const imageUrlInput = document.getElementById('image_url') as HTMLInputElement;
 
     const name = nameInput.value.trim();
     const username = usernameInput.value.trim();
     const password = passwordInput.value;
     const role = roleInput.value;
+    const image_url = imageUrlInput ? imageUrlInput.value.trim() : '';
 
     // Validate all fields at once
-    const isFormValid = validateForm(name, username, password, role);
+    const isFormValid = validateForm(name, username, password, role, image_url);
 
     if (!isFormValid) {
         console.log('Form validation failed');
@@ -102,36 +136,37 @@ async function handleCreateUser(e: Event) {
             name,
             username,
             password,
-            role
+            role,
+            image_url: image_url || null
         });
 
         alert('Usuário criado com sucesso!');
-        // Clear form
-        (document.getElementById('userForm') as HTMLFormElement).reset();
+        // Redirect to users list
+        window.location.href = '/pages/users.html';
     } catch (error: any) {
         console.error('Error creating user:', error);
         alert(error.message || 'Erro ao criar usuário');
     }
 }
 
-function validateForm(name: string, username: string, password: string, role: string): boolean {
+function validateForm(name: string, username: string, password: string, role: string, image_url: string): boolean {
     let isValid = true;
 
     // Name Validation
     if (!name) {
-        showError('full-name', 'Nome é obrigatório.');
+        showError('name', 'Nome é obrigatório.');
         isValid = false;
     } else if (name.length < 4) {
-        showError('full-name', 'Nome deve ter pelo menos 4 caracteres.');
+        showError('name', 'Nome deve ter pelo menos 4 caracteres.');
         isValid = false;
     }
 
     // Username Validation
     if (!username) {
-        showError('email', 'Username é obrigatório.');
+        showError('username', 'Username é obrigatório.');
         isValid = false;
     } else if (username.length < 4) {
-        showError('email', 'Username deve ter pelo menos 4 caracteres.');
+        showError('username', 'Username deve ter pelo menos 4 caracteres.');
         isValid = false;
     }
 
@@ -162,6 +197,16 @@ function validateForm(name: string, username: string, password: string, role: st
     if (!role) {
         showError('role', 'Selecione um cargo.');
         isValid = false;
+    }
+
+    // Image URL Validation (Optional)
+    if (image_url) {
+        try {
+            new URL(image_url);
+        } catch (_) {
+            showError('image_url', 'URL da imagem inválida.');
+            isValid = false;
+        }
     }
 
     return isValid;

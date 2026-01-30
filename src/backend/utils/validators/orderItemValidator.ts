@@ -32,6 +32,8 @@ export class OrderItemValidator {
       error.push('Preço deve ser maior que 0');
     } else if (!Number.isFinite(orderItem.price)) {
       error.push('Preço deve ser um número');
+    } else if (!Number.isInteger(orderItem.price)) {
+      error.push('Preço deve ser um número inteiro (em centavos)');
     }
 
     return {

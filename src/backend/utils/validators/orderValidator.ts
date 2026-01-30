@@ -2,6 +2,7 @@
 export interface Order {
   status: string;
   total: number;
+  tip?: number;
   oppened_at: Date;
   closed_at?: Date | string | null;
 }
@@ -44,6 +45,8 @@ export class OrderValidator {
       error.push('Total deve ser maior que 0');
     } else if (!Number.isFinite(order.total)) {
       error.push('Total deve ser um número');
+    } else if (!Number.isInteger(order.total)) {
+      error.push('Total deve ser um número inteiro (em centavos)');
     }
 
     if (!order.oppened_at) {
@@ -54,75 +57,14 @@ export class OrderValidator {
       error.push('Data de abertura não permite datas futuras');
     }
 
-    return {
-      valido: error.length === 0,
-      error,
-    };
-  }
-
-  static validateCreation(order: any): { valido: boolean; error: string[] } {
-    const error: string[] = [];
-
-    // Validar table_id (UUID)
-    if (!order.table_id || typeof order.table_id !== 'string') {
-      error.push('ID da mesa é obrigatório');
-    } else {
-      const uuidRegex =
-        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-      if (!uuidRegex.test(order.table_id)) {
-        error.push('ID da mesa deve ser um UUID válido');
-      }
-    }
-
-    // Validar user_id (UUID)
-    if (!order.user_id || typeof order.user_id !== 'string') {
-      error.push('ID do usuário é obrigatório');
-    } else {
-      const uuidRegex =
-        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-      if (!uuidRegex.test(order.user_id)) {
-        error.push('ID do usuário deve ser um UUID válido');
-      }
-    }
-
-    return {
-      valido: error.length === 0,
-      error,
-    };
-  }
-
-  static validateUpdate(order: any): { valido: boolean; error: string[] } {
-    const error: string[] = [];
-
-    // Validar status (opcional)
-    if (order.status !== undefined) {
-      if (
-        typeof order.status !== 'string' ||
-        order.status.trim().length === 0
-      ) {
-        error.push('Status não pode ser vazio');
-      } else if (!this.statusValidos.includes(order.status)) {
-        error.push(
-          'Status deve ser um dos seguintes: ' + this.statusValidos.join(', '),
-        );
-      }
-    }
-
-    // Validar total (opcional)
-    if (order.total !== undefined) {
-      const total = Number(order.total);
-      if (isNaN(total) || !Number.isFinite(total)) {
-        error.push('Total deve ser um número válido');
-      } else if (total < 0) {
-        error.push('Total não pode ser negativo');
-      }
-    }
-
-    // Validar closed_at (opcional)
-    if (order.closed_at !== undefined && order.closed_at !== null) {
-      const closedAt = new Date(order.closed_at);
-      if (isNaN(closedAt.getTime())) {
-        error.push('Data de fechamento deve ser uma data válida');
+    // Validação opcional de gorjeta
+    if (order.tip !== undefined && order.tip !== null) {
+      if (typeof order.tip !== 'number' || !Number.isFinite(order.tip)) {
+        error.push('Gorjeta deve ser um número válido');
+      } else if (order.tip < 0) {
+        error.push('Gorjeta não pode ser negativa');
+      } else if (!Number.isInteger(order.tip)) {
+        error.push('Gorjeta deve ser um número inteiro (em centavos)');
       }
     }
 

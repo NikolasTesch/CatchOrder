@@ -1,3 +1,4 @@
+require('./style.css');
 /* ========================================
    PAYMENT PAGE - JAVASCRIPT
    Dark Mode & Event Listeners

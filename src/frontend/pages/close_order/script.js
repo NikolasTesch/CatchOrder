@@ -1,3 +1,4 @@
+require('./style.css');
 // Close Order Page - JavaScript Functionality
 
 

@@ -1,4 +1,4 @@
-import './style.css';
+require('./style.css');
 
 interface Product {
   id: string;
@@ -21,18 +21,48 @@ document.addEventListener('DOMContentLoaded', () => {
   ) as HTMLButtonElement | null;
   const btnAddCard = document.getElementById(
     'btn-add-product',
-  ) as HTMLElement | null; // The card button
+  ) as HTMLElement | null;
 
   let products: Product[] = [];
 
   init();
 
   function init(): void {
+    initDarkMode();
     setupEventListeners();
     fetchProducts();
   }
 
+  function initDarkMode() {
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+      document.body.classList.add('dark-mode');
+      updateDarkModeIcon(true);
+    } else {
+      updateDarkModeIcon(false);
+    }
+  }
+
+  function toggleDarkMode() {
+    const isDark = document.body.classList.toggle('dark-mode');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    updateDarkModeIcon(isDark);
+  }
+
+  function updateDarkModeIcon(isDark: boolean) {
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    if (darkModeToggle) {
+      const icon = darkModeToggle.querySelector('.material-symbols-outlined');
+      if (icon) {
+        icon.textContent = isDark ? 'dark_mode' : 'light_mode';
+      }
+    }
+  }
+
   function setupEventListeners(): void {
+    // Search & Products
     if (searchInput) {
       searchInput.addEventListener('input', handleSearch);
     }
@@ -44,15 +74,44 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnAddCard) {
       btnAddCard.addEventListener('click', navigateToCreate);
     }
+
+    // Header & Navigation
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    if (darkModeToggle) {
+      darkModeToggle.addEventListener('click', toggleDarkMode);
+    }
+
+    const menuBtn = document.getElementById('menuBtn');
+    if (menuBtn) {
+      menuBtn.addEventListener('click', () => {
+        console.log('Menu clicked');
+        // TODO: Implement menu navigation
+      });
+    }
+
+    const userBtn = document.getElementById('userBtn');
+    if (userBtn) {
+      userBtn.addEventListener('click', () => {
+        console.log('User profile clicked');
+        // TODO: Navigate to profile
+      });
+    }
+
+    const logoImage = document.getElementById('logoImage');
+    if (logoImage) {
+      logoImage.addEventListener('click', () => {
+        window.location.href = '../landing_page/landingPage.html';
+      });
+    }
   }
 
   function navigateToCreate(): void {
-    window.location.href = '../createProducts.html';
+    window.location.href = '../create_products/createProducts.html';
   }
 
   async function fetchProducts(): Promise<void> {
     try {
-      const response = await fetch('http://localhost:3000/products');
+      const response = await fetch('http://localhost:3000/api/products');
       const data = await response.json();
 
       if (response.ok) {
@@ -68,12 +127,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function renderProducts(items: Product[]): void {
     if (!productsGrid) return;
-
-    // Keep the "Add New" card ??
-    // Actually, typically we clear everything or keep the Add button.
-    // The HTML structure has the Add Card *inside* the grid?
-    // Let's re-create the Add Card dynamically as the first or last item.
-    // Based on HTML, it was mixed. Let's make it the FIRST item for visibility.
 
     productsGrid.innerHTML = '';
 

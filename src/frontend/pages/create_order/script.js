@@ -1,3 +1,4 @@
+require('./style.css');
 // Create Order Page - JavaScript Functionality
 // Integrates with backend API to create orders with products
 
@@ -313,7 +314,7 @@ async function finalizeOrder() {
     });
 
     if (!orderResponse.ok) throw new Error('Erro ao criar pedido');
-    
+
     const orderData = await orderResponse.json();
     currentOrder = orderData.data;
 
@@ -345,7 +346,7 @@ async function finalizeOrder() {
     }
 
     showSuccess('Pedido criado com sucesso!');
-    
+
     // Redirect to orders page or waiter main after 2 seconds
     setTimeout(() => {
       window.location.href = '/waiter_main/waiterMain.html';
@@ -390,9 +391,9 @@ function showSuccess(message) {
     z-index: 9999;
     animation: slideIn 0.3s ease;
   `;
-  
+
   document.body.appendChild(toast);
-  
+
   setTimeout(() => {
     toast.style.animation = 'slideOut 0.3s ease';
     setTimeout(() => toast.remove(), 300);
@@ -418,41 +419,16 @@ function showError(message) {
     z-index: 9999;
     animation: slideIn 0.3s ease;
   `;
-  
+
   document.body.appendChild(toast);
-  
+
   setTimeout(() => {
     toast.style.animation = 'slideOut 0.3s ease';
     setTimeout(() => toast.remove(), 300);
   }, 3000);
 }
 
-// Add CSS animations
-const style = document.createElement('style');
-style.textContent = `
-  @keyframes slideIn {
-    from {
-      transform: translateX(100%);
-      opacity: 0;
-    }
-    to {
-      transform: translateX(0);
-      opacity: 1;
-    }
-  }
-  
-  @keyframes slideOut {
-    from {
-      transform: translateX(0);
-      opacity: 1;
-    }
-    to {
-      transform: translateX(100%);
-      opacity: 0;
-    }
-  }
-`;
-document.head.appendChild(style);
+
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', init);

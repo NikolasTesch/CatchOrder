@@ -73,8 +73,8 @@ export class TableValidator {
         error.push('Número da mesa deve ser um número inteiro');
       } else if (number <= 0) {
         error.push('Número da mesa deve ser um número positivo');
-      } else if (number > 9999) {
-        error.push('Número da mesa deve ser menor que 10000');
+      } else if (number > 50) {
+        error.push('Número da mesa deve ser menor que 50');
       }
     }
 

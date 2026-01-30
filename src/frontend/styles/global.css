@@ -585,19 +585,574 @@ body.dark-mode {
 }
 
 /* ========================================
-   RESPONSIVE BREAKPOINTS
+   RESPONSIVE BREAKPOINTS SYSTEM
+   Mobile small → Mobile → Tablet → Desktop small → Desktop → 4K
    ======================================== */
 
-/* Small devices (landscape phones, 576px and up) */
-@media (min-width: 576px) {
+/* ===== MOBILE SMALL (≤360px) ===== */
+@media (max-width: 360px) {
+  html {
+    font-size: 14px; /* Reduce base font for very small screens */
+  }
+
   .container {
-    max-width: 540px;
+    max-width: 100%;
+    padding: 0 var(--space-sm);
+  }
+
+  /* Reduce spacing for small screens */
+  .card-body,
+  .card-header,
+  .card-footer {
+    padding: var(--space-sm);
+  }
+
+  /* Stack buttons vertically */
+  .btn {
+    width: 100%;
+  }
+
+  /* Smaller font sizes */
+  h1, .text-3xl { font-size: 1.5rem; }
+  h2, .text-2xl { font-size: 1.25rem; }
+  h3, .text-xl { font-size: 1.125rem; }
+
+  /* Grid to single column */
+  .grid-cols-2,
+  .grid-cols-3,
+  .grid-cols-4 {
+    grid-template-columns: 1fr;
   }
 }
 
-/* Medium devices (tablets, 768px and up) */
-@media (min-width: 768px) {
+/* ===== MOBILE (≤480px) ===== */
+@media (max-width: 480px) {
+  .container {
+    max-width: min(95vw, 480px);
+  }
+
+  /* Ensure minimum touch targets */
+  button, a, input, select, textarea {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Full width buttons on mobile */
+  .btn-primary,
+  .btn-secondary,
+  .btn-danger {
+    width: 100%;
+  }
+
+  /* Adjust card layout */
+  .card {
+    border-radius: var(--radius-md);
+  }
+
+  /* Mobile navigation patterns */
+  .flex-row {
+    flex-direction: column;
+  }
+
+  /* Grid adjustments */
+  .grid-cols-3,
+  .grid-cols-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ===== TABLET (481px - 768px) ===== */
+@media (min-width: 481px) and (max-width: 768px) {
   .container {
     max-width: 720px;
+  }
+
+  /* Allow side-by-side layouts */
+  .grid-cols-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .grid-cols-3,
+  .grid-cols-4 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* Buttons can be inline */
+  .btn {
+    width: auto;
+    min-width: 120px;
+  }
+
+  /* Card improvements */
+  .card {
+    border-radius: var(--radius-lg);
+  }
+
+  /* Typography scaling */
+  html {
+    font-size: 16px;
+  }
+}
+
+/* ===== DESKTOP SMALL (769px - 1024px) ===== */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .container {
+    max-width: 960px;
+    padding: 0 var(--space-lg);
+  }
+
+  /* Full grid capabilities */
+  .grid-cols-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .grid-cols-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  /* Larger spacing */
+  .card-body {
+    padding: var(--space-lg);
+  }
+
+  /* Hover states become more prominent */
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+/* ===== DESKTOP (>1024px) ===== */
+@media (min-width: 1025px) {
+  .container {
+    max-width: 1200px;
+    padding: 0 var(--space-xl);
+  }
+
+  /* Enhanced typography */
+  html {
+    font-size: 16px;
+  }
+
+  /* Full grid layouts */
+  .grid-cols-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  /* Larger spacing for desktop */
+  :root {
+    --space-2xl: 3rem;
+    --space-3xl: 4rem;
+  }
+
+  /* Enhanced shadows and effects */
+  .card {
+    border-radius: var(--radius-xl);
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+  }
+
+  /* Button enhancements */
+  .btn-lg {
+    min-height: 56px;
+    font-size: var(--text-xl);
+  }
+}
+
+/* ===== 4K / ULTRA HD (>2560px) - PREMIUM UI ===== */
+@media (min-width: 2561px) {
+  /* ========== BASE SCALING ========== */
+  html {
+    font-size: 20px; /* Increased from 18px for better readability in 4K */
+  }
+
+  body {
+    line-height: 1.7; /* Improved line spacing for large screens */
+    letter-spacing: 0.01em; /* Subtle letter spacing for clarity */
+  }
+
+  .container {
+    max-width: 2048px; /* Slightly wider for 4K, but still comfortable */
+    padding: 0 var(--space-3xl);
+  }
+
+  /* ========== ENHANCED SPACING SYSTEM ========== */
+  :root {
+    --space-xs: 0.375rem;   /* 6px → 7.5px */
+    --space-sm: 0.75rem;    /* 12px → 15px */
+    --space-md: 1.5rem;     /* 24px → 30px */
+    --space-lg: 2.25rem;    /* 36px → 45px */
+    --space-xl: 3rem;       /* 48px → 60px */
+    --space-2xl: 5rem;      /* 64px → 100px */
+    --space-3xl: 8rem;      /* 96px → 160px */
+    
+    /* Enhanced shadows for depth perception on large screens */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 8px 16px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 16px 32px rgba(0, 0, 0, 0.12);
+    --shadow-xl: 0 24px 48px rgba(0, 0, 0, 0.15);
+    --shadow-2xl: 0 32px 64px rgba(0, 0, 0, 0.18);
+    
+    /* Smoother, more refined transitions */
+    --transition-fast: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* ========== TYPOGRAPHY ENHANCEMENTS ========== */
+  h1, .text-3xl { 
+    font-size: 4rem; /* 64px → 80px */
+    font-weight: var(--font-bold);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  
+  h2, .text-2xl { 
+    font-size: 3rem; /* 48px → 60px */
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+  }
+  
+  h3, .text-xl { 
+    font-size: 2.25rem; /* 36px → 45px */
+    line-height: 1.3;
+  }
+
+  h4, .text-lg {
+    font-size: 1.75rem; /* 28px → 35px */
+  }
+
+  p, .text-base {
+    font-size: 1.25rem; /* 20px → 25px */
+    line-height: 1.75;
+  }
+
+  .text-sm {
+    font-size: 1rem; /* 16px → 20px */
+  }
+
+  .text-xs {
+    font-size: 0.875rem; /* 14px → 17.5px */
+  }
+
+  /* ========== CARD COMPONENTS ========== */
+  .card {
+    border-radius: var(--radius-2xl);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    transition: all var(--transition-base);
+  }
+
+  .card:hover {
+    transform: translateY(-8px) scale(1.01);
+    box-shadow: var(--shadow-2xl);
+    border-color: rgba(var(--color-primary-rgb), 0.2);
+  }
+
+  .card-body,
+  .card-header,
+  .card-footer {
+    padding: var(--space-2xl);
+  }
+
+  .card-header {
+    border-bottom: 2px solid var(--border-light);
+  }
+
+  .card-footer {
+    border-top: 2px solid var(--border-light);
+  }
+
+  /* Glassmorphism effect for cards */
+  .card-elevated {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    box-shadow: var(--shadow-2xl);
+  }
+
+  body.dark-mode .card-elevated {
+    background: rgba(45, 45, 45, 0.95);
+  }
+
+  /* ========== BUTTON IMPROVEMENTS ========== */
+  .btn {
+    min-height: 64px;
+    padding: var(--space-md) var(--space-2xl);
+    font-size: 1.25rem;
+    font-weight: var(--font-semibold);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-base);
+  }
+
+  .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-xl);
+  }
+
+  .btn:active {
+    transform: translateY(-1px);
+  }
+
+  .btn-lg {
+    min-height: 72px;
+    padding: var(--space-lg) var(--space-3xl);
+    font-size: 1.5rem;
+    border-radius: var(--radius-xl);
+  }
+
+  .btn-sm {
+    min-height: 52px;
+    font-size: 1rem;
+    padding: var(--space-sm) var(--space-lg);
+  }
+
+  /* ========== INPUT FIELDS ========== */
+  .input {
+    min-height: 64px;
+    padding: var(--space-md) var(--space-lg);
+    font-size: 1.125rem;
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--border-light);
+  }
+
+  .input:focus {
+    border-width: 2px;
+    box-shadow: 0 0 0 4px rgba(var(--color-primary-rgb), 0.15);
+  }
+
+  /* ========== BADGE COMPONENTS ========== */
+  .badge {
+    padding: var(--space-sm) var(--space-md);
+    font-size: 1rem;
+    font-weight: var(--font-bold);
+    border-radius: var(--radius-full);
+    letter-spacing: 0.025em;
+  }
+
+  /* ========== GRID LAYOUTS ========== */
+  .grid-cols-2 {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-xl);
+  }
+
+  .grid-cols-3 {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-xl);
+  }
+
+  .grid-cols-4 {
+    grid-template-columns: repeat(6, 1fr);
+    gap: var(--space-2xl);
+  }
+
+  /* ========== ICONS & IMAGES ========== */
+  .material-symbols-outlined {
+    font-size: 32px !important; /* Scale icons up */
+  }
+
+  /* Larger icons for buttons */
+  .btn .material-symbols-outlined {
+    font-size: 28px !important;
+  }
+
+  .btn-lg .material-symbols-outlined {
+    font-size: 36px !important;
+  }
+
+  /* Image optimization */
+  img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+
+  /* ========== VISUAL ENHANCEMENTS ========== */
+  
+  /* Subtle backdrop blur for overlays */
+  .modal {
+    backdrop-filter: blur(8px);
+  }
+
+  /* Enhanced focus states */
+  *:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 4px;
+    border-radius: var(--radius-sm);
+  }
+
+  /* Smooth scroll behavior */
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 100px;
+  }
+
+  /* ========== ACCESSIBILITY TOUCHES ========== */
+  
+  /* Larger touch targets */
+  button, a, input, select, textarea,
+  [role="button"], [tabindex]:not([tabindex="-1"]) {
+    min-height: 56px;
+    min-width: 56px;
+  }
+
+  /* ========== UTILITY CLASSES FOR 4K ========== */
+  
+  /* Extra large text for hero sections */
+  .text-hero {
+    font-size: 5rem;
+    line-height: 1;
+    font-weight: var(--font-bold);
+    letter-spacing: -0.03em;
+  }
+
+  /* Display text */
+  .text-display {
+    font-size: 4.5rem;
+    line-height: 1.05;
+    font-weight: var(--font-bold);
+  }
+
+  /* Improved visual hierarchy */
+  .shadow-2xl {
+    box-shadow: var(--shadow-2xl);
+  }
+
+  /* Wider containers for specific content */
+  .container-wide {
+    max-width: 2400px;
+  }
+
+  .container-ultra-wide {
+    max-width: 90vw;
+  }
+
+  /* ========== ANIMATION REFINEMENTS ========== */
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(40px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  /* Parallax-ready transforms */
+  .card,
+  .btn,
+  .badge {
+    will-change: transform;
+    transform: translateZ(0);
+  }
+
+  /* ========== PROFESSIONAL POLISH ========== */
+  
+  /* Subtle gradient overlays */
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, 
+      var(--color-primary) 0%, 
+      var(--color-secondary) 100%);
+    opacity: 0;
+    transition: opacity var(--transition-base);
+  }
+
+  .card:hover::before {
+    opacity: 1;
+  }
+
+  /* Enhanced border radius for images */
+  img {
+    border-radius: var(--radius-lg);
+  }
+
+  /* Improved list spacing */
+  ul, ol {
+    padding-left: var(--space-2xl);
+  }
+
+  li {
+    margin-bottom: var(--space-md);
+  }
+}
+
+
+/* ===== RESPONSIVE UTILITIES ===== */
+
+/* Hide on mobile */
+@media (max-width: 768px) {
+  .hide-mobile {
+    display: none !important;
+  }
+}
+
+/* Hide on desktop */
+@media (min-width: 769px) {
+  .hide-desktop {
+    display: none !important;
+  }
+}
+
+/* Show only on mobile */
+.show-mobile {
+  display: block;
+}
+
+@media (min-width: 769px) {
+  .show-mobile {
+    display: none !important;
+  }
+}
+
+/* Show only on desktop */
+.show-desktop {
+  display: none;
+}
+
+@media (min-width: 769px) {
+  .show-desktop {
+    display: block !important;
+  }
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+  * {
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  a[href]:after {
+    content: " (" attr(href) ")";
   }
 }

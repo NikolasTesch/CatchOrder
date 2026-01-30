@@ -15,10 +15,44 @@ const newOrderButton = document.querySelector('.btn-new-order');
 const openOrdersSection = document.querySelector('.orders-section:nth-of-type(1) .section-title').parentElement;
 const finishedOrdersSection = document.querySelector('.orders-section:nth-of-type(2) .section-title').parentElement;
 
+
+function initDarkMode() {
+  const savedTheme = localStorage.getItem('theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  
+  if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+    document.body.classList.add('dark-mode');
+    updateDarkModeIcon(true);
+  } else {
+    updateDarkModeIcon(false);
+  }
+}
+
 /**
- * Initialize page
+ * Toggle dark mode on/off
  */
+function toggleDarkMode() {
+  const isDark = document.body.classList.toggle('dark-mode');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  updateDarkModeIcon(isDark);
+}
+
+/**
+ * Update dark mode toggle icon
+ * @param {boolean} isDark - Whether dark mode is active
+ */
+function updateDarkModeIcon(isDark) {
+  const icon = document.querySelector('#darkModeToggle .material-symbols-outlined');
+  if (icon) {
+    icon.textContent = isDark ? 'dark_mode' : 'light_mode';
+  }
+}
+
+
 async function init() {
+  initDarkMode();
+  setupHeaderListeners();
+  
   await Promise.all([
     loadOrders(),
     loadUsers(),
@@ -244,6 +278,44 @@ async function viewOrderDetails(order) {
   } catch (error) {
     console.error('Erro ao carregar detalhes:', error);
     showError('Erro ao carregar detalhes do pedido');
+  }
+}
+
+/**
+ * Setup header event listeners (dark mode, user, menu, logo)
+ */
+function setupHeaderListeners() {
+  // Dark mode toggle
+  const darkModeBtn = document.getElementById('darkModeToggle');
+  if (darkModeBtn) {
+    darkModeBtn.addEventListener('click', toggleDarkMode);
+  }
+
+  // Menu button
+  const menuBtn = document.getElementById('menuBtn');
+  if (menuBtn) {
+    menuBtn.addEventListener('click', () => {
+      // TODO: Implement menu functionality
+      console.log('Menu button clicked');
+    });
+  }
+
+  // User button
+  const userBtn = document.getElementById('userBtn');
+  if (userBtn) {
+    userBtn.addEventListener('click', () => {
+      // TODO: Implement user profile functionality
+      console.log('User button clicked');
+    });
+  }
+
+  // Logo click
+  const logo = document.querySelector('.logo-image');
+  if (logo) {
+    logo.addEventListener('click', () => {
+      // TODO: Navigate to home page
+      console.log('Logo clicked - navigate to home');
+    });
   }
 }
 

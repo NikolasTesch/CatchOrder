@@ -30,21 +30,31 @@ tablesRoutes.get(
 );
 
 // Busca uma mesa específica por ID
-tablesRoutes.get('/:id', tableController.show);
+tablesRoutes.get('/:id', validateTableId, tableController.show);
 
 // Atualiza o status operacional de uma mesa (garçom pode usar)
-tablesRoutes.patch('/:id/status', tableController.updateStatus);
+tablesRoutes.patch(
+  '/:id/status',
+  validateTableId,
+  validateTableStatus,
+  tableController.updateStatus,
+);
 
 // Rotas restritas - apenas Admin ou Manager podem acessar
 tablesRoutes.use(isAdminOrManager);
 
 // Cria uma nova mesa no sistema
-tablesRoutes.post('/', tableController.store);
+tablesRoutes.post('/', validateTableCreation, tableController.store);
 
 // Atualiza os dados de uma mesa existente
-tablesRoutes.put('/:id', tableController.update);
+tablesRoutes.put(
+  '/:id',
+  validateTableId,
+  validateTableUpdate,
+  tableController.update,
+);
 
 // Remove uma mesa do sistema
-tablesRoutes.delete('/:id', tableController.delete);
+tablesRoutes.delete('/:id', validateTableId, tableController.delete);
 
 export { tablesRoutes };

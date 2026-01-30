@@ -149,13 +149,6 @@ class ProductsController {
       const { category_id, name, description, price, image_path, is_active } =
         req.body;
 
-      if (!category_id || !name || price === undefined) {
-        return res.status(400).json({
-          message: "category_id, name, and price are required",
-          data: null,
-        });
-      }
-
       const product = await ProductModel.create({
         id: uuidv4(),
         category_id,

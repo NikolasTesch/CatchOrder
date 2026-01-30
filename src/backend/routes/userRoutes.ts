@@ -1,6 +1,11 @@
 import { Router } from 'express';
 import usersController from '../controllers/userControllers';
 import { isAdminOrManager } from '../middlewares/roleAuth';
+import {
+  validateUserCreation,
+  validateUserUpdate,
+  validateUserId,
+} from '../middlewares/validateUser';
 
 const usersRoutes = Router();
 
@@ -11,15 +16,20 @@ usersRoutes.use(isAdminOrManager);
 usersRoutes.get('/', usersController.index);
 
 // Cria um novo usuário (funcionário)
-usersRoutes.post('/', usersController.store);
+usersRoutes.post('/', validateUserCreation, usersController.store);
 
 // Busca um usuário específico por ID
-usersRoutes.get('/:id', usersController.show);
+usersRoutes.get('/:id', validateUserId, usersController.show);
 
 // Atualiza os dados de um usuário existente
-usersRoutes.put('/:id', usersController.update);
+usersRoutes.put(
+  '/:id',
+  validateUserId,
+  validateUserUpdate,
+  usersController.update,
+);
 
 // Remove um usuário do sistema
-usersRoutes.delete('/:id', usersController.delete);
+usersRoutes.delete('/:id', validateUserId, usersController.delete);
 
 export { usersRoutes };

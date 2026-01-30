@@ -21,6 +21,7 @@ out/
 .idea/
 *.swp
 *.swo
+.agent/
 
 # VS Code - Ignorar arquivos locais, mas manter configs do projeto
 .vscode/*
@@ -40,3 +41,11 @@ yarn-error.log*
 
 # Coverage
 coverage/
+
+public/css/
+public/js/
+public/pages/
+
+# Personal learning context
+.context/
+.senior-web-dev-mentor/

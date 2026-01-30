@@ -1,0 +1,347 @@
+﻿/* ========================================
+   PAYMENT PAGE - SPECIFIC STYLES
+   Using Global CSS Design System
+   ======================================== */
+
+/* Main Header (Standard Pattern) */
+.main-header {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: clamp(54px, 15vw, 60px);
+  background-color: var(--bg-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 clamp(0.75rem, 3vw, 1rem);
+  z-index: var(--z-fixed);
+}
+
+/* Header: Left Side - Menu Button */
+.icon-btn {
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  cursor: pointer;
+  color: var(--color-primary);
+  transition: all var(--transition-base);
+  padding: var(--space-xs);
+  border-radius: var(--radius-md);
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.icon-btn:hover {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  transform: scale(1.05);
+}
+
+.icon-btn:active {
+  transform: scale(0.95);
+}
+
+.icon-btn .material-symbols-outlined {
+  font-size: 28px;
+  font-weight: var(--font-bold);
+}
+
+.header-title {
+  font-size: clamp(0.875rem, 3vw, 1rem);
+  font-weight: var(--font-semibold);
+  color: var(--color-primary);
+}
+
+/* Header: Center - Logo */
+.header-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+}
+
+.logo-image {
+  height: clamp(50px, 12vw, 60px);
+  width: auto;
+  cursor: pointer;
+  transition: transform var(--transition-base);
+  /* Filtro para modo claro */
+  filter: brightness(0) saturate(100%) invert(25%) sepia(12%) 
+          saturate(2476%) hue-rotate(147deg) brightness(95%) contrast(93%);
+}
+
+.logo-image:hover {
+  transform: scale(1.05);
+}
+
+/* Dark mode logo */
+body.dark-mode .logo-image {
+  filter: brightness(0) saturate(100%) invert(59%) sepia(53%) 
+          saturate(434%) hue-rotate(147deg) brightness(93%) contrast(88%);
+}
+
+/* Header: Right Side - Actions */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.icon-btn-small {
+  background: none;
+  border: none;
+  min-height: 44px;
+  min-width: 44px;
+  padding: var(--space-xs);
+  color: var(--color-primary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn-small:hover {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  transform: scale(1.05);
+}
+
+.icon-btn-small:active {
+  transform: scale(0.95);
+}
+
+.icon-btn-small .material-symbols-outlined {
+  font-size: 24px;
+}
+
+/* Page Wrapper */
+.page-wrapper {
+  padding: var(--space-md);
+  padding-top: clamp(4rem, 12vw, 5rem);
+  width: 100%;
+  margin: 0 auto;
+  background-color: var(--bg-primary);
+  min-height: 100vh;
+  padding-bottom: var(--space-xl);
+}
+
+/* Price Section */
+.price-section {
+  background-color: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: clamp(1.5rem, 4vw, 2rem);
+  margin-bottom: var(--space-lg);
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+  transition: box-shadow var(--transition-base);
+}
+
+.total-price {
+  font-size: clamp(2.5rem, 8vw, 4rem);
+  font-weight: var(--font-bold);
+  color: var(--color-primary);
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* Consumed Section */
+.consumed-section {
+  background-color: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: clamp(1rem, 3vw, 1.5rem);
+  margin-bottom: var(--space-lg);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition-base);
+}
+
+.section-header {
+  margin-bottom: var(--space-md);
+}
+
+.section-title {
+  font-size: clamp(1.25rem, 4vw, 1.75rem);
+  color: var(--color-primary);
+  font-weight: var(--font-bold);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.arrow-icon {
+  font-weight: var(--font-bold);
+  font-size: clamp(1.5rem, 4.5vw, 2rem);
+}
+
+/* Consumed List Items */
+.consumed-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.consumed-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.item-header {
+  display: flex;
+  align-items: center;
+}
+
+.item-price {
+  font-size: clamp(0.875rem, 2.5vw, 1.1rem);
+  font-weight: var(--font-bold);
+  color: var(--color-primary);
+  line-height: 1.2;
+}
+
+.item-name {
+  font-size: clamp(0.625rem, 2vw, 0.8rem);
+  font-weight: var(--font-semibold);
+  color: var(--text-secondary);
+  line-height: 1.2;
+}
+
+.item-divider {
+  height: 2px;
+  background-color: var(--border-light);
+  margin-top: var(--space-xs);
+  width: 100%;
+  opacity: 0.6;
+}
+
+/* Payment Section */
+.payment-section {
+  margin-bottom: var(--space-lg);
+}
+
+.payment-methods-container {
+  display: flex;
+  justify-content: space-between;
+  gap: clamp(0.5rem, 2vw, 1rem);
+}
+
+.payment-btn {
+  flex: 1;
+  min-height: 64px;
+  background-color: var(--bg-card);
+  border: 2px solid transparent;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: all var(--transition-base);
+}
+
+.payment-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-primary);
+}
+
+.payment-btn:active {
+  transform: scale(0.95);
+}
+
+.payment-btn.active {
+  border-color: var(--color-primary);
+  background-color: rgba(var(--color-primary-rgb), 0.05);
+  color: var(--color-primary);
+}
+
+.payment-btn .material-symbols-outlined {
+  font-size: clamp(24px, 6vw, 32px);
+}
+
+/* Pix specific styling */
+.pix-icon-container {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  color: var(--text-secondary);
+}
+
+.payment-btn.active .pix-icon-container {
+  color: var(--color-primary);
+}
+
+.pix-text {
+  font-family: inherit;
+  font-weight: var(--font-semibold);
+  font-size: clamp(0.875rem, 2.5vw, 1.2rem);
+  letter-spacing: -0.5px;
+}
+
+/* Dark Mode Support */
+body.dark-mode {
+  background-color: var(--bg-dark);
+}
+
+body.dark-mode .page-wrapper {
+  background-color: var(--bg-dark);
+}
+
+body.dark-mode .price-section,
+body.dark-mode .consumed-section {
+  background-color: var(--bg-card-dark);
+  box-shadow: var(--shadow-dark);
+}
+
+body.dark-mode .payment-btn {
+  background-color: var(--bg-card-dark);
+  color: var(--text-dark);
+}
+
+body.dark-mode .payment-btn:hover {
+  box-shadow: var(--shadow-dark-md);
+}
+
+body.dark-mode .payment-btn.active {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+}
+
+body.dark-mode .item-name {
+  color: var(--text-dark-secondary);
+}
+
+body.dark-mode .pix-icon-container {
+  color: var(--text-dark-secondary);
+}
+
+body.dark-mode .payment-btn.active .pix-icon-container {
+  color: var(--color-primary);
+}
+
+/* Responsive adjustments */
+@media (max-width: 360px) {
+  .payment-methods-container {
+    gap: var(--space-sm);
+  }
+  
+  .payment-btn {
+    min-height: 56px;
+  }
+  
+  .header-title {
+    display: none;
+  }
+}
+
+@media (min-width: 481px) {
+  .page-wrapper {
+    padding: var(--space-lg);
+    padding-top: clamp(5rem, 12vw, 6rem);
+  }
+}

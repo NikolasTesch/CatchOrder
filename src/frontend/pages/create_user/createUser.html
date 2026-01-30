@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CatchOrder - Adicionar Usuário</title>
+
+  <!-- Noto Sans JP Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Material Icons -->
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="main-header">
+    <button class="icon-btn" aria-label="Voltar" id="backBtn">
+      <span class="material-symbols-outlined">arrow_back</span>
+      <span class="header-title">Adicionar Usuário</span>
+    </button>
+
+    <div class="header-center">
+      <img src="/img/logoName.svg" alt="CatchOrder Logo" class="logo-image" id="logoImage">
+    </div>
+
+    <nav class="header-actions" aria-label="Ações do cabeçalho">
+      <button class="icon-btn-small" aria-label="Alternar modo escuro" id="darkModeToggle">
+        <span class="material-symbols-outlined">light_mode</span>
+      </button>
+      <button class="icon-btn-small" aria-label="Acessar perfil do usuário" id="userBtn">
+        <span class="material-symbols-outlined">account_circle</span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main class="page-wrapper">
+    <section class="user-form-section" aria-label="Formulário de cadastro de usuário">
+      <div class="form-group">
+        <label for="image_url">URL da Foto (Opcional)</label>
+        <div class="input-wrapper">
+          <input type="url" id="image_url" placeholder="https://exemplo.com/foto.jpg" class="input-field"
+            aria-label="URL da imagem do usuário">
+          <span class="material-symbols-outlined input-icon">image</span>
+        </div>
+        <span class="error-message" id="image_url-error"></span>
+      </div>
+
+      <form class="user-form" id="userForm" novalidate>
+        <div class="form-group">
+          <label for="name">Nome Completo</label>
+          <input type="text" id="name" placeholder="Nome Completo" class="input-field" aria-label="Nome completo">
+          <span class="error-message" id="name-error"></span>
+        </div>
+
+
+
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" placeholder="Username (min 4 chars)" class="input-field"
+            aria-label="Username">
+          <span class="error-message" id="username-error"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Senha</label>
+          <input type="password" id="password" placeholder="******************" class="input-field" aria-label="Senha">
+          <span class="error-message" id="password-error"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="role">Cargo</label>
+          <select id="role" class="input-field" aria-label="Cargo">
+            <option value="" disabled selected>Selecione um cargo</option>
+            <option value="admin">Administrador</option>
+            <option value="manager">Gerente</option>
+            <option value="waiter">Garçom</option>
+          </select>
+          <span class="error-message" id="role-error"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full" id="submitBtn">Salvar</button>
+      </form>
+    </section>
+  </main>
+</body>
+
+</html>

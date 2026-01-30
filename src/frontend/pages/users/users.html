@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CatchOrder - Usuários</title>
+  
+  <!-- Noto Sans JP Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Material Icons -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="main-header">
+    <div class="header-left">
+      <button class="icon-btn" aria-label="Menu" id="menuBtn">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+      <h1 class="page-title">Usuários</h1>
+    </div>
+
+    <div class="header-center">
+      <img src="/img/logoName.svg" alt="CatchOrder Logo" class="logo-image" id="logoImage">
+    </div>
+
+    <nav class="header-right" aria-label="Ações do cabeçalho">
+      <button class="icon-btn-small" aria-label="Alternar modo escuro" id="darkModeToggle">
+        <span class="material-symbols-outlined">light_mode</span>
+      </button>
+      <button class="icon-btn-small" aria-label="Acessar perfil do usuário" id="userBtn">
+        <span class="material-symbols-outlined">account_circle</span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main class="content-wrapper">
+    <!-- Search Bar -->
+    <div class="search-container">
+      <span class="material-symbols-outlined search-icon">search</span>
+      <input type="text" class="search-input" placeholder="Buscar" id="searchInput" aria-label="Buscar usuários">
+    </div>
+
+    <!-- Action Button -->
+    <div class="actions-container">
+      <button class="btn btn-primary btn-full" id="addUserBtn">Adicionar Usuário</button>
+    </div>
+
+    <!-- Users Grid -->
+    <div class="users-grid" id="usersGrid">
+      <!-- Users will be rendered dynamically -->
+    </div>
+  </main>
+
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <nav class="sidebar-content">
+      <div class="sidebar-header">
+        <h2>Menu</h2>
+        <button class="close-btn" id="closeSidebar" aria-label="Fechar menu">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <ul class="sidebar-menu">
+        <li><a href="../products/products.html">
+          <span class="material-symbols-outlined">restaurant_menu</span>
+          Produtos
+        </a></li>
+        <li><a href="../create_products/createProducts.html">
+          <span class="material-symbols-outlined">add_circle</span>
+          Adicionar Produto
+        </a></li>
+        <li><a href="../users/users.html">
+          <span class="material-symbols-outlined">group</span>
+          Usuários
+        </a></li>
+        <li><a href="../waiter_main/waiterMain.html">
+          <span class="material-symbols-outlined">table_restaurant</span>
+          Mesas
+        </a></li>
+        <li><a href="../orders/orders.html">
+          <span class="material-symbols-outlined">receipt_long</span>
+          Pedidos
+        </a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- User Modal -->
+  <div class="user-modal" id="userModal">
+    <div class="user-modal-overlay" id="userModalOverlay"></div>
+    <div class="user-modal-content">
+      <div class="user-modal-header">
+        <h3>Meu Perfil</h3>
+        <button class="close-btn" id="closeUserModal" aria-label="Fechar">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="user-modal-body">
+        <div class="user-avatar">
+          <span class="material-symbols-outlined">account_circle</span>
+        </div>
+        <div class="user-info-modal">
+          <p class="user-name" id="modalUserName">Carregando...</p>
+          <p class="user-role" id="modalUserRole">Carregando...</p>
+        </div>
+      </div>
+      <div class="user-modal-footer">
+        <button class="btn btn-danger btn-full" id="logoutBtn">
+          <span class="material-symbols-outlined">logout</span>
+          Sair
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Details Modal -->
+  <div class="user-modal" id="userDetailsModal">
+    <div class="user-modal-overlay" id="userDetailsModalOverlay"></div>
+    <div class="user-modal-content">
+      <div class="user-modal-header">
+        <h3>Detalhes do Usuário</h3>
+        <button class="close-btn" id="closeUserDetailsModal" aria-label="Fechar">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="user-modal-body">
+        <div class="user-avatar" id="detailsUserAvatar">
+           <!-- Dynamic Content -->
+        </div>
+        <div class="user-info-modal">
+          <h2 class="user-name-large" id="detailsUserName">Nome do Usuário</h2>
+          <p class="user-role-badge" id="detailsUserRole">Cargo</p>
+          <div class="user-details-grid">
+            <div class="detail-item">
+              <span class="detail-label">Username</span>
+              <span class="detail-value" id="detailsUserUsername">@username</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">ID</span>
+              <span class="detail-value" id="detailsUserId">UUID</span>
+            </div>
+            <!-- Add more fields if available from API -->
+          </div>
+        </div>
+      </div>
+      <div class="user-modal-footer">
+        <button class="btn btn-primary btn-full" id="detailsEditBtn">
+          <span class="material-symbols-outlined">edit</span>
+          Editar Usuário
+        </button>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>
+

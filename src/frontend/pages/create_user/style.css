@@ -1,0 +1,280 @@
+﻿/* Page Wrapper */
+.page-wrapper {
+  padding: var(--space-md);
+  padding-top: clamp(4rem, 12vw, 5rem);
+  width: 100%;
+  margin: 0 auto;
+  background-color: var(--bg-primary);
+  min-height: 100vh;
+  padding-bottom: var(--space-xl);
+}
+
+/* Header Fixo */
+.main-header {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: clamp(54px, 15vw, 60px);
+  background-color: var(--bg-white);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 clamp(0.75rem, 3vw, 1rem);
+  z-index: var(--z-fixed);
+  box-shadow: var(--shadow-sm);
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--color-primary);
+  font-weight: var(--font-bold);
+  font-size: clamp(0.875rem, 3vw, 1rem);
+  min-height: 44px;
+  padding: var(--space-xs);
+  transition: all var(--transition-base);
+}
+
+.icon-btn:hover {
+  opacity: 0.8;
+}
+
+.icon-btn .material-symbols-outlined {
+  font-size: 28px;
+}
+
+.header-title {
+  font-family: var(--font-primary);
+  color: var(--text-secondary);
+}
+
+.header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+/* Logo Image */
+.logo-image {
+  height: clamp(50px, 12vw, 60px);
+  width: auto;
+  cursor: pointer;
+  filter: brightness(0) saturate(100%) invert(25%) sepia(12%) saturate(2476%) hue-rotate(147deg) brightness(95%) contrast(93%);
+  transition: transform var(--transition-base);
+}
+
+.logo-image:hover {
+  transform: scale(1.05);
+}
+
+/* Icon Button Small */
+.icon-btn-small {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xs);
+  min-height: 44px;
+  min-width: 44px;
+  color: var(--color-primary);
+  transition: all var(--transition-base);
+  border-radius: var(--radius-md);
+}
+
+.icon-btn-small:hover {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  transform: scale(1.05);
+}
+
+.icon-btn-small:active {
+  transform: scale(0.95);
+}
+
+.icon-btn-small .material-symbols-outlined {
+  font-size: 24px;
+}
+
+/* User Form Section */
+.user-form-section {
+  background-color: var(--bg-white);
+  border-radius: var(--radius-lg);
+  padding: clamp(1.5rem, 5vw, 2rem) clamp(1rem, 4vw, 1.5rem);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Photo Upload */
+.photo-upload {
+  display: flex;
+  justify-content: center;
+  margin-bottom: clamp(1.5rem, 5vw, 2rem);
+}
+
+.photo-circle {
+  width: clamp(100px, 28vw, 120px);
+  height: clamp(100px, 28vw, 120px);
+  border-radius: 50%;
+  background-color: var(--color-secondary);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  transition: transform var(--transition-base);
+}
+
+.photo-circle:hover {
+  transform: scale(1.05);
+}
+
+.photo-circle:active {
+  transform: scale(0.98);
+}
+
+.camera-icon {
+  font-size: clamp(48px, 14vw, 56px) !important;
+  color: var(--text-white);
+  font-weight: 300;
+  pointer-events: none;
+}
+
+/* Form */
+.user-form {
+  width: 100%;
+}
+
+.form-group {
+  margin-bottom: clamp(1rem, 3.5vw, 1.25rem);
+}
+
+label {
+  display: block;
+  font-size: clamp(0.75rem, 2.5vw, 0.875rem);
+  font-weight: var(--font-medium);
+  margin-bottom: var(--space-sm);
+  color: var(--text-secondary);
+}
+
+.input-field {
+  width: 100%;
+  height: clamp(2.75rem, 9vw, 3rem);
+  padding: 0 var(--space-md);
+  border: none;
+  border-bottom: 1px solid var(--border-medium);
+  font-size: clamp(0.875rem, 3vw, 1rem);
+  font-family: var(--font-primary);
+  outline: none;
+  transition: all var(--transition-base);
+  background-color: transparent;
+  color: var(--text-primary);
+}
+
+.input-field::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+.input-field:focus {
+  border-bottom-color: var(--color-primary);
+  box-shadow: 0 1px 0 0 var(--color-primary);
+}
+
+/* Text Input Wrapper with Icon */
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  right: 0;
+  font-size: 20px !important;
+  color: var(--text-secondary);
+  pointer-events: none;
+  margin-right: var(--space-xs);
+}
+
+.input-wrapper .input-field {
+    padding-right: 32px; /* Space for icon */
+}
+
+/* Phone Input Wrapper - Keeping for backward compatibility if needed, though replaced above mostly */
+.phone-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.phone-icon {
+  position: absolute;
+  left: 0;
+  font-size: 20px !important;
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+
+.phone-input {
+  padding-left: clamp(1.75rem, 6vw, 2rem);
+}
+
+/* Error Message */
+.error-message {
+  color: #ef4444;
+  /* Red color */
+  font-size: 0.75rem;
+  margin-top: 4px;
+  display: none;
+  font-weight: 500;
+}
+
+.input-field.error {
+  border-bottom-color: #ef4444;
+}
+
+/* Submit Button uses global .btn .btn-primary .btn-full */
+
+/* Dark mode logo filter */
+@media (prefers-color-scheme: dark) {
+  .logo-image {
+    filter: brightness(0) saturate(100%) invert(59%) sepia(53%) saturate(434%) hue-rotate(147deg) brightness(93%) contrast(88%);
+  }
+}
+
+body.dark-mode .logo-image {
+  filter: brightness(0) saturate(100%) invert(59%) sepia(53%) saturate(434%) hue-rotate(147deg) brightness(93%) contrast(88%);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 360px) {
+  .page-wrapper {
+    padding: clamp(0.5rem, 2vw, 0.75rem);
+  }
+
+  .user-form-section {
+    padding: var(--space-md) var(--space-sm);
+  }
+
+  .photo-circle {
+    width: 90px;
+    height: 90px;
+  }
+
+  .camera-icon {
+    font-size: 40px !important;
+  }
+}

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CatchOrder - Gestão</title>
+  <!-- Noto Sans JP Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Material Icons -->
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+
+<body>
+  <!-- Header Principal -->
+  <header class="main-header">
+    <div class="header-left">
+      <button class="icon-btn" id="menuBtn" aria-label="Menu de navegação">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+      <h1 class="page-title">Dashboard</h1>
+    </div>
+
+    <div class="header-center">
+      <img src="/img/logoName.svg" alt="CatchOrder Logo" class="logo-image">
+    </div>
+
+    <div class="header-right">
+      <button class="icon-btn" id="darkModeToggle" aria-label="Alternar modo escuro">
+        <span class="material-symbols-outlined">light_mode</span>
+      </button>
+      <button class="icon-btn" id="notificationsBtn" aria-label="Notificações">
+        <span class="material-symbols-outlined">notifications</span>
+      </button>
+      <button class="icon-btn" id="profileBtn" aria-label="Perfil do usuário">
+        <span class="material-symbols-outlined">account_circle</span>
+      </button>
+      <button class="icon-btn" id="logoutBtn" aria-label="Sair">
+        <span class="material-symbols-outlined">logout</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar de Navegação -->
+  <aside class="sidebar" id="sidebar">
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-section="dashboard">
+        <span class="material-symbols-outlined">dashboard</span>
+        <span class="nav-text">Dashboard</span>
+      </button>
+      <button class="nav-item" data-section="users">
+        <span class="material-symbols-outlined">group</span>
+        <span class="nav-text">Usuários</span>
+      </button>
+      <button class="nav-item" data-section="products">
+        <span class="material-symbols-outlined">restaurant_menu</span>
+        <span class="nav-text">Produtos</span>
+      </button>
+      <button class="nav-item" data-section="tables">
+        <span class="material-symbols-outlined">table_restaurant</span>
+        <span class="nav-text">Mesas</span>
+      </button>
+      <button class="nav-item" data-section="orders">
+        <span class="material-symbols-outlined">receipt_long</span>
+        <span class="nav-text">Pedidos</span>
+      </button>
+      <button class="nav-item" data-section="categories">
+        <span class="material-symbols-outlined">category</span>
+        <span class="nav-text">Categorias</span>
+      </button>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- Dashboard Section -->
+    <section id="dashboard-section" class="content-section active">
+      <h2 class="section-title">Visão Geral</h2>
+
+      <!-- Cards de Métricas -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-icon" style="background: #e3f2fd;">
+            <span class="material-symbols-outlined" style="color: #1976d2;">people</span>
+          </div>
+          <div class="metric-info">
+            <span class="metric-label">Usuários</span>
+            <span class="metric-value" id="totalUsers">--</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-icon" style="background: #f3e5f5;">
+            <span class="material-symbols-outlined" style="color: #7b1fa2;">restaurant_menu</span>
+          </div>
+          <div class="metric-info">
+            <span class="metric-label">Produtos</span>
+            <span class="metric-value" id="totalProducts">--</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-icon" style="background: #e8f5e9;">
+            <span class="material-symbols-outlined" style="color: #388e3c;">table_restaurant</span>
+          </div>
+          <div class="metric-info">
+            <span class="metric-label">Mesas</span>
+            <span class="metric-value" id="totalTables">--</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-icon" style="background: #e0f7fa;">
+            <span class="material-symbols-outlined" style="color: #006064;">payments</span>
+          </div>
+          <div class="metric-info">
+            <span class="metric-label">Vendas Hoje</span>
+            <span class="metric-value" id="dailySales">R$ 0,00</span>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-icon" style="background: #fff3e0;">
+            <span class="material-symbols-outlined" style="color: #f57c00;">receipt_long</span>
+          </div>
+          <div class="metric-info">
+            <span class="metric-label">Pedidos Abertos</span>
+            <span class="metric-value" id="totalOrders">--</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gráficos e Tabelas -->
+      <div class="dashboard-grid">
+        <div class="dashboard-card">
+          <h3 class="card-title">Mesas por Status</h3>
+          <div id="tablesStatus" class="status-grid">
+            <div class="status-item">
+              <span class="status-badge available">Disponível</span>
+              <span class="status-count" id="availableTables">--</span>
+            </div>
+            <div class="status-item">
+              <span class="status-badge occupied">Ocupada</span>
+              <span class="status-count" id="occupiedTables">--</span>
+            </div>
+            <div class="status-item">
+              <span class="status-badge reserved">Reservada</span>
+              <span class="status-count" id="reservedTables">--</span>
+            </div>
+
+
+          </div>
+        </div>
+
+        <div class="dashboard-card">
+          <h3 class="card-title">Pedidos Recentes</h3>
+          <div id="recentOrders" class="recent-list">
+            <p class="loading-text">Carregando...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Analytics Grid -->
+      <div class="dashboard-grid" style="margin-top: 2rem;">
+        <div class="dashboard-card">
+          <h3 class="card-title">Top Produtos Mais Vendidos</h3>
+          <div id="topProducts" class="recent-list">
+            <p class="loading-text">Carregando...</p>
+          </div>
+        </div>
+
+        <div class="dashboard-card">
+          <h3 class="card-title">Maiores Vendas</h3>
+          <div id="biggestSales" class="recent-list">
+            <p class="loading-text">Carregando...</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Users Section -->
+    <section id="users-section" class="content-section">
+      <div class="section-header">
+        <h2 class="section-title">Gerenciar Usuários</h2>
+        <button class="btn-primary" id="addUserBtn">
+          <span class="material-symbols-outlined">add</span>
+          Novo Usuário
+        </button>
+      </div>
+
+      <div class="search-bar">
+        <span class="material-symbols-outlined">search</span>
+        <input type="text" id="searchUsers" placeholder="Buscar usuários...">
+      </div>
+
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Username</th>
+              <th>Função</th>
+              <th>Data Criação</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="usersTableBody">
+            <tr>
+              <td colspan="5" class="loading-cell">Carregando...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products-section" class="content-section">
+      <div class="section-header">
+        <h2 class="section-title">Gerenciar Produtos</h2>
+        <button class="btn-primary" id="addProductBtn">
+          <span class="material-symbols-outlined">add</span>
+          Novo Produto
+        </button>
+      </div>
+
+      <div class="filters-bar">
+        <div class="search-bar">
+          <span class="material-symbols-outlined">search</span>
+          <input type="text" id="searchProducts" placeholder="Buscar produtos...">
+        </div>
+        <select id="categoryFilter" class="filter-select">
+          <option value="">Todas Categorias</option>
+        </select>
+        <select id="statusFilter" class="filter-select">
+          <option value="">Todos Status</option>
+          <option value="1">Ativos</option>
+          <option value="0">Inativos</option>
+        </select>
+      </div>
+
+      <div class="products-grid" id="productsGrid">
+        <p class="loading-text">Carregando...</p>
+      </div>
+    </section>
+
+    <!-- Tables Section -->
+    <section id="tables-section" class="content-section">
+      <div class="section-header">
+        <h2 class="section-title">Gerenciar Mesas</h2>
+        <button class="btn-primary" id="addTableBtn">
+          <span class="material-symbols-outlined">add</span>
+          Nova Mesa
+        </button>
+      </div>
+
+      <div class="filters-bar">
+        <select id="tableStatusFilter" class="filter-select">
+          <option value="">Todos Status</option>
+          <option value="AVAILABLE">Disponível</option>
+          <option value="OCCUPIED">Ocupada</option>
+          <option value="RESERVED">Reservada</option>
+        </select>
+      </div>
+
+      <div class="tables-grid" id="tablesGrid">
+        <p class="loading-text">Carregando...</p>
+      </div>
+    </section>
+
+    <!-- Orders Section -->
+    <section id="orders-section" class="content-section">
+      <div class="section-header">
+        <h2 class="section-title">Gerenciar Pedidos</h2>
+      </div>
+
+      <div class="filters-bar">
+        <select id="orderStatusFilter" class="filter-select">
+          <option value="">Todos Status</option>
+          <option value="OPEN">Aberto</option>
+          <option value="CLOSED">Fechado</option>
+          <option value="CANCELLED">Cancelado</option>
+        </select>
+      </div>
+
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Mesa</th>
+              <th>Status</th>
+              <th>Total</th>
+              <th>Data</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="ordersTableBody">
+            <tr>
+              <td colspan="6" class="loading-cell">Carregando...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section id="categories-section" class="content-section">
+      <div class="section-header">
+        <h2 class="section-title">Gerenciar Categorias</h2>
+        <button class="btn-primary" id="addCategoryBtn">
+          <span class="material-symbols-outlined">add</span>
+          Nova Categoria
+        </button>
+      </div>
+
+      <div class="categories-grid" id="categoriesGrid">
+        <p class="loading-text">Carregando...</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal para Formulários -->
+  <div class="modal" id="formModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle">Formulário</h3>
+        <button class="close-btn" id="closeModal">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <!-- Conteúdo dinâmico -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast para Notificações -->
+  <div class="toast" id="toast">
+    <span class="toast-icon material-symbols-outlined"></span>
+    <span class="toast-message"></span>
+  </div>
+
+</body>
+
+</html>

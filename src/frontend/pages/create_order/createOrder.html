@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CatchOrder - Criação de Pedidos</title>
+
+  <!-- Noto Sans JP Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Material Icons -->
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+
+<body>
+  <!-- Header Fixo -->
+  <header class="main-header">
+    <button class="icon-btn" aria-label="Menu de navegação" id="menuBtn">
+      <span class="material-symbols-outlined">menu</span>
+      <span class="header-title">Pedidos</span>
+    </button>
+
+    <div class="header-center">
+      <img src="/img/logoName.svg" alt="CatchOrder Logo" class="logo-image" id="logoImage">
+    </div>
+
+    <nav class="header-actions" aria-label="Ações do cabeçalho">
+      <button class="icon-btn-small" aria-label="Alternar modo escuro" id="darkModeToggle">
+        <span class="material-symbols-outlined">light_mode</span>
+      </button>
+      <button class="icon-btn-small" aria-label="Acessar perfil do usuário" id="userBtn">
+        <span class="material-symbols-outlined">account_circle</span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main class="page-wrapper">
+    <!-- Barra de Informações -->
+    <section class="info-bar card" aria-label="Informações do pedido">
+      <div class="info-item">
+        <span class="info-label">Qtd Produtos</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Total: R$00,00</span>
+      </div>
+    </section>
+
+    <!-- Container para Produtos Dinâmicos -->
+    <div id="products-container"></div>
+
+    <!-- Seção de Observações -->
+    <section class="observations-section card">
+      <h3 class="obs-title">Obs.</h3>
+      <p class="obs-subtitle">Adicione as observações do pedido aqui.</p>
+
+      <textarea class="obs-textarea input" rows="3" placeholder="Digite suas observações..."
+        aria-label="Campo de observações do pedido"></textarea>
+    </section>
+
+    <!-- Botões de Ação -->
+    <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">
+      <!-- Botão Salvar/Enviar (Primary Action for Items) -->
+      <button class="btn btn-primary btn-full btn-lg btn-send" style="background-color: #10b981;">Salvar / Atualizar
+        Itens</button>
+
+      <!-- Botão Finalizar (Close Table) -->
+      <button class="btn btn-full btn-lg btn-finalize"
+        style="background-color: #ef4444; color: white; border: none;">Finalizar Pedido</button>
+    </div>
+  </main>
+
+  <!-- Script injected by Webpack -->
+</body>
+
+</html>

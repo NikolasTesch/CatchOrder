@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CatchOrder - Login</title>
+
+  <!-- Noto Sans JP Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Material Icons -->
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+
+<body>
+  <!-- Dark Mode Toggle -->
+  <button class="dark-mode-toggle" aria-label="Alternar modo escuro" id="darkModeToggle">
+    <span class="material-symbols-outlined">light_mode</span>
+  </button>
+
+  <main class="page-wrapper">
+    <header class="login-header">
+      <div class="logo-box">
+        <span class="material-symbols-outlined icon-main">restaurant_menu</span>
+      </div>
+      <h2 class="brand-name">CatchOrder</h2>
+      <p class="subtitle">Sistema de Gestão de Restaurantes</p>
+    </header>
+
+    <section class="login-card card" aria-label="Formulário de login">
+      <h1 class="card-title">Bem-vindo ao CatchOrder</h1>
+
+      <form class="login-form" id="loginForm">
+        <div class="form-group">
+          <label for="username">Usuário</label>
+          <input type="text" id="username" placeholder="Digite seu nome de usuário" class="input-field" required>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Senha</label>
+          <div class="input-password-wrapper">
+            <input type="password" id="password" placeholder="Digite a sua senha" class="input-field password-input"
+              required>
+            <button type="button" class="password-toggle" aria-label="Mostrar/ocultar senha" id="passwordToggle">
+              <span class="material-symbols-outlined">visibility</span>
+            </button>
+          </div>
+          <div class="forgot-password">
+            <a href="#">Esqueceu sua senha? Entre em contato com seu gestor.</a>
+          </div>
+        </div>
+
+        <div id="login-error" class="error-message"></div>
+        <button type="submit" class="btn btn-primary">Continuar</button>
+      </form>
+    </section>
+
+    <footer class="login-footer">
+      <p>Ao continuar, você concorda com os
+        <a href="#" class="link-bold">Termos de Serviço</a> e
+        <a href="#" class="link-bold">Política de Privacidade</a>.
+      </p>
+    </footer>
+  </main>
+
+
+</body>
+
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CatchOrder - Pedidos</title>
+
+  <!-- Noto Sans JP Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Material Icons -->
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+
+<body>
+  <header class="main-header">
+    <!-- Esquerda: Menu/Navegação -->
+    <button class="icon-btn" id="menuBtn" aria-label="Menu de navegação">
+      <span class="material-symbols-outlined">menu</span>
+      <span class="header-title">Pedidos</span>
+    </button>
+
+    <!-- Centro: Logo -->
+    <div class="header-center">
+      <img src="/img/logoName.svg" alt="CatchOrder Logo" class="logo-image">
+    </div>
+
+    <!-- Direita: Ações -->
+    <nav class="header-actions">
+      <button class="icon-btn-small" id="darkModeToggle" aria-label="Alternar modo escuro">
+        <span class="material-symbols-outlined">light_mode</span>
+      </button>
+      <button class="icon-btn-small" id="userBtn" aria-label="Perfil do usuário">
+        <span class="material-symbols-outlined">account_circle</span>
+      </button>
+    </nav>
+  </header>
+
+  <main class="page-wrapper">
+    <!-- Barra de Busca -->
+    <div class="search-container" role="search" aria-label="Buscar pedidos por mesa">
+      <span class="material-symbols-outlined search-icon">search</span>
+      <input type="text" class="search-input" placeholder="Buscar mesa" aria-label="Número da mesa">
+    </div>
+
+    <!-- Botão Novo Pedido -->
+    <button class="btn-new-order" aria-label="Criar novo pedido">Novo Pedido</button>
+
+    <!-- Seção: Ordens Abertas -->
+    <section class="orders-section" aria-label="Ordens em aberto">
+      <h2 class="section-title">Ordens abertas</h2>
+      <!-- Cards serão injetados aqui via TypeScript -->
+    </section>
+
+    <!-- Seção: Ordens Finalizadas -->
+    <section class="orders-section" aria-label="Ordens finalizadas">
+      <h2 class="section-title">Ordens finalizadas</h2>
+      <!-- Cards serão injetados aqui via TypeScript -->
+    </section>
+  </main>
+</body>
+
+</html>

@@ -1,0 +1,131 @@
+/* Container que centraliza o card */
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 3rem 1.5rem;
+  /* Respiro para telas 480p */
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.logo-box {
+  background-color: var(--primary);
+  width: 80px;
+  height: 80px;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  box-shadow: var(--shadow-logo);
+}
+
+.icon-main {
+  color: white;
+  font-size: 48px !important;
+}
+
+.brand-name {
+  color: var(--primary);
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+/* A BOX DE CADASTRO */
+.card {
+  background-color: #ffffff;
+  border: 1px solid var(--border-gray);
+  border-radius: 1rem;
+  padding: 2.5rem 2rem;
+  width: 100%;
+  max-width: 480px;
+  /* Um pouco mais larga que o login para os campos novos */
+  box-shadow: 0 30px 60px -10px rgba(0, 0, 0, 0.35);
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+/* Campos de Formulário */
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.input-field {
+  width: 100%;
+  height: 3.5rem;
+  padding: 0 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.input-field:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary);
+}
+
+/* Botão Principal */
+.btn-primary {
+  width: 100%;
+  height: 3.5rem;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: transform 0.1s;
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+/* Link de Troca */
+.switch-prompt {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.switch-prompt a {
+  color: var(--primary);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* Rodapé */
+.footer {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.link-bold {
+  color: var(--text-main);
+  font-weight: 600;
+  text-decoration: underline;
+}

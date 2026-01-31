@@ -89,6 +89,25 @@ async function init() {
 
     await loadTableDetails(currentTableId);
 
+    // [New Logic] Check if table already has an OPEN order
+    if (!currentOrderId) {
+        try {
+            const allOrdersResp = await ApiService.get<{ data: Order[] }>('/orders');
+            const openOrder = (allOrdersResp.data || []).find(o =>
+                o.table_id === currentTableId && o.status === 'OPEN'
+            );
+
+            if (openOrder) {
+                console.warn('Mesa ocupada. Redirecionando para ordem existente:', openOrder.id);
+                // Redirect to existing order
+                window.location.href = `/pages/createOrder.html?table_id=${currentTableId}&order_id=${openOrder.id}`;
+                return;
+            }
+        } catch (e) {
+            console.error('Erro ao verificar pedidos da mesa:', e);
+        }
+    }
+
     if (currentOrderId) {
         console.log('Edit Mode: Order ID present', currentOrderId);
         await loadOrderDetails(currentOrderId);

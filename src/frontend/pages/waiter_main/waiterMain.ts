@@ -96,8 +96,18 @@ function setupEventListeners() {
     // New Order Button
     const newOrderBtn = document.getElementById('newOrderBtn');
     if (newOrderBtn) {
-        newOrderBtn.addEventListener('click', () => {
-            window.location.href = '/pages/create_order/createOrder.html';
+        newOrderBtn.addEventListener('click', openTableSelectionModal);
+    }
+
+    // Modal Close
+    const closeTableModal = document.getElementById('closeTableModal');
+    const modalOverlay = document.getElementById('tableModalOverlay');
+    if (closeTableModal && modalOverlay) {
+        closeTableModal.addEventListener('click', () => {
+            modalOverlay.classList.remove('active');
+        });
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) modalOverlay.classList.remove('active');
         });
     }
 
@@ -119,7 +129,6 @@ function setupEventListeners() {
     const userBtn = document.getElementById('userBtn');
     if (userBtn) {
         userBtn.addEventListener('click', () => {
-            // Maybe go to profile page or show specialized modal
             console.log('User profile clicked');
         });
     }
@@ -132,6 +141,45 @@ function setupEventListeners() {
             if (dest) window.location.href = dest;
         });
     });
+}
+
+async function openTableSelectionModal() {
+    const modalOverlay = document.getElementById('tableModalOverlay');
+    const grid = document.getElementById('availableTablesGrid');
+
+    if (!modalOverlay || !grid) return;
+
+    grid.innerHTML = '<p>Carregando mesas...</p>';
+    modalOverlay.classList.add('active');
+
+    try {
+        const response = await ApiService.get<{ data: Table[] }>('/tables');
+        const tables = (response.data || []).filter(t => t.status === 'AVAILABLE');
+
+        if (tables.length === 0) {
+            grid.innerHTML = '<p class="empty-message">Nenhuma mesa disponível no momento.</p>';
+            return;
+        }
+
+        grid.innerHTML = tables.map(table => `
+            <button class="table-card available" data-table-id="${table.id}">
+                <span class="table-number">${table.number}</span>
+            </button>
+        `).join('');
+
+        grid.querySelectorAll('.table-card').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tableId = (btn as HTMLElement).dataset.tableId;
+                if (tableId) {
+                    window.location.href = `/pages/createOrder.html?table_id=${tableId}`;
+                }
+            });
+        });
+
+    } catch (error) {
+        grid.innerHTML = '<p class="error-message">Erro ao carregar mesas.</p>';
+        console.error(error);
+    }
 }
 
 async function handleLogout() {
@@ -184,6 +232,8 @@ function renderAllTables(tables: Table[]) {
     const container = document.querySelector('.tables-grid');
     if (!container) return;
 
+    // Filter out OCCUPIED tables from "All Tables" or show them with status?
+    // Current requirement implies showing all. Let's keep it.
     container.innerHTML = tables.map(table => `
     <button class="table-card ${table.status.toLowerCase()}" data-table-id="${table.id}" aria-label="Mesa ${table.number}">
       <span class="table-number">${table.number}</span>
@@ -192,17 +242,19 @@ function renderAllTables(tables: Table[]) {
 
     container.querySelectorAll('.table-card').forEach(card => {
         (card as HTMLElement).addEventListener('click', () => {
+            // If occupied -> open order
+            // If available -> open new order (same flow as modal?)
+            // For now, keep existing behavior: redirect to createOrder which handles both?
+            // Actually, createOrder needs table_id. If occupied, it likely has an order. 
+            // If available, it starts new.
             handleTableClick((card as HTMLElement).dataset.tableId!);
         });
     });
 }
 
 function handleTableClick(tableId: string) {
-    // Navigate to orders page filtering by this table or creating new order for it
-    // Or go to createOrder directly?
-    // Based on user flow, maybe 'orders.html' is a list, but 'createOrder.html' is the detail
-    // Let's go to createOrder which seems to be the main "Order Interaction" page
-    window.location.href = `/pages/create_order/createOrder.html?table_id=${tableId}`;
+    // Navigate to Create Order Page
+    window.location.href = `/pages/createOrder.html?table_id=${tableId}`;
 }
 
 async function loadSummary() {
@@ -231,4 +283,5 @@ async function loadSummary() {
 }
 
 // Initialize
+document.addEventListener('DOMContentLoaded', init);
 document.addEventListener('DOMContentLoaded', init);

@@ -89,7 +89,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await ApiService.post<{ user: { role: string; id: string; name: string; username: string } }>('/auth/login', { username, password });
 
             console.log('Login successful', response);
-            console.log('Login successful', response);
+
+            // Save user to localStorage
+            if (response.user) {
+                localStorage.setItem('user', JSON.stringify(response.user));
+            }
 
             // Redirect based on role
             if (response.user.role === 'waiter') {

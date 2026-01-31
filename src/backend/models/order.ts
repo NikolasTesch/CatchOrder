@@ -17,9 +17,11 @@ export class OrderModel {
     return db.all<OrderDTO[]>(`
       SELECT 
         o.*, 
+        u.name as user_name,
         COALESCE(SUM(oi.quantity * oi.unit_price), 0) as total
       FROM orders o
       LEFT JOIN order_items oi ON o.id = oi.order_id
+      LEFT JOIN users u ON o.user_id = u.id
       GROUP BY o.id
     `);
   }

@@ -699,23 +699,51 @@ function setupEventListeners() {
         darkModeToggle.onclick = toggleDarkMode;
     }
 
-    // Sidebar & User Modal Events
-    document.getElementById('menuBtn')?.addEventListener('click', toggleSidebar);
-    document.getElementById('closeSidebar')?.addEventListener('click', closeSidebar);
-    document.getElementById('sidebarOverlay')?.addEventListener('click', closeSidebar);
-    
-    document.getElementById('userBtn')?.addEventListener('click', openUserModal);
-    document.getElementById('closeUserModal')?.addEventListener('click', closeUserModal);
-    document.getElementById('userModalOverlay')?.addEventListener('click', closeUserModal);
-    document.getElementById('logoutBtn')?.addEventListener('click', handleLogout);
+    // Sidebar & Navigation
+    const menuBtn = document.getElementById('menuBtn');
+    const sidebar = document.getElementById('sidebar');
+    if (menuBtn && sidebar) {
+        menuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+    }
 
-    // ESC key listener
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            closeSidebar();
-            closeUserModal();
-        }
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                await ApiService.post('/auth/logout', {});
+            } catch (e) {
+                console.error('Logout error', e);
+            } finally {
+                localStorage.removeItem('user');
+                window.location.href = '/pages/landingPage.html';
+            }
+        });
+    }
+
+    // Sidebar Links
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const dest = (item as HTMLElement).dataset.href;
+            if (dest) window.location.href = dest;
+        });
     });
+
+    const logo = document.getElementById('logoImage');
+    if (logo) {
+        logo.addEventListener('click', () => {
+            window.location.href = '/pages/waiterMain.html';
+        });
+    }
+
+    const userBtn = document.getElementById('userBtn');
+    if (userBtn) {
+        userBtn.addEventListener('click', () => {
+            console.log('User profile clicked');
+        });
+    }
 }
 
 // --- Dark Mode (Shared Logic) ---

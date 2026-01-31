@@ -70,8 +70,7 @@
   cursor: pointer;
   transition: transform var(--transition-base);
   /* Filtro para modo claro */
-  filter: brightness(0) saturate(100%) invert(25%) sepia(12%) 
-          saturate(2476%) hue-rotate(147deg) brightness(95%) contrast(93%);
+  filter: brightness(0) saturate(100%) invert(25%) sepia(12%) saturate(2476%) hue-rotate(147deg) brightness(95%) contrast(93%);
 }
 
 .logo-image:hover {
@@ -80,8 +79,7 @@
 
 /* Dark mode logo */
 body.dark-mode .logo-image {
-  filter: brightness(0) saturate(100%) invert(59%) sepia(53%) 
-          saturate(434%) hue-rotate(147deg) brightness(93%) contrast(88%);
+  filter: brightness(0) saturate(100%) invert(59%) sepia(53%) saturate(434%) hue-rotate(147deg) brightness(93%) contrast(88%);
 }
 
 /* Header: Right Side - Actions */
@@ -359,7 +357,8 @@ body.dark-mode .search-input::placeholder {
 
 body.dark-mode .order-card {
   background-color: var(--bg-card);
-  box-shadow: var(--shadow-sm); /* or shadow-dark if defined, but shadow-sm usually adapts if using rgba */
+  box-shadow: var(--shadow-sm);
+  /* or shadow-dark if defined, but shadow-sm usually adapts if using rgba */
 }
 
 body.dark-mode .order-card:hover {
@@ -397,7 +396,7 @@ body.dark-mode .btn-waiter:hover {
   .btn-waiter {
     width: 100%;
   }
-  
+
   .header-title {
     display: none;
   }
@@ -408,4 +407,65 @@ body.dark-mode .btn-waiter:hover {
     padding: var(--space-lg);
     padding-top: clamp(5rem, 12vw, 6rem);
   }
+}
+
+/* Sidebar Styles */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 280px;
+  background-color: var(--bg-white);
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  z-index: 2000;
+  padding-top: 80px;
+}
+
+.sidebar.active {
+  transform: translateX(0);
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  gap: 0.5rem;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  color: var(--text-primary);
+  border-radius: var(--radius-md);
+  transition: all 0.2s;
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.nav-item:hover {
+  background-color: var(--bg-secondary);
+}
+
+.nav-item.active {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  color: var(--color-primary);
+}
+
+.nav-item .material-symbols-outlined {
+  font-size: 24px;
+}
+
+body.dark-mode .sidebar {
+  background-color: var(--bg-primary);
+  border-right: 1px solid var(--border-light);
 }

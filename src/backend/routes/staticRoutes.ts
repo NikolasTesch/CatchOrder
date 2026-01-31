@@ -21,7 +21,7 @@ router.get('/pages/landingPage.html', (req, res) => {
 
 // 3. Root Redirect
 router.get('/', (req, res) => {
-  res.redirect('/pages/landingPage.html');
+  res.redirect('pages/landingPage.html');
 });
 
 // 4. Protected Pages (Rest of /pages)

@@ -19,10 +19,10 @@
   <!-- Header -->
   <header class="main-header">
     <div class="header-left">
-      <button class="icon-btn" aria-label="Menu" id="menuBtn">
+      <button class="icon-btn" aria-label="Menu de navegação" id="menuBtn">
         <span class="material-symbols-outlined">menu</span>
       </button>
-      <h1 class="page-title">Pedidos</h1>
+      <span class="header-title">Pedidos</span>
     </div>
 
     <div class="header-center">
@@ -36,8 +36,25 @@
       <button class="icon-btn-small" aria-label="Acessar perfil do usuário" id="userBtn">
         <span class="material-symbols-outlined">account_circle</span>
       </button>
+      <button class="icon-btn-small" aria-label="Sair" id="logoutBtn">
+        <span class="material-symbols-outlined">logout</span>
+      </button>
     </nav>
   </header>
+
+  <!-- Sidebar de Navegação -->
+  <aside class="sidebar" id="sidebar">
+    <nav class="sidebar-nav">
+      <button class="nav-item" data-href="/pages/waiterMain.html">
+        <span class="material-symbols-outlined">dashboard</span>
+        <span class="nav-text">Dashboard</span>
+      </button>
+      <button class="nav-item active" data-href="/pages/orders.html">
+        <span class="material-symbols-outlined">receipt_long</span>
+        <span class="nav-text">Pedidos</span>
+      </button>
+    </nav>
+  </aside>
 
   <!-- Main Content -->
   <main class="content-wrapper">

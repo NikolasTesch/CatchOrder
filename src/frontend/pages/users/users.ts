@@ -1,7 +1,7 @@
 // Make this file a module to avoid global scope contamination
-export {};
+export { };
 
-require('./style.css');
+import './style.css';
 
 // API Configuration
 const USERS_API_BASE = 'http://localhost:3000/api';
@@ -23,7 +23,7 @@ type ToastType = 'success' | 'error' | 'info';
 function checkAuth(): boolean {
   const token = localStorage.getItem('token');
   const userStr = localStorage.getItem('user');
-  
+
   if (!token || !userStr) {
     window.location.href = '../landing_page/landingPage.html';
     return false;
@@ -33,7 +33,7 @@ function checkAuth(): boolean {
     // Frontend Permission Validation
     const user = JSON.parse(userStr);
     const allowedRoles = ['admin', 'manager'];
-    
+
     if (!allowedRoles.includes(user.role)) {
       alert('Acesso negado: Você não tem permissão para acessar esta página.');
       window.location.href = '../products/products.html'; // Redirect to a safe page
@@ -65,21 +65,21 @@ function getAuthHeaders(): HeadersInit {
 function showToast(message: string, type: ToastType = 'info'): void {
   const toast = document.createElement('div');
   toast.className = `toast toast-${type}`;
-  
+
   let icon = 'info';
   if (type === 'success') icon = 'check_circle';
   if (type === 'error') icon = 'error';
-  
+
   toast.innerHTML = `
     <span class="material-symbols-outlined">${icon}</span>
     <span>${message}</span>
   `;
-  
+
   document.body.appendChild(toast);
-  
+
   // Animate in
   setTimeout(() => toast.classList.add('toast-show'), 100);
-  
+
   // Animate out and remove
   setTimeout(() => {
     toast.classList.remove('toast-show');
@@ -109,18 +109,18 @@ function openUserModal(): void {
   if (userStr) {
     try {
       const user = JSON.parse(userStr);
-      
+
       const nameEl = document.getElementById('modalUserName');
       const roleEl = document.getElementById('modalUserRole');
-      
+
       if (nameEl) nameEl.textContent = user.name || 'Usuário';
       if (roleEl) roleEl.textContent = formatRole(user.role || '');
-      
+
       document.body.classList.add('user-modal-open');
-      
+
       // Close other modals if open
       document.getElementById('userDetailsModal')?.classList.remove('open');
-      document.getElementById('userDetailsModalOverlay')?.classList.remove('open'); 
+      document.getElementById('userDetailsModalOverlay')?.classList.remove('open');
       // Note: CSS uses class on body for main modal, but details modal might need specific handling if implemented differently.
       // Based on style.css, it uses #userDetailsModal display none/block logic or class 'user-modal-open' on body?
       // style.css uses `body.user-modal-open .user-modal-overlay { display: block; }` which applies to ALL class .user-modal. 
@@ -145,11 +145,23 @@ function closeUserModal(): void {
 /**
  * Handle user logout
  */
-function handleLogout(): void {
+/**
+ * Handle user logout
+ */
+async function handleLogout(): Promise<void> {
   if (confirm('Tem certeza que deseja sair?')) {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    window.location.href = '../landing_page/landingPage.html';
+    try {
+      const response = await fetch(`${USERS_API_BASE}/auth/logout`, {
+        method: 'POST',
+        headers: getAuthHeaders()
+      });
+    } catch (e) {
+      console.error("Logout API call failed", e);
+    } finally {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/pages/landingPage.html';
+    }
   }
 }
 
@@ -171,9 +183,9 @@ function formatRole(role: string): string {
 function openUserDetailsModal(user: User): void {
   const modal = document.getElementById('userDetailsModal');
   const overlay = document.getElementById('userDetailsModalOverlay');
-  
+
   if (!modal || !overlay) return;
-  
+
   // Populate Data
   const avatarEl = document.getElementById('detailsUserAvatar');
   const nameEl = document.getElementById('detailsUserName');
@@ -181,27 +193,27 @@ function openUserDetailsModal(user: User): void {
   const usernameEl = document.getElementById('detailsUserUsername');
   const idEl = document.getElementById('detailsUserId');
   const editBtn = document.getElementById('detailsEditBtn');
-  
+
   if (nameEl) nameEl.textContent = user.name || 'Usuário';
   if (roleEl) roleEl.textContent = formatRole(user.role);
   if (usernameEl) usernameEl.textContent = `@${user.username}`;
   if (idEl) idEl.textContent = user.id;
-  
+
   if (avatarEl) {
     const initials = getInitials(user.name || user.username);
-    avatarEl.innerHTML = user.image_url 
+    avatarEl.innerHTML = user.image_url
       ? `<img src="${user.image_url}" alt="${user.name}" class="user-avatar-img" />`
       : `<span class="material-symbols-outlined" style="font-size: 48px; color: var(--color-primary)">account_circle</span>`;
-      // Using simpler avatar for modal or reuse the nice initials style if we copy class
-      avatarEl.className = 'user-avatar'; // Reset/Ensure class
-      if (!user.image_url) {
-         avatarEl.innerHTML = `<span class="user-avatar-initials" style="width: 80px; height: 80px; font-size: 32px;">${initials}</span>`;
-         avatarEl.style.backgroundColor = 'transparent'; // Remove gray bg if using initials circle
-      } else {
-         avatarEl.style.backgroundColor = 'var(--bg-secondary)';
-      }
+    // Using simpler avatar for modal or reuse the nice initials style if we copy class
+    avatarEl.className = 'user-avatar'; // Reset/Ensure class
+    if (!user.image_url) {
+      avatarEl.innerHTML = `<span class="user-avatar-initials" style="width: 80px; height: 80px; font-size: 32px;">${initials}</span>`;
+      avatarEl.style.backgroundColor = 'transparent'; // Remove gray bg if using initials circle
+    } else {
+      avatarEl.style.backgroundColor = 'var(--bg-secondary)';
+    }
   }
-  
+
   if (editBtn) {
     editBtn.onclick = () => {
       // Navigate to edit page or handle edit
@@ -210,12 +222,12 @@ function openUserDetailsModal(user: User): void {
       // window.location.href = `../create_user/createUser.html?id=${user.id}`;
     };
   }
-  
+
   // Show Modal
   modal.style.display = 'block'; // Override CSS
   modal.style.pointerEvents = 'auto';
   overlay.style.display = 'block';
-  
+
   // Animate content
   const content = modal.querySelector('.user-modal-content') as HTMLElement;
   if (content) {
@@ -227,16 +239,16 @@ function openUserDetailsModal(user: User): void {
 function closeUserDetailsModal(): void {
   const modal = document.getElementById('userDetailsModal');
   const overlay = document.getElementById('userDetailsModalOverlay');
-  
+
   if (!modal || !overlay) return;
-  
+
   // Animate out
   const content = modal.querySelector('.user-modal-content') as HTMLElement;
   if (content) {
     content.style.opacity = '0';
     content.style.transform = 'translate(-50%, -50%) scale(0.9)';
   }
-  
+
   setTimeout(() => {
     modal.style.display = 'none';
     modal.style.pointerEvents = 'none';
@@ -262,7 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!checkAuth()) {
       return;
     }
-    
+
     initDarkMode();
     setupEventListeners();
     fetchUsers();
@@ -344,13 +356,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (closeUserModalBtn) {
       closeUserModalBtn.addEventListener('click', closeUserModal);
     }
-    
+
     // User Details Modal Handlers
     const detailsOverlay = document.getElementById('userDetailsModalOverlay');
     if (detailsOverlay) {
       detailsOverlay.addEventListener('click', closeUserDetailsModal);
     }
-    
+
     const closeDetailsBtn = document.getElementById('closeUserDetailsModal');
     if (closeDetailsBtn) {
       closeDetailsBtn.addEventListener('click', closeUserDetailsModal);
@@ -393,7 +405,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function fetchUsers(): Promise<void> {
     if (usersGrid) {
-        usersGrid.innerHTML = `
+      usersGrid.innerHTML = `
             <div style="grid-column: 1/-1; text-align: center; padding: 2rem;">
                 <span class="material-symbols-outlined" style="animation: spin 1s linear infinite;">refresh</span>
                 <p>Carregando usuários...</p>
@@ -406,7 +418,7 @@ document.addEventListener('DOMContentLoaded', () => {
         method: 'GET',
         headers: getAuthHeaders(),
       });
-      
+
       const data = await response.json();
 
       if (response.ok) {
@@ -455,16 +467,16 @@ document.addEventListener('DOMContentLoaded', () => {
   function createUserCard(user: User): HTMLElement {
     const card = document.createElement('div');
     card.className = 'user-card';
-    
+
     // Add Click listener for Details Modal
     card.addEventListener('click', () => openUserDetailsModal(user));
 
     const userName = user.name || user.username || 'Usuário';
     const userRole = formatRole(user.role);
     const initials = getInitials(userName);
-    
+
     // Use image_url if available, otherwise show initials
-    const avatarContent = user.image_url 
+    const avatarContent = user.image_url
       ? `<img src="${user.image_url}" alt="${userName}" class="user-avatar-img" />`
       : `<span class="user-avatar-initials">${initials}</span>`;
 
@@ -482,17 +494,17 @@ document.addEventListener('DOMContentLoaded', () => {
         <p class="user-username">@${user.username}</p>
       </div>
     `;
-    
+
     // Add Event Listener to Edit Button (Stop Propagation)
     const editBtn = card.querySelector('.btn-card-edit');
     if (editBtn) {
-        editBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            showToast('Funcionalidade de edição em breve', 'info');
-            // navigateToEdit(user.id);
-        });
+      editBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        showToast('Funcionalidade de edição em breve', 'info');
+        // navigateToEdit(user.id);
+      });
     }
-    
+
     return card;
   }
 
@@ -517,10 +529,10 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function getInitials(name: string): string {
-    if (!name) return '?';
-    const parts = name.trim().split(' ');
-    if (parts.length >= 2) {
-      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-    }
-    return name.substring(0, 2).toUpperCase();
+  if (!name) return '?';
+  const parts = name.trim().split(' ');
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+  return name.substring(0, 2).toUpperCase();
 }

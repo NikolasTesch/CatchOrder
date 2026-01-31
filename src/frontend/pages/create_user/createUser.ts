@@ -1,4 +1,4 @@
-require('./style.css');
+import './style.css';
 import { ApiService } from '../../services/apiService';
 
 console.log('Create User Script Loaded');

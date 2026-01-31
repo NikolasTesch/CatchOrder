@@ -16,7 +16,7 @@
 </head>
 
 <body>
-  <!-- Header Fixo -->
+  <!-- Header -->
   <header class="main-header">
     <div class="header-left">
       <button class="icon-btn" aria-label="Menu de navegação" id="menuBtn">
@@ -29,7 +29,7 @@
       <img src="/img/logoName.svg" alt="CatchOrder Logo" class="logo-image" id="logoImage">
     </div>
 
-    <nav class="header-actions" aria-label="Ações do cabeçalho">
+    <nav class="header-right" aria-label="Ações do cabeçalho">
       <button class="icon-btn-small" aria-label="Alternar modo escuro" id="darkModeToggle">
         <span class="material-symbols-outlined">light_mode</span>
       </button>
@@ -57,7 +57,7 @@
   </aside>
 
   <!-- Main Content -->
-  <main class="page-wrapper">
+  <main class="content-wrapper">
     <!-- Barra de Informações -->
     <section class="info-bar card" aria-label="Informações do pedido">
       <div class="info-item">
@@ -91,6 +91,69 @@
         style="background-color: #ef4444; color: white; border: none;">Finalizar Pedido</button>
     </div>
   </main>
+
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <nav class="sidebar-content">
+      <div class="sidebar-header">
+        <h2>Menu</h2>
+        <button class="close-btn" id="closeSidebar" aria-label="Fechar menu">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <ul class="sidebar-menu">
+        <li><a href="../products/products.html">
+          <span class="material-symbols-outlined">restaurant_menu</span>
+          Produtos
+        </a></li>
+        <li><a href="../create_products/createProducts.html">
+          <span class="material-symbols-outlined">add_circle</span>
+          Adicionar Produto
+        </a></li>
+        <li><a href="../users/users.html">
+          <span class="material-symbols-outlined">group</span>
+          Usuários
+        </a></li>
+        <li><a href="../waiter_main/waiterMain.html">
+          <span class="material-symbols-outlined">table_restaurant</span>
+          Mesas
+        </a></li>
+        <li><a href="../orders/orders.html">
+          <span class="material-symbols-outlined">receipt_long</span>
+          Pedidos
+        </a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- User Modal -->
+  <div class="user-modal" id="userModal">
+    <div class="user-modal-overlay" id="userModalOverlay"></div>
+    <div class="user-modal-content">
+      <div class="user-modal-header">
+        <h3>Meu Perfil</h3>
+        <button class="close-btn" id="closeUserModal" aria-label="Fechar">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="user-modal-body">
+        <div class="user-avatar">
+          <span class="material-symbols-outlined">account_circle</span>
+        </div>
+        <div class="user-info-modal">
+          <p class="user-name" id="modalUserName">Carregando...</p>
+          <p class="user-role" id="modalUserRole">Carregando...</p>
+        </div>
+      </div>
+      <div class="user-modal-footer">
+        <button class="btn btn-danger btn-full" id="logoutBtn">
+          <span class="material-symbols-outlined">logout</span>
+          Sair
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- Script injected by Webpack -->
 </body>

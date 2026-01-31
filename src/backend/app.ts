@@ -21,7 +21,7 @@ app.use((req, res, next) => {
 });
 
 // Security: CORS configuration
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001'];
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001', 'https://lab.alphaedtech.org.br'];
 
 app.use(
   cors({

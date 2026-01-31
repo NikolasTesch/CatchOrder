@@ -25,9 +25,10 @@ const menuBtn = document.getElementById('menuBtn');
 const logoutBtn = document.getElementById('logoutBtn');
 const darkModeToggle = document.getElementById("darkModeToggle");
 
-function init() {
+async function init() {
     // Check authentication
-    if (!checkAuth()) return;
+    const isAuth = await checkAuth();
+    if (!isAuth) return;
 
     initDarkMode();
     setupEventListeners();
@@ -43,14 +44,27 @@ function init() {
     console.log('WaiterMain page initialized (TS)');
 }
 
-function checkAuth(): boolean {
+async function checkAuth(): Promise<boolean> {
     const userStr = localStorage.getItem('user');
-    // Basic check, real auth is via cookie/API 401
-    if (!userStr) {
-        // window.location.href = '/pages/landingPage.html';
-        // return false; 
+
+    // If we have user in local storage, assume good (optimistic)
+    if (userStr) return true;
+
+    // If not, try to fetch from backend (Session Cookie check)
+    try {
+        const response = await ApiService.get<{ user: any }>('/auth/me');
+        if (response && response.user) {
+            console.log('Session restored from cookie');
+            localStorage.setItem('user', JSON.stringify(response.user));
+            return true;
+        }
+    } catch (e) {
+        console.error('Auth check failed:', e);
     }
-    return true;
+
+    // If both failed, redirect
+    window.location.href = 'landingPage.html';
+    return false;
 }
 
 // Dark Mode
@@ -129,7 +143,11 @@ function setupEventListeners() {
     navItems.forEach(item => {
         item.addEventListener('click', () => {
             const dest = (item as HTMLElement).dataset.href;
-            if (dest) window.location.href = dest;
+            if (dest) {
+                // Fix: Extract just the filename if it contains /pages/
+                const filename = dest.split('/').pop();
+                window.location.href = filename || dest;
+            }
         });
     });
 }

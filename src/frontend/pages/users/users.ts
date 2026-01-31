@@ -4,7 +4,7 @@ export { };
 import './style.css';
 
 // API Configuration
-const USERS_API_BASE = 'http://localhost:3000/api';
+const USERS_API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : (window.location.pathname.includes('/server09/') ? '/server09/api' : '/api');
 
 interface User {
   id: string;
@@ -25,7 +25,7 @@ function checkAuth(): boolean {
   const userStr = localStorage.getItem('user');
 
   if (!token || !userStr) {
-    window.location.href = '../landing_page/landingPage.html';
+    window.location.href = 'landingPage.html';
     return false;
   }
 
@@ -36,12 +36,12 @@ function checkAuth(): boolean {
 
     if (!allowedRoles.includes(user.role)) {
       alert('Acesso negado: Você não tem permissão para acessar esta página.');
-      window.location.href = '../products/products.html'; // Redirect to a safe page
+      window.location.href = 'products.html'; // Redirect to a safe page
       return false;
     }
   } catch (e) {
     localStorage.clear();
-    window.location.href = '../landing_page/landingPage.html';
+    window.location.href = 'landingPage.html';
     return false;
   }
 
@@ -160,7 +160,7 @@ async function handleLogout(): Promise<void> {
     } finally {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      window.location.href = '/pages/landingPage.html';
+      window.location.href = 'landingPage.html';
     }
   }
 }
@@ -394,13 +394,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const logoImage = document.getElementById('logoImage');
     if (logoImage) {
       logoImage.addEventListener('click', () => {
-        window.location.href = '../landing_page/landingPage.html';
+        window.location.href = 'landingPage.html';
       });
     }
   }
 
   function navigateToCreateUser(): void {
-    window.location.href = '../create_user/createUser.html';
+    window.location.href = 'createUser.html';
   }
 
   async function fetchUsers(): Promise<void> {
@@ -430,7 +430,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (response.status === 401) {
           localStorage.removeItem('token');
           localStorage.removeItem('user');
-          window.location.href = '../landing_page/landingPage.html';
+          window.location.href = 'landingPage.html';
           return;
         }
       }

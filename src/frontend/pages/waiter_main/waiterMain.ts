@@ -17,7 +17,7 @@ interface Order {
 }
 
 // State
-const API_BASE = 'http://localhost:3000/api';
+const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : (window.location.pathname.includes('/server09/') ? '/server09/api' : '/api');
 
 // DOM Elements
 const sidebar = document.getElementById('sidebar');
@@ -97,7 +97,7 @@ function setupEventListeners() {
     const newOrderBtn = document.getElementById('newOrderBtn');
     if (newOrderBtn) {
         newOrderBtn.addEventListener('click', () => {
-            window.location.href = '/pages/create_order/createOrder.html';
+            window.location.href = 'createOrder.html';
         });
     }
 
@@ -111,7 +111,7 @@ function setupEventListeners() {
     const logoImage = document.getElementById('logoImage');
     if (logoImage) {
         logoImage.addEventListener('click', () => {
-            window.location.href = '/pages/waiterMain.html';
+            window.location.href = 'waiterMain.html';
         });
     }
 
@@ -141,7 +141,7 @@ async function handleLogout() {
         console.error('Logout error', e);
     } finally {
         localStorage.removeItem('user');
-        window.location.href = '/pages/landingPage.html';
+        window.location.href = 'landingPage.html';
     }
 }
 
@@ -202,7 +202,7 @@ function handleTableClick(tableId: string) {
     // Or go to createOrder directly?
     // Based on user flow, maybe 'orders.html' is a list, but 'createOrder.html' is the detail
     // Let's go to createOrder which seems to be the main "Order Interaction" page
-    window.location.href = `/pages/create_order/createOrder.html?table_id=${tableId}`;
+    window.location.href = `createOrder.html?table_id=${tableId}`;
 }
 
 async function loadSummary() {

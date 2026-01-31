@@ -17,7 +17,7 @@ interface Order {
 }
 
 // State
-const API_BASE = 'http://localhost:3000/api';
+const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : (window.location.pathname.includes('/server09/') ? '/server09/api' : '/api');
 
 // DOM Elements
 const sidebar = document.getElementById('sidebar');
@@ -121,7 +121,7 @@ function setupEventListeners() {
     const logoImage = document.getElementById('logoImage');
     if (logoImage) {
         logoImage.addEventListener('click', () => {
-            window.location.href = '/pages/waiterMain.html';
+            window.location.href = 'waiterMain.html';
         });
     }
 
@@ -189,7 +189,7 @@ async function handleLogout() {
         console.error('Logout error', e);
     } finally {
         localStorage.removeItem('user');
-        window.location.href = '/pages/landingPage.html';
+        window.location.href = 'landingPage.html';
     }
 }
 

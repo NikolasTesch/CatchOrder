@@ -2,7 +2,7 @@ import './style.css';
 import { ApiService } from '../../services/apiService';
 
 // API Configuration
-const API_BASE = 'http://localhost:3000/api';
+const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : (window.location.pathname.includes('/server09/') ? '/server09/api' : '/api');
 
 // Interfaces
 interface Category {
@@ -83,7 +83,7 @@ async function init() {
 
     if (!currentTableId) {
         showError('Mesa não identificada. Redirecionando...');
-        setTimeout(() => window.location.href = '/pages/waiterMain.html', 2000);
+        setTimeout(() => window.location.href = 'waiterMain.html', 2000);
         return;
     }
 
@@ -128,7 +128,7 @@ async function init() {
 function checkAuth(): boolean {
     const token = localStorage.getItem('token');
     if (!token) {
-        window.location.href = '../landing_page/landingPage.html';
+        window.location.href = 'landingPage.html';
         return false;
     }
     return true;
@@ -176,7 +176,7 @@ function handleLogout() {
     if (confirm('Tem certeza que deseja sair?')) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        window.location.href = '../landing_page/landingPage.html';
+        window.location.href = 'landingPage.html';
     }
 }
 
@@ -204,7 +204,7 @@ async function apiCall<T>(url: string, options: RequestInit = {}): Promise<T> {
 
     if (response.status === 401) {
         localStorage.removeItem('token');
-        window.location.href = '../landing_page/landingPage.html';
+        window.location.href = 'landingPage.html';
         throw new Error('Sessão expirada');
     }
 
@@ -600,7 +600,7 @@ async function saveItems() {
         cart = [];
 
         setTimeout(() => {
-            window.location.href = `/pages/createOrder.html?table_id=${currentTableId}&order_id=${orderId}`;
+            window.location.href = `createOrder.html?table_id=${currentTableId}&order_id=${orderId}`;
         }, 1500);
 
     } catch (error: any) {
@@ -630,7 +630,7 @@ async function finalizeOrder() {
         });
         showSuccess('Conta fechada com sucesso!');
         setTimeout(() => {
-            window.location.href = '/pages/orders.html';
+            window.location.href = 'orders.html';
         }, 1500);
     } catch (e: any) {
         console.error(e);
@@ -738,7 +738,7 @@ function setupEventListeners() {
                 console.error('Logout error', e);
             } finally {
                 localStorage.removeItem('user');
-                window.location.href = '/pages/landingPage.html';
+                window.location.href = 'landingPage.html';
             }
         });
     }
@@ -755,7 +755,7 @@ function setupEventListeners() {
     const logo = document.getElementById('logoImage');
     if (logo) {
         logo.addEventListener('click', () => {
-            window.location.href = '/pages/waiterMain.html';
+            window.location.href = 'waiterMain.html';
         });
     }
 

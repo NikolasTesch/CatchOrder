@@ -12,8 +12,16 @@ app.use((req, res, next) => {
   next();
 });
 
+// Middleware: Normalize URL to remove double slashes (Fix for proxy issues)
+app.use((req, res, next) => {
+  if (req.url.startsWith('//')) {
+    req.url = req.url.replace(/^\/+/, '/');
+  }
+  next();
+});
+
 // Security: CORS configuration
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001'];
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001', 'https://lab.alphaedtech.org.br'];
 
 app.use(
   cors({

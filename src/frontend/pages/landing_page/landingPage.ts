@@ -97,10 +97,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Redirect based on role
             if (response.user.role === 'waiter') {
-                window.location.href = '/pages/waiterMain.html';
+                window.location.href = 'waiterMain.html';
             } else {
                 // Default for admin, manager, kitchen, etc.
-                window.location.href = '/pages/gestMain.html';
+                window.location.href = 'gestMain.html';
             }
 
         } catch (error: any) {

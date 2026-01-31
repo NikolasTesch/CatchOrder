@@ -4,7 +4,7 @@ export { };
 import "./style.css";
 
 // API Configuration
-const API_BASE = "http://localhost:3000/api";
+const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : (window.location.pathname.includes('/server09/') ? '/server09/api' : '/api');
 
 interface Product {
   id: string;
@@ -21,7 +21,7 @@ interface Product {
 function checkAuth(): boolean {
   const token = localStorage.getItem("token");
   if (!token) {
-    window.location.href = "../landing_page/landingPage.html";
+    window.location.href = "landingPage.html";
     return false;
   }
   return true;
@@ -117,7 +117,7 @@ async function handleLogout(): Promise<void> {
     } finally {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      window.location.href = '/pages/landingPage.html';
+      window.location.href = 'landingPage.html';
     }
   }
 }
@@ -270,13 +270,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const logoImage = document.getElementById("logoImage");
     if (logoImage) {
       logoImage.addEventListener("click", () => {
-        window.location.href = "../landing_page/landingPage.html";
+        window.location.href = "landingPage.html";
       });
     }
   }
 
   function navigateToCreate(): void {
-    window.location.href = "../create_products/createProducts.html";
+    window.location.href = "createProducts.html";
   }
 
   async function fetchProducts(): Promise<void> {
@@ -296,7 +296,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (response.status === 401) {
           localStorage.removeItem("token");
           localStorage.removeItem("user");
-          window.location.href = "../landing_page/landingPage.html";
+          window.location.href = "landingPage.html";
           return;
         }
         console.error("Failed to fetch products:", data.message);

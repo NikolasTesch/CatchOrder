@@ -1,4 +1,5 @@
 import './style.css';
+import { ApiService } from '../../services/apiService';
 
 // API Configuration
 const API_BASE = 'http://localhost:3000/api';
@@ -246,8 +247,8 @@ async function loadProducts() {
     try {
         const response = await apiCall<{ data: Product[] }>('/products/active');
         if (!response.data) {
-             const allProdResponse = await apiCall<{ data: Product[] }>('/products');
-             products = (allProdResponse.data || []).filter(p => p.active);
+            const allProdResponse = await apiCall<{ data: Product[] }>('/products');
+            products = (allProdResponse.data || []).filter(p => p.active);
         } else {
             products = response.data || [];
         }
@@ -490,7 +491,7 @@ function renderCartItems() {
             `).join('')}
         </ul>
     `;
-    
+
     // Add event listeners for remove buttons
     cartSection.querySelectorAll('.btn-remove-new').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -501,12 +502,12 @@ function renderCartItems() {
     });
 
     const clearBtn = document.getElementById('btn-clear-cart');
-    if(clearBtn) {
+    if (clearBtn) {
         clearBtn.addEventListener('click', (e) => {
-             e.stopPropagation();
-             cart = [];
-             updateInfoBar();
-             renderCartItems();
+            e.stopPropagation();
+            cart = [];
+            updateInfoBar();
+            renderCartItems();
         });
     }
 }
@@ -559,8 +560,8 @@ async function saveItems() {
                 await apiCall(`/orders/${orderId}/items`, {
                     method: 'POST',
                     body: JSON.stringify({
-                         product_id: item.product_id,
-                         quantity: item.quantity
+                        product_id: item.product_id,
+                        quantity: item.quantity
                     })
                 });
             }

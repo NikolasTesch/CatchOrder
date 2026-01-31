@@ -53,7 +53,7 @@ const config: webpack.Configuration = {
   output: {
     path: path.resolve(__dirname, 'public/js'),
     filename: '[name].bundle.js',
-    publicPath: '../',
+    publicPath: '../js/',
     clean: true,
   },
   plugins: [

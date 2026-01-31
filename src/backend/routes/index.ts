@@ -7,8 +7,6 @@ import { productsRoutes } from './productRoutes';
 import { authRoutes } from './authRoutes';
 import { authenticateToken } from '../middlewares/jwtAuth';
 import authController from '../controllers/authController';
-import usersController from '../controllers/userControllers';
-import { isAdmin, isWaiter, isManager } from '../middlewares/roleAuth';
 import { validateLogin } from '../middlewares/validateAuth';
 
 const routes = Router();

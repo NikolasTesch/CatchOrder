@@ -35,16 +35,7 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-// Main Router to handle URL Prefixing
-const mainRouter = express.Router();
-
-// Static & Page Routes
-mainRouter.use(staticRoutes);
-
-mainRouter.use('/api', routes);
-
-// Mount the main router with the configured prefix (or root if not defined)
-const urlPrefix = process.env.URL_PREFIX || '/';
-app.use(urlPrefix, mainRouter);
+app.use(staticRoutes);
+app.use('/api', routes);
 
 export { app };

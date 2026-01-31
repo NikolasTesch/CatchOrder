@@ -48,26 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
     init();
 });
 
-async function checkAuth() {
-    const userStr = localStorage.getItem('user');
-    if (userStr) return true;
-
-    try {
-        const response = await ApiService.get<{ user: any }>('/auth/me');
-        if (response && response.user) {
-            localStorage.setItem('user', JSON.stringify(response.user));
-            return true;
-        }
-    } catch (e) {
-        console.error('Auth check failed via API');
-    }
-    window.location.href = 'landingPage.html';
-    return false;
-}
-
 async function init() {
-    if (!await checkAuth()) return;
-
     initDarkMode();
     setupHeaderListeners();
     setupEventListeners();
@@ -215,7 +196,7 @@ function createOrderCard(order: Order, type: 'open' | 'finished'): HTMLElement {
         console.log(`Open details for order ${order.id}`);
 
         if (table) {
-            window.location.href = `createOrder.html?table_id=${table.id}&order_id=${order.id}`;
+            window.location.href = `./createOrder.html?table_id=${table.id}&order_id=${order.id}`;
         } else {
             showError('Erro: Mesa não encontrada para este pedido.');
         }
@@ -298,7 +279,7 @@ function setupHeaderListeners() {
                 console.error('Logout error', e);
             } finally {
                 localStorage.removeItem('user');
-                window.location.href = 'landingPage.html';
+                window.location.href = '/pages/landingPage.html';
             }
         });
     }
@@ -315,7 +296,7 @@ function setupHeaderListeners() {
     const logo = document.querySelector('.logo-image');
     if (logo) {
         logo.addEventListener('click', () => {
-            window.location.href = 'waiterMain.html';
+            window.location.href = '/pages/waiterMain.html';
         });
     }
 }
@@ -331,7 +312,7 @@ function setupEventListeners() {
 
     if (newOrderButton) {
         newOrderButton.addEventListener('click', () => {
-            window.location.href = 'waiterMain.html';
+            window.location.href = '/pages/waiterMain.html';
         });
     }
 }

@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (btnBack) {
     btnBack.addEventListener(
       "click",
-      () => (window.location.href = "products.html"),
+      () => (window.location.href = "../products/products.html"),
     );
   }
 
@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
       await ApiService.post("/products", payload);
 
       alert("Produto criado com sucesso!");
-      window.location.href = "products.html";
+      window.location.href = "../products/products.html";
     } catch (error: any) {
       console.error("Error creating product:", error);
       alert(error.message || "Erro ao criar produto");

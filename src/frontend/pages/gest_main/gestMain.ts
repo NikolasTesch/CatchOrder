@@ -140,7 +140,7 @@ async function apiCall<T>(endpoint: string, options: RequestInit = {}): Promise<
 
         if (!response.ok) {
             if (response.status === 401) {
-                window.location.href = "landingPage.html";
+                window.location.href = "/login.html";
                 return {} as T; // Unreachable due to redirect
             }
             const error = await response.json();
@@ -1038,7 +1038,7 @@ document.addEventListener("DOMContentLoaded", () => {
         logoutBtn.addEventListener("click", async () => {
             try {
                 await apiCall("/auth/logout", { method: "POST" });
-                window.location.href = "landingPage.html";
+                window.location.href = "/login.html";
             } catch (error) {
                 console.error("Logout error:", error);
             }

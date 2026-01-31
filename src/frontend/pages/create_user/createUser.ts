@@ -60,7 +60,7 @@ function setupEventListeners() {
     if (logoImage) {
         logoImage.style.cursor = 'pointer';
         logoImage.addEventListener('click', () => {
-            window.location.href = 'orders.html';
+            window.location.href = '/pages/orders.html';
         });
     }
 
@@ -73,16 +73,16 @@ function setupEventListeners() {
                 try {
                     const user = JSON.parse(userStr);
                     if (user.role === 'waiter') {
-                        window.location.href = 'waiterMain.html';
+                        window.location.href = '/pages/waiterMain.html';
                     } else {
-                        window.location.href = 'gestMain.html';
+                        window.location.href = '/pages/gestMain.html';
                     }
                 } catch (e) {
                     console.error('Error parsing user data:', e);
-                    window.location.href = 'gestMain.html';
+                    window.location.href = '/pages/gestMain.html';
                 }
             } else {
-                window.location.href = 'gestMain.html';
+                window.location.href = '/pages/gestMain.html';
             }
         });
     }
@@ -142,7 +142,7 @@ async function handleCreateUser(e: Event) {
 
         alert('Usuário criado com sucesso!');
         // Redirect to users list
-        window.location.href = 'users.html';
+        window.location.href = '/pages/users.html';
     } catch (error: any) {
         console.error('Error creating user:', error);
         alert(error.message || 'Erro ao criar usuário');

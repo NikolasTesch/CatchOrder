@@ -167,16 +167,29 @@ export class OrderModel {
     return true;
   }
 
-  static async close(id: string, tip?: number): Promise<OrderDTO | undefined> {
+  static async close(id: string, tip: number = 0): Promise<OrderDTO | undefined> {
     const db = await getDb();
     const order = await OrderModel.findById(id);
 
     if (!order || order.status !== 'OPEN') return undefined;
 
+    const closed_at = new Date().toISOString();
+
+    // 1. Update Order status, closed_at and tip
     await db.run(
-      `UPDATE orders SET status = 'CLOSED' WHERE id = ?`,
-      [id],
+      `UPDATE orders SET status = 'CLOSED', closed_at = ?, tip = ? WHERE id = ?`,
+      [closed_at, tip, id],
     );
+
+    // 2. Release the Table (Set to AVAILABLE and unbind waiter)
+    if (order.table_id) {
+      // Import dynamically or ensure TableModel is imported
+      await TableModel.updateStatus(
+        order.table_id,
+        TableStatus.AVAILABLE,
+        undefined
+      );
+    }
 
     return OrderModel.findById(id);
   }

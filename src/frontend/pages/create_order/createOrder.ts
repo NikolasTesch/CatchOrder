@@ -97,7 +97,7 @@ async function init() {
             if (openOrder) {
                 console.warn('Mesa ocupada. Redirecionando para ordem existente:', openOrder.id);
                 // Redirect to existing order
-                window.location.href = `/pages/createOrder.html?table_id=${currentTableId}&order_id=${openOrder.id}`;
+                window.location.href = `createOrder.html?table_id=${currentTableId}&order_id=${openOrder.id}`;
                 return;
             }
         } catch (e) {

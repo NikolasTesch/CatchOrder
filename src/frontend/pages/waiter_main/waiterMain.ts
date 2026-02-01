@@ -216,7 +216,7 @@ function renderAllTables(tables: Table[]) {
 
 function handleTableClick(tableId: string) {
     // Navigate to Create Order Page
-    window.location.href = `/pages/createOrder.html?table_id=${tableId}`;
+    window.location.href = `createOrder.html?table_id=${tableId}`;
 }
 
 // Modal Functions

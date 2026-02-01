@@ -6,6 +6,7 @@ import { formatCurrency } from '../../utils/currency';
 interface OrderItem {
   product_id: string;
   product_name?: string;
+  name?: string;
   quantity: number;
   price?: number;
 }
@@ -195,8 +196,8 @@ function createOrderCard(order: Order, type: 'open' | 'finished'): HTMLElement {
   const itemsDescription =
     order.items && order.items.length > 0
       ? order.items
-          .map((item) => `${item.quantity}x ${item.product_name || 'Item'}`)
-          .join(', ')
+        .map((item) => `${item.quantity}x ${item.name || item.product_name || 'Item'}`)
+        .join(', ')
       : 'Sem itens';
 
   // Observations
@@ -209,7 +210,7 @@ function createOrderCard(order: Order, type: 'open' | 'finished'): HTMLElement {
       <span class="table-badge">${tableNumber}</span>
     </div>
     <div class="order-info">
-      <p class="order-price">${formatCurrency(parseFloat(order.total) * 100)}</p>
+      <p class="order-price">${formatCurrency(parseFloat(order.total))}</p>
       <p class="order-description">${itemsDescription}</p>
     </div>
     <div class="order-footer">

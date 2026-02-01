@@ -11,46 +11,40 @@ export type { TableDTO, CreateTableDTO, UpdateTableDTO };
 export class TableModel {
   static async findAll(): Promise<TableDTO[]> {
     const db = await getDb();
-    const tables = await db.all<TableDTO[]>(
+    return db.all<TableDTO[]>(
       'SELECT * FROM restaurant_tables ORDER BY number',
     );
-    return tables;
   }
 
   static async findById(id: string): Promise<TableDTO | undefined> {
     const db = await getDb();
-    const table = await db.get<TableDTO>(
-      'SELECT * FROM restaurant_tables WHERE id = ?',
-      [id],
-    );
-    return table;
+    return db.get<TableDTO>('SELECT * FROM restaurant_tables WHERE id = ?', [
+      id,
+    ]);
   }
 
   static async findByNumber(number: number): Promise<TableDTO | undefined> {
     const db = await getDb();
-    const table = await db.get<TableDTO>(
+    return db.get<TableDTO>(
       'SELECT * FROM restaurant_tables WHERE number = ?',
       [number],
     );
-    return table;
   }
 
   static async findByStatus(status: TableStatus): Promise<TableDTO[]> {
     const db = await getDb();
-    const tables = await db.all<TableDTO[]>(
+    return db.all<TableDTO[]>(
       'SELECT * FROM restaurant_tables WHERE status = ? ORDER BY number',
       [status],
     );
-    return tables;
   }
 
   static async findByWaiterId(waiterId: string): Promise<TableDTO[]> {
     const db = await getDb();
-    const tables = await db.all<TableDTO[]>(
+    return db.all<TableDTO[]>(
       'SELECT * FROM restaurant_tables WHERE waiter_id = ? ORDER BY number',
       [waiterId],
     );
-    return tables;
   }
 
   static async findAvailable(): Promise<TableDTO[]> {

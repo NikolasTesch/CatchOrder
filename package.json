@@ -13,7 +13,9 @@
     "build:back": "tsc",
     "build:front": "webpack --mode development",
     "build": "npm run build:back && npm run build:front",
-    "dev": "ts-node-dev --respawn --transpile-only src/backend/server.ts",
+    "dev:prepare": "bash scripts/prepare-dev.sh",
+    "dev:server": "ts-node-dev --respawn --transpile-only src/backend/server.ts",
+    "dev": "npm run dev:prepare && npm run dev:server",
     "start": "node dist/backend/server.js"
   },
   "repository": {

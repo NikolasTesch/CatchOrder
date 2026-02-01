@@ -1042,14 +1042,22 @@ function applyProductFilters() {
 // ========================================
 // INITIALIZATION
 // ========================================
-document.addEventListener('DOMContentLoaded', () => {
-  initDarkMode();
-  console.log('GestMain v2 Loaded - Fixing Remote Deployment'); // Debug Log
+document.addEventListener("DOMContentLoaded", () => {
+    initDarkMode();
 
-  // Event Listeners
-  if (menuBtn && sidebar) {
-    menuBtn.addEventListener('click', () => {
-      sidebar.classList.toggle('active');
+    // Event Listeners
+    if (menuBtn && sidebar) {
+        menuBtn.addEventListener("click", () => {
+            sidebar.classList.toggle("active");
+        });
+    }
+
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach((item) => {
+        item.addEventListener("click", () => {
+            const section = (item as HTMLElement).dataset.section;
+            if (section) switchSection(section);
+        });
     });
   }
 

@@ -288,11 +288,9 @@ function renderAvailableTables(tables: Table[]) {
     )
     .join('');
 
-  container.querySelectorAll('.table-card').forEach((card) => {
-    (card as HTMLElement).addEventListener('click', () => {
-      handleTableClick((card as HTMLElement).dataset.tableId!);
-    });
-  });
+function handleTableClick(tableId: string) {
+    // Navigate to Create Order Page
+    window.location.href = `createOrder.html?table_id=${tableId}`;
 }
 
 // Modal Functions

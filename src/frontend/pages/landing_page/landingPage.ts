@@ -86,13 +86,16 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             console.log('Sending request to /auth/login...'); // Debug 7
             // Using ApiService for consistent request handling
-            const response = await ApiService.post<{ user: { role: string; id: string; name: string; username: string } }>('/auth/login', { username, password });
+            const response = await ApiService.post<{ user: { role: string; id: string; name: string; username: string }, token: string }>('/auth/login', { username, password });
 
             console.log('Login successful', response);
 
-            // Save user to localStorage
+            // Save user and token to localStorage
             if (response.user) {
                 localStorage.setItem('user', JSON.stringify(response.user));
+            }
+            if (response.token) {
+                localStorage.setItem('token', response.token);
             }
 
             // Redirect based on role

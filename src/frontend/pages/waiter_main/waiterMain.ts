@@ -16,8 +16,6 @@ interface Order {
     created_at: string;
 }
 
-// State
-const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : (window.location.pathname.includes('/server09/') ? '/server09/api' : '/api');
 
 // DOM Elements
 const sidebar = document.getElementById('sidebar');
@@ -143,44 +141,7 @@ function setupEventListeners() {
     });
 }
 
-async function openTableSelectionModal() {
-    const modalOverlay = document.getElementById('tableModalOverlay');
-    const grid = document.getElementById('availableTablesGrid');
 
-    if (!modalOverlay || !grid) return;
-
-    grid.innerHTML = '<p>Carregando mesas...</p>';
-    modalOverlay.classList.add('active');
-
-    try {
-        const response = await ApiService.get<{ data: Table[] }>('/tables');
-        const tables = (response.data || []).filter(t => t.status === 'AVAILABLE');
-
-        if (tables.length === 0) {
-            grid.innerHTML = '<p class="empty-message">Nenhuma mesa disponível no momento.</p>';
-            return;
-        }
-
-        grid.innerHTML = tables.map(table => `
-            <button class="table-card available" data-table-id="${table.id}">
-                <span class="table-number">${table.number}</span>
-            </button>
-        `).join('');
-
-        grid.querySelectorAll('.table-card').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const tableId = (btn as HTMLElement).dataset.tableId;
-                if (tableId) {
-                    window.location.href = `/pages/createOrder.html?table_id=${tableId}`;
-                }
-            });
-        });
-
-    } catch (error) {
-        grid.innerHTML = '<p class="error-message">Erro ao carregar mesas.</p>';
-        console.error(error);
-    }
-}
 
 async function handleLogout() {
     try {
@@ -201,6 +162,7 @@ async function loadTables() {
 
         renderOccupiedTables(tables.filter(t => t.status === 'OCCUPIED'));
         renderAllTables(tables);
+        renderAvailableTables(tables.filter(t => t.status === 'AVAILABLE'));
     } catch (error) {
         console.error('Error loading tables:', error);
     }
@@ -257,6 +219,38 @@ function handleTableClick(tableId: string) {
     window.location.href = `/pages/createOrder.html?table_id=${tableId}`;
 }
 
+// Modal Functions
+function openTableSelectionModal() {
+    const modal = document.getElementById('tableModalOverlay');
+    if (modal) {
+        modal.classList.add('active');
+        loadTables();
+    }
+}
+
+function renderAvailableTables(tables: Table[]) {
+    const container = document.getElementById('availableTablesGrid');
+    if (!container) return;
+
+    if (tables.length === 0) {
+        container.innerHTML = '<p class="empty-message">Nenhuma mesa disponível</p>';
+        return;
+    }
+
+    container.innerHTML = tables.map(table => `
+        <button class="table-card available" data-table-id="${table.id}" aria-label="Mesa ${table.number}">
+          <span class="table-number">${table.number}</span>
+        </button>
+    `).join('');
+
+    container.querySelectorAll('.table-card').forEach(card => {
+        (card as HTMLElement).addEventListener('click', () => {
+            // Navigate to Create Order with selected table
+            window.location.href = `createOrder.html?table_id=${(card as HTMLElement).dataset.tableId}`;
+        });
+    });
+}
+
 async function loadSummary() {
     try {
         // Reusing loadOrders from orders service might be better but for now direct fetch
@@ -283,5 +277,4 @@ async function loadSummary() {
 }
 
 // Initialize
-document.addEventListener('DOMContentLoaded', init);
 document.addEventListener('DOMContentLoaded', init);

@@ -12,7 +12,7 @@ const categories = [
 ];
 
 // Gerar IDs dos usuários (3 admins)
-const userIds = Array.from({ length: 3 }, () => uuidv4());
+const userIds = Array.from({ length: 4 }, () => uuidv4());
 
 const users = [
   {
@@ -38,6 +38,14 @@ const users = [
     password_hash:
       '$2b$10$rGze23Ok9t9W0HECY1s71.tLNY8UXHbLxJXBX72hIEou1me8k1zv6',
     role: userRole.ADMIN,
+  },
+  {
+    id: userIds[3],
+    name: 'Romulo',
+    username: 'romulo',
+    password_hash:
+      '$2b$10$rGze23Ok9t9W0HECY1s71.tLNY8UXHbLxJXBX72hIEou1me8k1zv6',
+    role: userRole.WAITER,
   },
 ];
 
@@ -211,7 +219,7 @@ const orders = [
     id: orderIds[5],
     table_id: tableIds[0],
     user_id: userIds[0],
-    status: 'COMPLETED',
+    status: 'CLOSED',
     total: 6600,
     tip: 660,
     opened_at: new Date('2026-01-29T14:00:00'),
@@ -221,7 +229,7 @@ const orders = [
     id: orderIds[6],
     table_id: tableIds[1],
     user_id: userIds[1],
-    status: 'COMPLETED',
+    status: 'CLOSED',
     total: 8100,
     tip: 810,
     opened_at: new Date('2026-01-29T16:00:00'),
@@ -231,7 +239,7 @@ const orders = [
     id: orderIds[7],
     table_id: tableIds[2],
     user_id: userIds[2],
-    status: 'COMPLETED',
+    status: 'CLOSED',
     total: 4900,
     tip: 490,
     opened_at: new Date('2026-01-29T18:00:00'),
@@ -241,7 +249,7 @@ const orders = [
     id: orderIds[8],
     table_id: tableIds[3],
     user_id: userIds[0],
-    status: 'COMPLETED',
+    status: 'CLOSED',
     total: 9200,
     tip: 920,
     opened_at: new Date('2026-01-30T08:00:00'),
@@ -251,7 +259,7 @@ const orders = [
     id: orderIds[9],
     table_id: tableIds[4],
     user_id: userIds[1],
-    status: 'COMPLETED',
+    status: 'CLOSED',
     total: 5700,
     tip: 570,
     opened_at: new Date('2026-01-30T09:30:00'),

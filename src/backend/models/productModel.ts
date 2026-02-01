@@ -10,43 +10,33 @@ export type { ProductDTO, CreateProductDTO, UpdateProductDTO };
 export class ProductModel {
   static async findAll(): Promise<ProductDTO[]> {
     const db = await getDb();
-    const products = await db.all<ProductDTO[]>('SELECT * FROM products');
-    return products;
+    return db.all<ProductDTO[]>('SELECT * FROM products');
   }
 
   static async findById(id: string): Promise<ProductDTO | undefined> {
     const db = await getDb();
-    const product = await db.get<ProductDTO>(
-      'SELECT * FROM products WHERE id = ?',
-      [id],
-    );
-    return product;
+    return db.get<ProductDTO>('SELECT * FROM products WHERE id = ?', [id]);
   }
 
   static async findByCategory(categoryId: string): Promise<ProductDTO[]> {
     const db = await getDb();
-    const products = await db.all<ProductDTO[]>(
+    return db.all<ProductDTO[]>(
       'SELECT * FROM products WHERE category_id = ?',
       [categoryId],
     );
-    return products;
   }
 
   static async findActive(): Promise<ProductDTO[]> {
     const db = await getDb();
-    const products = await db.all<ProductDTO[]>(
-      'SELECT * FROM products WHERE is_active = 1',
-    );
-    return products;
+    return db.all<ProductDTO[]>('SELECT * FROM products WHERE is_active = 1');
   }
 
   static async findActiveByCategory(categoryId: string): Promise<ProductDTO[]> {
     const db = await getDb();
-    const products = await db.all<ProductDTO[]>(
+    return db.all<ProductDTO[]>(
       'SELECT * FROM products WHERE category_id = ? AND is_active = 1',
       [categoryId],
     );
-    return products;
   }
 
   static async create(data: CreateProductDTO): Promise<ProductDTO> {
@@ -129,10 +119,9 @@ export class ProductModel {
   static async search(query: string): Promise<ProductDTO[]> {
     const db = await getDb();
     const searchTerm = `%${query}%`;
-    const products = await db.all<ProductDTO[]>(
+    return db.all<ProductDTO[]>(
       'SELECT * FROM products WHERE name LIKE ? OR description LIKE ?',
       [searchTerm, searchTerm],
     );
-    return products;
   }
 }

@@ -1,95 +1,175 @@
 import { getDb } from '../../config/database';
 import { runSeeds } from '../seeds/seeds';
 
+/**
+ * Executa as migrations do banco de dados
+ *
+ * IMPORTANTE: Preços são armazenados como INTEGER em centavos
+ * Exemplo: R$ 10,50 = 1050, R$ 0,99 = 99, R$ 100,00 = 10000
+ */
 export const runMigrations = async () => {
   const db = await getDb();
 
-  // Tabela de Categorias
+  // ========================================
+  // TABELA: categories
+  // ========================================
   await db.exec(`
     CREATE TABLE IF NOT EXISTS categories (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
-      slug TEXT UNIQUE NOT NULL
+      slug TEXT UNIQUE NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME
     )
   `);
 
-  // Tabela de Produtos
+  // ========================================
+  // TABELA: products
+  // ========================================
   await db.exec(`
     CREATE TABLE IF NOT EXISTS products (
       id TEXT PRIMARY KEY,
       category_id TEXT NOT NULL,
       name TEXT NOT NULL,
       description TEXT,
-      price INTEGER NOT NULL,
+      price INTEGER NOT NULL CHECK (price >= 0),
       image_path TEXT,
       is_active BOOLEAN DEFAULT 1,
-      FOREIGN KEY (category_id) REFERENCES categories(id)
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME,
+      FOREIGN KEY (category_id) REFERENCES categories(id) 
+        ON DELETE RESTRICT 
+        ON UPDATE CASCADE
     )
   `);
 
-  // Tabela de Usuários
+  // ========================================
+  // TABELA: users
+  // ========================================
   await db.exec(`
     CREATE TABLE IF NOT EXISTS users (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
       username TEXT UNIQUE NOT NULL,
       password_hash TEXT NOT NULL,
-      role TEXT NOT NULL,
+      role TEXT NOT NULL CHECK (role IN ('admin', 'manager', 'waiter')),
       image_url TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME
     )
   `);
 
-  // Tabela de Mesas (Restaurant Tables)
+  // ========================================
+  // TABELA: restaurant_tables
+  // ========================================
   await db.exec(`
     CREATE TABLE IF NOT EXISTS restaurant_tables (
       id TEXT PRIMARY KEY,
-      number INTEGER UNIQUE NOT NULL,
-      status TEXT NOT NULL DEFAULT 'AVAILABLE',
+      number INTEGER UNIQUE NOT NULL CHECK (number > 0),
+      capacity INTEGER DEFAULT 4 CHECK (capacity > 0),
+      status TEXT NOT NULL DEFAULT 'AVAILABLE' 
+        CHECK (status IN ('AVAILABLE', 'OCCUPIED', 'RESERVED')),
       waiter_id TEXT,
-      FOREIGN KEY (waiter_id) REFERENCES users(id)
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME,
+      FOREIGN KEY (waiter_id) REFERENCES users(id) 
+        ON DELETE SET NULL 
+        ON UPDATE CASCADE
     )
   `);
 
-  try {
-    await db.exec(
-      `ALTER TABLE restaurant_tables ADD COLUMN waiter_id TEXT REFERENCES users(id)`,
-    );
-  } catch (error) {
-    // Ignore if column already exists
-  }
-
-
-
-  // Tabela de Pedidos (Orders)
+  // ========================================
+  // TABELA: orders
+  // ========================================
   await db.exec(`
     CREATE TABLE IF NOT EXISTS orders (
       id TEXT PRIMARY KEY,
       table_id TEXT NOT NULL,
       user_id TEXT NOT NULL,
-      status TEXT NOT NULL DEFAULT 'OPEN',
-      total INTEGER DEFAULT 0,
-      tip INTEGER DEFAULT 0,
+      status TEXT NOT NULL DEFAULT 'OPEN' 
+        CHECK (status IN ('OPEN', 'CLOSED', 'CANCELLED')),
+      total INTEGER DEFAULT 0 CHECK (total >= 0),
+      tip INTEGER DEFAULT 0 CHECK (tip >= 0),
       opened_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       closed_at DATETIME,
-      FOREIGN KEY (table_id) REFERENCES restaurant_tables(id),
-      FOREIGN KEY (user_id) REFERENCES users(id)
+      FOREIGN KEY (table_id) REFERENCES restaurant_tables(id) 
+        ON DELETE RESTRICT 
+        ON UPDATE CASCADE,
+      FOREIGN KEY (user_id) REFERENCES users(id) 
+        ON DELETE RESTRICT 
+        ON UPDATE CASCADE
     )
   `);
 
-  // Tabela de Itens do Pedido (Order Items)
+  // ========================================
+  // TABELA: order_items
+  // ========================================
   await db.exec(`
     CREATE TABLE IF NOT EXISTS order_items (
       id TEXT PRIMARY KEY,
       order_id TEXT NOT NULL,
       product_id TEXT NOT NULL,
-      quantity INTEGER NOT NULL,
-      unit_price INTEGER NOT NULL,
-      FOREIGN KEY (order_id) REFERENCES orders(id),
-      FOREIGN KEY (product_id) REFERENCES products(id)
+      quantity INTEGER NOT NULL CHECK (quantity > 0),
+      unit_price INTEGER NOT NULL CHECK (unit_price >= 0),
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (order_id) REFERENCES orders(id) 
+        ON DELETE CASCADE 
+        ON UPDATE CASCADE,
+      FOREIGN KEY (product_id) REFERENCES products(id) 
+        ON DELETE RESTRICT 
+        ON UPDATE CASCADE
     )
   `);
+
+  // ========================================
+  // ÍNDICES PARA OTIMIZAÇÃO DE PERFORMANCE
+  // ========================================
+
+  // Índices para categories
+  await db.exec(
+    `CREATE INDEX IF NOT EXISTS idx_categories_slug ON categories(slug)`,
+  );
+
+  // Índices para products
+  await db.exec(
+    `CREATE INDEX IF NOT EXISTS idx_products_category_id ON products(category_id)`,
+  );
+  await db.exec(
+    `CREATE INDEX IF NOT EXISTS idx_products_is_active ON products(is_active)`,
+  );
+
+  // Índices para users
+  await db.exec(
+    `CREATE INDEX IF NOT EXISTS idx_users_username ON users(username)`,
+  );
+  await db.exec(`CREATE INDEX IF NOT EXISTS idx_users_role ON users(role)`);
+
+  // Índices para restaurant_tables
+  await db.exec(
+    `CREATE INDEX IF NOT EXISTS idx_tables_status ON restaurant_tables(status)`,
+  );
+  await db.exec(
+    `CREATE INDEX IF NOT EXISTS idx_tables_waiter_id ON restaurant_tables(waiter_id)`,
+  );
+
+  // Índices para orders
+  await db.exec(
+    `CREATE INDEX IF NOT EXISTS idx_orders_table_id ON orders(table_id)`,
+  );
+  await db.exec(
+    `CREATE INDEX IF NOT EXISTS idx_orders_user_id ON orders(user_id)`,
+  );
+  await db.exec(
+    `CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status)`,
+  );
+
+  // Índices para order_items
+  await db.exec(
+    `CREATE INDEX IF NOT EXISTS idx_order_items_order_id ON order_items(order_id)`,
+  );
+  await db.exec(
+    `CREATE INDEX IF NOT EXISTS idx_order_items_product_id ON order_items(product_id)`,
+  );
 
   // Executar seeds
   await runSeeds();

@@ -1,4 +1,4 @@
-export {};
+export { };
 import './style.css';
 import {
   centsToReais,
@@ -43,7 +43,8 @@ interface Order {
   table_id: number; // or string depending on API, script calls it table_id but renders table_id directly
   status: 'OPEN' | 'CLOSED' | 'CANCELLED';
   total: number;
-  created_at?: string;
+  opened_at: string;
+  closed_at?: string;
   items?: any[];
 }
 
@@ -310,6 +311,23 @@ async function loadDashboard() {
     if (reservedTablesEl)
       reservedTablesEl.textContent = reservedTables.toString();
 
+    // Calculate Daily Sales
+    const today = new Date();
+    // Normalize to start/end of day in local time for accurate comparison
+    const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+    const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1).getTime();
+
+    const salesToday = ordersData.data?.filter((o) => {
+      const isClosed = o.status === 'CLOSED' || (o.status as any) === 'COMPLETED';
+      if (!isClosed || !o.closed_at) return false;
+
+      const closeTime = new Date(o.closed_at).getTime();
+      return closeTime >= startOfDay && closeTime < endOfDay;
+    }).reduce((acc, curr) => acc + (curr.total || 0), 0) || 0;
+
+    const dailySalesEl = document.getElementById("dailySales");
+    if (dailySalesEl) dailySalesEl.textContent = `R$ ${salesToday.toFixed(2)}`;
+
     // Recent orders
     renderRecentOrders(ordersData.data || []);
   } catch (error) {
@@ -410,15 +428,14 @@ function showUserForm(userId: string | null = null) {
         <label class="form-label">Username</label>
         <input type="text" class="form-input" name="username" value="${user?.username || ''}" required>
       </div>
-      ${
-        !isEdit
-          ? `
+      ${!isEdit
+        ? `
       <div class="form-group">
         <label class="form-label">Senha</label>
         <input type="password" class="form-input" name="password" required>
       </div>
       `
-          : ''
+        : ''
       }
       <div class="form-group">
         <label class="form-label">Função</label>
@@ -572,14 +589,14 @@ function showProductForm(productId: string | null = null) {
         <select class="form-select" name="category_id" required>
           <option value="">Selecione...</option>
           ${categories
-            .map(
-              (cat) => `
+        .map(
+          (cat) => `
             <option value="${cat.id}" ${product?.category_id === cat.id ? 'selected' : ''}>
               ${cat.name}
             </option>
           `,
-            )
-            .join('')}
+        )
+        .join('')}
         </select>
       </div>
       <div class="form-group">
@@ -807,7 +824,7 @@ function renderOrders(ordersData: Order[]) {
         <td>Mesa ${order.table_id}</td>
         <td><span class="status-pill ${order.status.toLowerCase()}">${order.status}</span></td>
         <td>${formatCurrency(order.total || 0)}</td>
-        <td>${order.created_at ? new Date(order.created_at).toLocaleDateString('pt-BR') : '-'}</td>
+        <td>${order.opened_at ? new Date(order.opened_at).toLocaleDateString('pt-BR') : '-'}</td>
         <td>
           <div class="action-btns">
             <button class="btn-icon" onclick="viewOrder('${order.id}')" title="Visualizar">
@@ -834,7 +851,7 @@ async function viewOrder(orderId: string) {
         <p><strong>Mesa:</strong> ${order.table_id}</p>
         <p><strong>Status:</strong> <span class="status-pill ${order.status.toLowerCase()}">${order.status}</span></p>
         <p><strong>Total:</strong> ${formatCurrency(order.total || 0)}</p>
-        <p><strong>Data:</strong> ${order.created_at ? new Date(order.created_at).toLocaleString('pt-BR') : '-'}</p>
+        <p><strong>Data:</strong> ${order.opened_at ? new Date(order.opened_at).toLocaleString('pt-BR') : '-'}</p>
       </div>
       <div class="form-actions">
         <button type="button" class="btn-secondary" onclick="closeModal()">Fechar</button>
@@ -1043,31 +1060,23 @@ function applyProductFilters() {
 // INITIALIZATION
 // ========================================
 document.addEventListener("DOMContentLoaded", () => {
-    initDarkMode();
+  initDarkMode();
 
-    // Event Listeners
-    if (menuBtn && sidebar) {
-        menuBtn.addEventListener("click", () => {
-            sidebar.classList.toggle("active");
-        });
-    }
-
-    const navItems = document.querySelectorAll('.nav-item');
-    navItems.forEach((item) => {
-        item.addEventListener("click", () => {
-            const section = (item as HTMLElement).dataset.section;
-            if (section) switchSection(section);
-        });
+  // Event Listeners
+  if (menuBtn && sidebar) {
+    menuBtn.addEventListener("click", () => {
+      sidebar.classList.toggle("active");
     });
   }
 
   const navItems = document.querySelectorAll('.nav-item');
   navItems.forEach((item) => {
-    item.addEventListener('click', () => {
+    item.addEventListener("click", () => {
       const section = (item as HTMLElement).dataset.section;
       if (section) switchSection(section);
     });
   });
+
 
   if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
 

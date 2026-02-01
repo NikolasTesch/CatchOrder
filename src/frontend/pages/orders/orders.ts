@@ -105,13 +105,21 @@ async function loadTables() {
 function renderOrders() {
     const filteredOrders = filterOrders();
 
+    const sortByTable = (a: Order, b: Order) => {
+        const tableA = tables.find(t => t.id === a.table_id);
+        const tableB = tables.find(t => t.id === b.table_id);
+        const numA = tableA ? Number(tableA.number) : 0;
+        const numB = tableB ? Number(tableB.number) : 0;
+        return numA - numB;
+    };
+
     const openOrders = filteredOrders.filter(order =>
         order.status === 'OPEN' || order.status === 'IN_PROGRESS'
-    );
+    ).sort(sortByTable);
 
     const finishedOrders = filteredOrders.filter(order =>
         order.status === 'CLOSED' || order.status === 'PAID'
-    );
+    ).sort(sortByTable);
 
     renderOrderList(openOrdersSection, openOrders, 'open');
     renderOrderList(finishedOrdersSection, finishedOrders, 'finished');

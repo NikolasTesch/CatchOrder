@@ -9,12 +9,17 @@ import type {
 import { TableModel } from './tableModel';
 import { TableStatus } from '../../shared/types/table';
 
+interface OrderRawResult extends OrderDTO {
+  user_name: string;
+  items_json: string;
+}
+
 export class OrderModel {
   static async findAll(): Promise<OrderDTO[]> {
     const db = await getDb();
     // Dynamically calculate total from items to ensure accuracy
     // Using LEFT JOIN to sum stored prices.
-    const orders = await db.all<any[]>(`
+    const orders = await db.all<OrderRawResult[]>(`...query...`);
       SELECT 
         o.*, 
         u.name as user_name,

@@ -9,21 +9,45 @@ import type {
 import { TableModel } from './tableModel';
 import { TableStatus } from '../../shared/types/table';
 
+interface OrderRawResult extends OrderDTO {
+  user_name: string;
+  items_json: string;
+}
+
 export class OrderModel {
   static async findAll(): Promise<OrderDTO[]> {
     const db = await getDb();
     // Dynamically calculate total from items to ensure accuracy
     // Using LEFT JOIN to sum stored prices.
-    return db.all<OrderDTO[]>(`
+    const orders = await db.all<OrderRawResult[]>(`...query...`);
       SELECT 
         o.*, 
         u.name as user_name,
-        COALESCE(SUM(oi.quantity * oi.unit_price), 0) as total
+        COALESCE(SUM(oi.quantity * oi.unit_price), 0) as total,
+        json_group_array(json_object('name', p.name, 'quantity', oi.quantity, 'unit_price', oi.unit_price)) as items_json
       FROM orders o
       LEFT JOIN order_items oi ON o.id = oi.order_id
+      LEFT JOIN products p ON oi.product_id = p.id
       LEFT JOIN users u ON o.user_id = u.id
       GROUP BY o.id
     `);
+
+    return orders.map((o) => {
+      let items = [];
+      try {
+        items = JSON.parse(o.items_json);
+        // Filter out nulls from left join (if an order has no items, json_group_array might contain an object with null values or be [null])
+        items = items.filter((i: any) => i && i.name);
+      } catch (e) {
+        items = [];
+      }
+      return {
+        ...o,
+        items,
+        // Ensure total is a number
+        total: Number(o.total)
+      };
+    });
   }
 
   static async findById(id: string): Promise<OrderDTO | undefined> {

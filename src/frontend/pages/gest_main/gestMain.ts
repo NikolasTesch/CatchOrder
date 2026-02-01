@@ -326,10 +326,12 @@ async function loadDashboard() {
     }).reduce((acc, curr) => acc + (curr.total || 0), 0) || 0;
 
     const dailySalesEl = document.getElementById("dailySales");
-    if (dailySalesEl) dailySalesEl.textContent = `R$ ${salesToday.toFixed(2)}`;
+    if (dailySalesEl) dailySalesEl.textContent = formatCurrency(salesToday);
 
     // Recent orders
     renderRecentOrders(ordersData.data || []);
+    renderTopProducts(ordersData.data || []);
+    renderBiggestSales(ordersData.data || []);
   } catch (error) {
     console.error('Error loading dashboard:', error);
   }
@@ -339,7 +341,10 @@ function renderRecentOrders(ordersData: Order[]) {
   const container = document.getElementById('recentOrders');
   if (!container) return;
 
-  const recentOrders = ordersData.slice(0, 5);
+  // Recent: Last 5 orders (assuming array is latest first? Or I should sort by opened_at desc)
+  // The API doesn't guarantee order, safe to sort
+  const sorted = [...ordersData].sort((a, b) => new Date(b.opened_at).getTime() - new Date(a.opened_at).getTime());
+  const recentOrders = sorted.slice(0, 5);
 
   if (recentOrders.length === 0) {
     container.innerHTML =
@@ -362,6 +367,72 @@ function renderRecentOrders(ordersData: Order[]) {
     `,
     )
     .join('');
+}
+
+function renderTopProducts(ordersData: Order[]) {
+  const container = document.getElementById('topProducts');
+  if (!container) return;
+
+  if (ordersData.length === 0) {
+    container.innerHTML = '<p class="loading-text">Sem dados</p>';
+    return;
+  }
+
+  // Aggregate products
+  const productStats: Record<string, number> = {};
+  ordersData.forEach(order => {
+    if (order.items && Array.isArray(order.items)) {
+      order.items.forEach((item: any) => {
+        if (item.name) {
+          productStats[item.name] = (productStats[item.name] || 0) + (item.quantity || 0);
+        }
+      });
+    }
+  });
+
+  const topProducts = Object.entries(productStats)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 5);
+
+  if (topProducts.length === 0) {
+    container.innerHTML = '<p class="loading-text">Nenhum produto vendido</p>';
+    return;
+  }
+
+  container.innerHTML = topProducts.map(([name, qty]) => `
+        <div class="recent-item">
+            <div class="recent-item-header">
+                <span class="recent-item-id">${name}</span>
+                <span class="recent-item-status" style="background: #e3f2fd; color: #1976d2;">${qty} item(s)</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderBiggestSales(ordersData: Order[]) {
+  const container = document.getElementById('biggestSales');
+  if (!container) return;
+
+  if (ordersData.length === 0) {
+    container.innerHTML = '<p class="loading-text">Sem dados</p>';
+    return;
+  }
+
+  const biggest = [...ordersData]
+    .sort((a, b) => (b.total || 0) - (a.total || 0))
+    .slice(0, 5);
+
+  container.innerHTML = biggest.map(order => `
+        <div class="recent-item">
+            <div class="recent-item-header">
+                <span class="recent-item-id">Pedido #${order.id.substring(0, 8)}</span>
+                <span class="recent-item-status" style="background: #e8f5e9; color: #2e7d32;">${formatCurrency(order.total || 0)}</span>
+            </div>
+             <div class="recent-item-info">
+                ${order.opened_at ? new Date(order.opened_at).toLocaleDateString('pt-BR') : '-'}
+            </div>
+        </div>
+    `).join('');
 }
 
 // ========================================
@@ -846,12 +917,42 @@ async function viewOrder(orderId: string) {
     if (modalTitle)
       modalTitle.textContent = `Pedido #${orderId.substring(0, 8)}`;
     if (modalBody) {
+      const itemsHtml = order.items && order.items.length > 0
+        ? `
+          <table class="table" style="margin-top: 15px;">
+            <thead>
+              <tr>
+                <th>Produto</th>
+                <th>Qtd</th>
+                <th>Unitário</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${order.items.map((item: any) => `
+                <tr>
+                  <td>${item.product_name || 'Produto Removido'}</td>
+                  <td>${item.quantity}</td>
+                  <td>${formatCurrency(item.unit_price)}</td>
+                  <td>${formatCurrency(item.total_item || item.quantity * item.unit_price)}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `
+        : '<p>Nenhum item neste pedido.</p>';
+
       modalBody.innerHTML = `
       <div style="margin-bottom: 20px;">
         <p><strong>Mesa:</strong> ${order.table_id}</p>
         <p><strong>Status:</strong> <span class="status-pill ${order.status.toLowerCase()}">${order.status}</span></p>
-        <p><strong>Total:</strong> ${formatCurrency(order.total || 0)}</p>
         <p><strong>Data:</strong> ${order.opened_at ? new Date(order.opened_at).toLocaleString('pt-BR') : '-'}</p>
+        <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
+        <h4 style="margin-bottom: 10px;">Itens do Pedido</h4>
+        ${itemsHtml}
+        <div style="margin-top: 15px; text-align: right;">
+           <p class="summary-value" style="font-size: 1.2rem;"><strong>Total: ${formatCurrency(order.total || 0)}</strong></p>
+        </div>
       </div>
       <div class="form-actions">
         <button type="button" class="btn-secondary" onclick="closeModal()">Fechar</button>

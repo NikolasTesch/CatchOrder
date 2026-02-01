@@ -1,8 +1,6 @@
 export class ApiService {
     static getBaseUrl(): string {
-        console.log('Detected Hostname:', window.location.hostname);
         if (window.location.hostname === 'lab.alphaedtech.org.br') {
-            console.log('Returning Remote URL: /server09/api');
             return '/server09/api';
         }
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {

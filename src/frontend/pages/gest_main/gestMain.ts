@@ -997,7 +997,6 @@ function applyProductFilters() {
 // ========================================
 document.addEventListener("DOMContentLoaded", () => {
     initDarkMode();
-    console.log("GestMain v2 Loaded - Fixing Remote Deployment"); // Debug Log
 
     // Event Listeners
     if (menuBtn && sidebar) {

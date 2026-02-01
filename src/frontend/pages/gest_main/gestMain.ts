@@ -67,12 +67,6 @@ declare global {
 }
 
 // ========================================
-// CONFIGURATION
-// ========================================
-const API_BASE = window.location.origin;
-const API_PREFIX = '/api';
-
-// ========================================
 // STATE MANAGEMENT
 // ========================================
 let currentSection = 'dashboard';
@@ -127,30 +121,30 @@ function updateDarkModeIcon(isDark: boolean) {
 // ========================================
 // API HELPERS
 // ========================================
+// Using ApiService from services folder
+import { ApiService } from '../../services/apiService';
+
 async function apiCall<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     try {
-        const response = await fetch(`${API_BASE}${API_PREFIX}${endpoint}`, {
-            ...options,
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json",
-                ...options.headers,
-            },
-        });
+        const method = options.method || 'GET';
+        let response: any;
 
-        if (!response.ok) {
-            if (response.status === 401) {
-                window.location.href = "/login.html";
-                return {} as T; // Unreachable due to redirect
-            }
-            const error = await response.json();
-            throw new Error(error.message || "Erro na requisição");
+        if (method === 'GET') {
+            response = await ApiService.get(endpoint);
+        } else if (method === 'POST') {
+            response = await ApiService.post(endpoint, options.body ? JSON.parse(options.body as string) : {});
+        } else if (method === 'PUT') {
+            response = await ApiService.put(endpoint, options.body ? JSON.parse(options.body as string) : {});
+        } else if (method === 'DELETE') {
+            response = await ApiService.delete(endpoint);
         }
 
-        return await response.json();
+        // ApiService already returns the data directly (T) or throws error
+        return response as T;
+
     } catch (error: any) {
         console.error("API Error:", error);
-        showToast(error.message, "error");
+        showToast(error.message || "Erro na requisição", "error");
         throw error;
     }
 }
@@ -1038,9 +1032,12 @@ document.addEventListener("DOMContentLoaded", () => {
         logoutBtn.addEventListener("click", async () => {
             try {
                 await apiCall("/auth/logout", { method: "POST" });
-                window.location.href = "/login.html";
             } catch (error) {
                 console.error("Logout error:", error);
+            } finally {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = "/pages/landingPage.html";
             }
         });
     }

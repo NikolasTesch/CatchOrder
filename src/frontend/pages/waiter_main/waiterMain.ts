@@ -15,7 +15,7 @@ interface Order {
   status: 'OPEN' | 'CLOSED' | 'CANCELLED';
   total: number;
   tip: number;
-  created_at: string;
+  opened_at: string;
 }
 
 interface User {
@@ -346,7 +346,10 @@ async function loadSummary() {
 
     const today = new Date().toDateString();
     const todayOrders = orders.filter((o) => {
-      const orderDate = new Date(o.created_at).toDateString();
+      // Use opened_at which matches the database field
+      if (!o.opened_at) return false;
+
+      const orderDate = new Date(o.opened_at).toDateString();
       return (
         orderDate === today &&
         o.status === 'CLOSED' &&

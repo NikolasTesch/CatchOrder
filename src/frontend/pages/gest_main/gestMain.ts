@@ -1,5 +1,11 @@
 export {};
 import './style.css';
+import {
+  centsToReais,
+  formatCurrency,
+  reaisToCents,
+  parseInputToCents,
+} from '../../utils/currency';
 // ========================================
 // INTERFACES
 // ========================================
@@ -124,29 +130,37 @@ function updateDarkModeIcon(isDark: boolean) {
 // Using ApiService from services folder
 import { ApiService } from '../../services/apiService';
 
-async function apiCall<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    try {
-        const method = options.method || 'GET';
-        let response: any;
+async function apiCall<T>(
+  endpoint: string,
+  options: RequestInit = {},
+): Promise<T> {
+  try {
+    const method = options.method || 'GET';
+    let response: any;
 
-        if (method === 'GET') {
-            response = await ApiService.get(endpoint);
-        } else if (method === 'POST') {
-            response = await ApiService.post(endpoint, options.body ? JSON.parse(options.body as string) : {});
-        } else if (method === 'PUT') {
-            response = await ApiService.put(endpoint, options.body ? JSON.parse(options.body as string) : {});
-        } else if (method === 'DELETE') {
-            response = await ApiService.delete(endpoint);
-        }
-
-        // ApiService already returns the data directly (T) or throws error
-        return response as T;
-
-    } catch (error: any) {
-        console.error("API Error:", error);
-        showToast(error.message || "Erro na requisição", "error");
-        throw error;
+    if (method === 'GET') {
+      response = await ApiService.get(endpoint);
+    } else if (method === 'POST') {
+      response = await ApiService.post(
+        endpoint,
+        options.body ? JSON.parse(options.body as string) : {},
+      );
+    } else if (method === 'PUT') {
+      response = await ApiService.put(
+        endpoint,
+        options.body ? JSON.parse(options.body as string) : {},
+      );
+    } else if (method === 'DELETE') {
+      response = await ApiService.delete(endpoint);
     }
+
+    // ApiService already returns the data directly (T) or throws error
+    return response as T;
+  } catch (error: any) {
+    console.error('API Error:', error);
+    showToast(error.message || 'Erro na requisição', 'error');
+    throw error;
+  }
 }
 
 // ========================================
@@ -324,7 +338,7 @@ function renderRecentOrders(ordersData: Order[]) {
           <span class="recent-item-status">${order.status}</span>
         </div>
         <div class="recent-item-info">
-          Mesa: ${order.table_id} | Total: R$ ${order.total?.toFixed(2) || '0.00'}
+          Mesa: ${order.table_id} | Total: ${formatCurrency(order.total || 0)}
         </div>
       </div>
     `,
@@ -519,7 +533,7 @@ function renderProducts(productsData: Product[]) {
         </div>
         <p class="product-description">${product.description || 'Sem descrição'}</p>
         <div class="product-footer">
-          <span class="product-price">R$ ${product.price.toFixed(2)}</span>
+          <span class="product-price">R$ ${centsToReais(product.price)}</span>
            <div class="product-actions">
             <button class="btn-icon" onclick="editProduct('${product.id}')" title="Editar">
               <span class="material-symbols-outlined">edit</span>
@@ -574,7 +588,7 @@ function showProductForm(productId: string | null = null) {
       </div>
       <div class="form-group">
         <label class="form-label">Preço (R$)</label>
-        <input type="number" step="0.01" class="form-input" name="price" value="${product?.price || ''}" required>
+        <input type="number" step="0.01" class="form-input" name="price" value="${product ? centsToReais(product.price) : ''}" required>
       </div>
       <div class="form-group">
         <label class="form-label">Status</label>
@@ -599,7 +613,7 @@ async function submitProductForm(event: Event, productId: string | null) {
   const formData = new FormData(event.target as HTMLFormElement);
   const data: any = {};
   formData.forEach((value, key) => (data[key] = value));
-  data.price = parseFloat(data.price);
+  data.price = parseInputToCents(data.price);
   data.is_active = parseInt(data.is_active);
 
   try {
@@ -792,7 +806,7 @@ function renderOrders(ordersData: Order[]) {
         <td>#${order.id.substring(0, 8)}</td>
         <td>Mesa ${order.table_id}</td>
         <td><span class="status-pill ${order.status.toLowerCase()}">${order.status}</span></td>
-        <td>R$ ${order.total?.toFixed(2) || '0.00'}</td>
+        <td>${formatCurrency(order.total || 0)}</td>
         <td>${order.created_at ? new Date(order.created_at).toLocaleDateString('pt-BR') : '-'}</td>
         <td>
           <div class="action-btns">
@@ -819,7 +833,7 @@ async function viewOrder(orderId: string) {
       <div style="margin-bottom: 20px;">
         <p><strong>Mesa:</strong> ${order.table_id}</p>
         <p><strong>Status:</strong> <span class="status-pill ${order.status.toLowerCase()}">${order.status}</span></p>
-        <p><strong>Total:</strong> R$ ${order.total?.toFixed(2) || '0.00'}</p>
+        <p><strong>Total:</strong> ${formatCurrency(order.total || 0)}</p>
         <p><strong>Data:</strong> ${order.created_at ? new Date(order.created_at).toLocaleString('pt-BR') : '-'}</p>
       </div>
       <div class="form-actions">
@@ -1028,9 +1042,9 @@ function applyProductFilters() {
 // ========================================
 // INITIALIZATION
 // ========================================
-document.addEventListener("DOMContentLoaded", () => {
-    initDarkMode();
-    console.log("GestMain v2 Loaded - Fixing Remote Deployment"); // Debug Log
+document.addEventListener('DOMContentLoaded', () => {
+  initDarkMode();
+  console.log('GestMain v2 Loaded - Fixing Remote Deployment'); // Debug Log
 
   // Event Listeners
   if (menuBtn && sidebar) {
@@ -1126,17 +1140,16 @@ document.addEventListener("DOMContentLoaded", () => {
       renderOrders(filtered);
     });
 
-    // Filter Listeners
-    document.getElementById("searchUsers")?.addEventListener("input", (e) => {
-        const query = (e.target as HTMLInputElement).value.toLowerCase();
-        const filtered = users.filter(
-            (u) =>
-                u.name.toLowerCase().includes(query) ||
-                u.username.toLowerCase().includes(query)
-        );
-        renderUsers(filtered);
->>>>>>> developer
-    });
+  // Filter Listeners
+  document.getElementById('searchUsers')?.addEventListener('input', (e) => {
+    const query = (e.target as HTMLInputElement).value.toLowerCase();
+    const filtered = users.filter(
+      (u) =>
+        u.name.toLowerCase().includes(query) ||
+        u.username.toLowerCase().includes(query),
+    );
+    renderUsers(filtered);
+  });
 
   // Load initial data
   loadDashboard();

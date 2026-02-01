@@ -105,13 +105,21 @@ async function loadTables() {
 function renderOrders() {
     const filteredOrders = filterOrders();
 
+    const sortByTable = (a: Order, b: Order) => {
+        const tableA = tables.find(t => t.id === a.table_id);
+        const tableB = tables.find(t => t.id === b.table_id);
+        const numA = tableA ? Number(tableA.number) : 0;
+        const numB = tableB ? Number(tableB.number) : 0;
+        return numA - numB;
+    };
+
     const openOrders = filteredOrders.filter(order =>
         order.status === 'OPEN' || order.status === 'IN_PROGRESS'
-    );
+    ).sort(sortByTable);
 
     const finishedOrders = filteredOrders.filter(order =>
         order.status === 'CLOSED' || order.status === 'PAID'
-    );
+    ).sort(sortByTable);
 
     renderOrderList(openOrdersSection, openOrders, 'open');
     renderOrderList(finishedOrdersSection, finishedOrders, 'finished');
@@ -159,7 +167,9 @@ function createOrderCard(order: Order, type: 'open' | 'finished'): HTMLElement {
     const user = users.find(u => u.id === order.user_id);
 
     const tableNumber = table ? table.number : '?';
-    const userName = user ? (user.username || user.name) : 'Desconhecido';
+
+    // Use name from backend JOIN or fallback to local mapping
+    const userName = (order as any).user_name || (user ? (user.username || user.name) : 'Desconhecido');
 
     // Format price
     const price = order.total ? parseFloat(order.total).toFixed(2) : '0.00';

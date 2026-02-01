@@ -1,9 +1,6 @@
 import './style.css';
 import { ApiService } from '../../services/apiService';
 
-// API Configuration
-const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : (window.location.pathname.includes('/server09/') ? '/server09/api' : '/api');
-
 // Interfaces
 interface Category {
     id: string;
@@ -88,6 +85,25 @@ async function init() {
     }
 
     await loadTableDetails(currentTableId);
+
+    // [New Logic] Check if table already has an OPEN order
+    if (!currentOrderId) {
+        try {
+            const allOrdersResp = await ApiService.get<{ data: Order[] }>('/orders');
+            const openOrder = (allOrdersResp.data || []).find(o =>
+                o.table_id === currentTableId && o.status === 'OPEN'
+            );
+
+            if (openOrder) {
+                console.warn('Mesa ocupada. Redirecionando para ordem existente:', openOrder.id);
+                // Redirect to existing order
+                window.location.href = `/pages/createOrder.html?table_id=${currentTableId}&order_id=${openOrder.id}`;
+                return;
+            }
+        } catch (e) {
+            console.error('Erro ao verificar pedidos da mesa:', e);
+        }
+    }
 
     if (currentOrderId) {
         console.log('Edit Mode: Order ID present', currentOrderId);
@@ -175,7 +191,7 @@ function formatRole(role: string): string {
 
 async function apiCall<T>(url: string, options: RequestInit = {}): Promise<T> {
     const headers = getAuthHeaders();
-    const response = await fetch(`${API_BASE}${url}`, {
+    const response = await fetch(`${ApiService.getBaseUrl()}${url}`, {
         ...options,
         headers: {
             ...headers,
@@ -306,7 +322,7 @@ function createProductCard(product: Product): HTMLElement {
     card.className = 'product-card';
     card.dataset.productId = product.id;
 
-    const imageUrl = product.image_url || '/img/placeholder-product.png';
+    const imageUrl = product.image_url || 'https://placehold.co/150';
     const price = product.price ? parseFloat(product.price.toString()).toFixed(2) : '0.00';
 
     card.innerHTML = `
@@ -605,7 +621,10 @@ async function finalizeOrder() {
     }
 
     try {
-        await apiCall(`/orders/${currentOrderId}/close`, { method: 'PATCH' });
+        await apiCall(`/orders/${currentOrderId}/close`, {
+            method: 'PATCH',
+            body: JSON.stringify({ tip: 0 })
+        });
         showSuccess('Conta fechada com sucesso!');
         setTimeout(() => {
             window.location.href = 'orders.html';
@@ -704,9 +723,7 @@ function setupEventListeners() {
     const menuBtn = document.getElementById('menuBtn');
     const sidebar = document.getElementById('sidebar');
     if (menuBtn && sidebar) {
-        menuBtn.addEventListener('click', () => {
-            sidebar.classList.toggle('active');
-        });
+        menuBtn.addEventListener('click', toggleSidebar);
     }
 
     const logoutBtn = document.getElementById('logoutBtn');
@@ -741,9 +758,7 @@ function setupEventListeners() {
 
     const userBtn = document.getElementById('userBtn');
     if (userBtn) {
-        userBtn.addEventListener('click', () => {
-            console.log('User profile clicked');
-        });
+        userBtn.addEventListener('click', openUserModal);
     }
 }
 

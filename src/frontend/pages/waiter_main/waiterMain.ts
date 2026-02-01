@@ -26,12 +26,6 @@ interface User {
 }
 
 // State
-const API_BASE =
-  window.location.hostname === 'localhost'
-    ? 'http://localhost:3000/api'
-    : window.location.pathname.includes('/server09/')
-      ? '/server09/api'
-      : '/api';
 let currentUser: User | null = null;
 
 // DOM Elements
@@ -159,11 +153,28 @@ function setupEventListeners() {
     });
   }
 
-  // New Order Button
+  // New Order Button - opens modal if it exists, otherwise redirects
   const newOrderBtn = document.getElementById('newOrderBtn');
   if (newOrderBtn) {
-    newOrderBtn.addEventListener('click', () => {
-      window.location.href = 'createOrder.html';
+    const modalOverlay = document.getElementById('tableModalOverlay');
+    if (modalOverlay) {
+      newOrderBtn.addEventListener('click', openTableSelectionModal);
+    } else {
+      newOrderBtn.addEventListener('click', () => {
+        window.location.href = 'createOrder.html';
+      });
+    }
+  }
+
+  // Modal Close
+  const closeTableModal = document.getElementById('closeTableModal');
+  const modalOverlay = document.getElementById('tableModalOverlay');
+  if (closeTableModal && modalOverlay) {
+    closeTableModal.addEventListener('click', () => {
+      modalOverlay.classList.remove('active');
+    });
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) modalOverlay.classList.remove('active');
     });
   }
 
@@ -185,7 +196,6 @@ function setupEventListeners() {
   const userBtn = document.getElementById('userBtn');
   if (userBtn) {
     userBtn.addEventListener('click', () => {
-      // Maybe go to profile page or show specialized modal
       console.log('User profile clicked');
     });
   }
@@ -217,8 +227,16 @@ async function loadTables() {
     const response = await ApiService.get<{ data: Table[] }>('/tables');
     const tables = response.data || [];
 
-    renderOccupiedTables(tables);
-    renderAvailableTables(tables);
+    renderOccupiedTables(tables.filter((t) => t.status === 'OCCUPIED'));
+    renderAvailableTables(tables.filter((t) => t.status === 'AVAILABLE'));
+
+    // If modal exists, also render modal tables
+    const modalGrid = document.getElementById('availableTablesGrid');
+    if (modalGrid) {
+      renderModalAvailableTables(
+        tables.filter((t) => t.status === 'AVAILABLE'),
+      );
+    }
   } catch (error) {
     console.error('Error loading tables:', error);
   }
@@ -228,14 +246,12 @@ function renderOccupiedTables(tables: Table[]) {
   const container = document.querySelector('.occupied-scroll');
   if (!container) return;
 
-  const occupiedTables = tables.filter((t) => t.status === 'OCCUPIED');
-
-  if (occupiedTables.length === 0) {
+  if (tables.length === 0) {
     container.innerHTML = '<p class="empty-message">Nenhuma mesa ocupada</p>';
     return;
   }
 
-  container.innerHTML = occupiedTables
+  container.innerHTML = tables
     .map(
       (table) => `
         <button class="table-card occupied" data-table-id="${table.id}" aria-label="Mesa ${table.number}">
@@ -256,15 +272,13 @@ function renderAvailableTables(tables: Table[]) {
   const container = document.querySelector('.available-tables-grid');
   if (!container) return;
 
-  const availableTables = tables.filter((t) => t.status === 'AVAILABLE');
-
-  if (availableTables.length === 0) {
+  if (tables.length === 0) {
     container.innerHTML =
       '<p class="empty-message">Nenhuma mesa disponível</p>';
     return;
   }
 
-  container.innerHTML = availableTables
+  container.innerHTML = tables
     .map(
       (table) => `
     <button class="table-card available" data-table-id="${table.id}" aria-label="Mesa ${table.number}">
@@ -281,11 +295,45 @@ function renderAvailableTables(tables: Table[]) {
   });
 }
 
+// Modal Functions
+function openTableSelectionModal() {
+  const modal = document.getElementById('tableModalOverlay');
+  if (modal) {
+    modal.classList.add('active');
+    loadTables();
+  }
+}
+
+function renderModalAvailableTables(tables: Table[]) {
+  const container = document.getElementById('availableTablesGrid');
+  if (!container) return;
+
+  if (tables.length === 0) {
+    container.innerHTML =
+      '<p class="empty-message">Nenhuma mesa disponível</p>';
+    return;
+  }
+
+  container.innerHTML = tables
+    .map(
+      (table) => `
+    <button class="table-card available" data-table-id="${table.id}" aria-label="Mesa ${table.number}">
+      <span class="table-number">${table.number}</span>
+    </button>
+  `,
+    )
+    .join('');
+
+  container.querySelectorAll('.table-card').forEach((card) => {
+    (card as HTMLElement).addEventListener('click', () => {
+      // Navigate to Create Order with selected table
+      window.location.href = `createOrder.html?table_id=${(card as HTMLElement).dataset.tableId}`;
+    });
+  });
+}
+
 function handleTableClick(tableId: string) {
-  // Navigate to orders page filtering by this table or creating new order for it
-  // Or go to createOrder directly?
-  // Based on user flow, maybe 'orders.html' is a list, but 'createOrder.html' is the detail
-  // Let's go to createOrder which seems to be the main "Order Interaction" page
+  // Navigate to Create Order Page
   window.location.href = `createOrder.html?table_id=${tableId}`;
 }
 

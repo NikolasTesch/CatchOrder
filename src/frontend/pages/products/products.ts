@@ -1,10 +1,11 @@
 // Make this file a module to avoid global scope contamination
 export { };
 
+import { ApiService } from '../../services/apiService';
 import "./style.css";
 
 // API Configuration
-const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : (window.location.pathname.includes('/server09/') ? '/server09/api' : '/api');
+// Using ApiService.getBaseUrl()
 
 interface Product {
   id: string;
@@ -108,7 +109,7 @@ function closeUserModal(): void {
 async function handleLogout(): Promise<void> {
   if (confirm('Tem certeza que deseja sair?')) {
     try {
-      const response = await fetch(`${API_BASE}/auth/logout`, {
+      const response = await fetch(`${ApiService.getBaseUrl()}/auth/logout`, {
         method: 'POST',
         headers: getAuthHeaders()
       });
@@ -281,7 +282,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function fetchProducts(): Promise<void> {
     try {
-      const response = await fetch(`${API_BASE}/products`, {
+      const response = await fetch(`${ApiService.getBaseUrl()}/products`, {
         method: "GET",
         headers: getAuthHeaders(),
       });

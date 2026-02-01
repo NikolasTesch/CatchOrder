@@ -42,17 +42,26 @@
     </nav>
   </header>
 
-  <!-- Sidebar de Navegação -->
+  <!-- Sidebar Navigation (Waiter) -->
   <aside class="sidebar" id="sidebar">
-    <nav class="sidebar-nav">
-      <button class="nav-item" data-href="/pages/waiterMain.html">
-        <span class="material-symbols-outlined">dashboard</span>
-        <span class="nav-text">Dashboard</span>
-      </button>
-      <button class="nav-item active" data-href="/pages/orders.html">
-        <span class="material-symbols-outlined">receipt_long</span>
-        <span class="nav-text">Pedidos</span>
-      </button>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <nav class="sidebar-content">
+      <div class="sidebar-header">
+        <h2>Menu</h2>
+        <button class="close-btn" id="closeSidebar" aria-label="Fechar menu">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <ul class="sidebar-menu">
+        <li><a href="/pages/waiterMain.html" class="nav-item">
+            <span class="material-symbols-outlined">dashboard</span>
+            Dashboard
+          </a></li>
+        <li><a href="/pages/orders.html" class="nav-item">
+            <span class="material-symbols-outlined">receipt_long</span>
+            Pedidos
+          </a></li>
+      </ul>
     </nav>
   </aside>
 
@@ -91,41 +100,6 @@
         style="background-color: #ef4444; color: white; border: none;">Finalizar Pedido</button>
     </div>
   </main>
-
-  <!-- Sidebar Navigation -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-    <nav class="sidebar-content">
-      <div class="sidebar-header">
-        <h2>Menu</h2>
-        <button class="close-btn" id="closeSidebar" aria-label="Fechar menu">
-          <span class="material-symbols-outlined">close</span>
-        </button>
-      </div>
-      <ul class="sidebar-menu">
-        <li><a href="../products/products.html">
-          <span class="material-symbols-outlined">restaurant_menu</span>
-          Produtos
-        </a></li>
-        <li><a href="../create_products/createProducts.html">
-          <span class="material-symbols-outlined">add_circle</span>
-          Adicionar Produto
-        </a></li>
-        <li><a href="../users/users.html">
-          <span class="material-symbols-outlined">group</span>
-          Usuários
-        </a></li>
-        <li><a href="../waiter_main/waiterMain.html">
-          <span class="material-symbols-outlined">table_restaurant</span>
-          Mesas
-        </a></li>
-        <li><a href="../orders/orders.html">
-          <span class="material-symbols-outlined">receipt_long</span>
-          Pedidos
-        </a></li>
-      </ul>
-    </nav>
-  </aside>
 
   <!-- User Modal -->
   <div class="user-modal" id="userModal">

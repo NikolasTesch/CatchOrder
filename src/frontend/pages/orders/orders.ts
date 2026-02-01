@@ -159,7 +159,9 @@ function createOrderCard(order: Order, type: 'open' | 'finished'): HTMLElement {
     const user = users.find(u => u.id === order.user_id);
 
     const tableNumber = table ? table.number : '?';
-    const userName = user ? (user.username || user.name) : 'Desconhecido';
+
+    // Use name from backend JOIN or fallback to local mapping
+    const userName = (order as any).user_name || (user ? (user.username || user.name) : 'Desconhecido');
 
     // Format price
     const price = order.total ? parseFloat(order.total).toFixed(2) : '0.00';

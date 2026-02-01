@@ -1,9 +1,6 @@
 import './style.css';
 import { ApiService } from '../../services/apiService';
 
-// API Configuration
-const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : (window.location.pathname.includes('/server09/') ? '/server09/api' : '/api');
-
 // Interfaces
 interface Category {
     id: string;
@@ -194,7 +191,7 @@ function formatRole(role: string): string {
 
 async function apiCall<T>(url: string, options: RequestInit = {}): Promise<T> {
     const headers = getAuthHeaders();
-    const response = await fetch(`${API_BASE}${url}`, {
+    const response = await fetch(`${ApiService.getBaseUrl()}${url}`, {
         ...options,
         headers: {
             ...headers,

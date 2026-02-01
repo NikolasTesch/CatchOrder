@@ -1,5 +1,5 @@
 export class ApiService {
-    private static getBaseUrl(): string {
+    static getBaseUrl(): string {
         if (window.location.hostname === 'lab.alphaedtech.org.br') {
             return '/server09/api';
         }

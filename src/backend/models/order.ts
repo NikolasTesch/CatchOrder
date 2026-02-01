@@ -19,7 +19,7 @@ export class OrderModel {
     const db = await getDb();
     // Dynamically calculate total from items to ensure accuracy
     // Using LEFT JOIN to sum stored prices.
-    const orders = await db.all<OrderRawResult[]>(`...query...`);
+    const orders = await db.all<OrderRawResult[]>(`
       SELECT 
         o.*, 
         u.name as user_name,
@@ -31,7 +31,6 @@ export class OrderModel {
       LEFT JOIN users u ON o.user_id = u.id
       GROUP BY o.id
     `);
-
     return orders.map((o) => {
       let items = [];
       try {

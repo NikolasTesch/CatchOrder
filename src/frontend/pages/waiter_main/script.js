@@ -29,7 +29,7 @@ function getAuthHeaders() {
  * Handle API errors
  */
 function handleApiError(error, response) {
-  console.error('API Error:', error);
+  // console.error('API Error:', error);
 
   if (response && response.status === 401) {
     localStorage.removeItem('token');
@@ -47,7 +47,7 @@ function handleApiError(error, response) {
  */
 function showNotification(message, type = 'info') {
   // TODO: Implement a proper notification system
-  console.log(`[${type.toUpperCase()}] ${message}`);
+  // console.log(`[${type.toUpperCase()}] ${message}`);
 }
 
 function initDarkMode() {
@@ -93,7 +93,7 @@ function setupEventListeners() {
   const menuBtn = document.getElementById('menuBtn');
   if (menuBtn) {
     menuBtn.addEventListener('click', () => {
-      console.log('Menu clicked');
+      // console.log('Menu clicked');
       // TODO: Open navigation menu
     });
   }
@@ -102,7 +102,7 @@ function setupEventListeners() {
   const userBtn = document.getElementById('userBtn');
   if (userBtn) {
     userBtn.addEventListener('click', () => {
-      console.log('User profile clicked');
+      // console.log('User profile clicked');
       // TODO: Navigate to user profile
     });
   }
@@ -111,7 +111,7 @@ function setupEventListeners() {
   const logoImage = document.getElementById('logoImage');
   if (logoImage) {
     logoImage.addEventListener('click', () => {
-      console.log('Logo clicked');
+      // console.log('Logo clicked');
       // TODO: Navigate to home
     });
   }
@@ -202,7 +202,7 @@ function renderAllTables(tables) {
 }
 
 function handleTableClick(tableId) {
-  console.log('Table clicked:', tableId);
+  // console.log('Table clicked:', tableId);
   // Navigate to table details/orders page
   window.location.href = `orders.html?tableId=${tableId}`;
 }
@@ -253,10 +253,10 @@ function displayUserInfo() {
   if (userStr) {
     try {
       const user = JSON.parse(userStr);
-      console.log('Logged in as:', user.username);
+      // console.log('Logged in as:', user.username);
       // TODO: Display user name in UI if needed
     } catch (error) {
-      console.error('Error parsing user data:', error);
+      // console.error('Error parsing user data:', error);
     }
   }
 }
@@ -279,7 +279,7 @@ function init() {
     loadSummary();
   }, 30000);
 
-  console.log('WaiterMain page initialized');
+  // console.log('WaiterMain page initialized');
 }
 
 // Initialize when DOM is ready

@@ -78,7 +78,7 @@ async function loadOrder() {
 
     renderOrderDetails();
   } catch (error) {
-    console.error("Erro ao carregar pedido:", error);
+
     showError("Erro ao carregar pedido");
   }
 }
@@ -97,7 +97,7 @@ async function loadTable() {
       displayTableNumberEl.textContent = tableNumber;
     }
   } catch (error) {
-    console.error("Erro ao carregar mesa:", error);
+
   }
 }
 
@@ -204,7 +204,7 @@ function closeOrder() {
           window.location.href = "waiterMain.html";
         }, 1500);
       } catch (error: any) {
-        console.error("Erro ao fechar comanda:", error);
+        // console.error("Erro ao fechar comanda:", error);
         showError(error.message || "Erro ao fechar comanda");
       }
     },
@@ -254,7 +254,7 @@ function setupHeaderListeners() {
   const userBtn = document.getElementById('userBtn');
   if (userBtn) {
     userBtn.addEventListener('click', () => {
-      console.log('User profile clicked');
+
     });
   }
 
@@ -271,7 +271,7 @@ function setupHeaderListeners() {
       try {
         await ApiService.post('/auth/logout', {});
       } catch (e) {
-        console.error('Logout error', e);
+        // console.error('Logout error', e);
       } finally {
         localStorage.removeItem('user');
         window.location.href = 'landingPage.html';

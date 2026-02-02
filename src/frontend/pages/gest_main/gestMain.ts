@@ -159,7 +159,7 @@ async function apiCall<T>(
     // ApiService already returns the data directly (T) or throws error
     return response as T;
   } catch (error: any) {
-    console.error("API Error:", error);
+    // console.error("API Error:", error);
     showToast(error.message || "Erro na requisição", "error");
     throw error;
   }
@@ -352,7 +352,7 @@ async function loadDashboard() {
     renderTopProducts(ordersData.data || []);
     renderBiggestSales(ordersData.data || []);
   } catch (error) {
-    console.error("Error loading dashboard:", error);
+    // console.error("Error loading dashboard:", error);
   }
 }
 
@@ -474,7 +474,7 @@ async function loadCurrentUser() {
     currentUser = response.user;
     setupHeaderListeners();
   } catch (error) {
-    console.error("Error loading current user:", error);
+    // console.error("Error loading current user:", error);
     // Redirect to login if auth fails? Or just hide profile?
     // window.location.href = '/pages/landingPage.html';
   }
@@ -589,7 +589,7 @@ async function loadUsers() {
     users = response.data || [];
     renderUsers(users);
   } catch (error) {
-    console.error("Error loading users:", error);
+    // console.error("Error loading users:", error);
   }
 }
 
@@ -696,7 +696,7 @@ async function submitUserForm(event: Event, userId: string | null) {
     closeModal();
     loadUsers();
   } catch (error) {
-    console.error("Error submitting user:", error);
+    // console.error("Error submitting user:", error);
   }
 }
 
@@ -708,7 +708,7 @@ async function deleteUser(userId: string) {
     showToast("Usuário deletado com sucesso", "success");
     loadUsers();
   } catch (error) {
-    console.error("Error deleting user:", error);
+    // console.error("Error deleting user:", error);
   }
 }
 
@@ -737,7 +737,7 @@ async function loadProducts() {
 
     renderProducts(products);
   } catch (error) {
-    console.error("Error loading products:", error);
+    // console.error("Error loading products:", error);
   }
 }
 

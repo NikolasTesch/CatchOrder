@@ -61,7 +61,7 @@ async function init() {
   setupHeaderListeners();
   setupEventListeners();
 
-  console.log('Orders page initializing...');
+  // console.log('Orders page initializing...');
 
   await Promise.all([loadOrders(), loadUsers(), loadTables()]);
 
@@ -80,9 +80,9 @@ async function loadOrders() {
   try {
     const response = await ApiService.get<{ data: Order[] }>('/orders');
     orders = response.data || [];
-    console.log('Orders loaded:', orders.length);
+    // console.log('Orders loaded:', orders.length);
   } catch (error) {
-    console.error('Erro ao carregar pedidos:', error);
+    // console.error('Erro ao carregar pedidos:', error);
   }
 }
 
@@ -91,7 +91,7 @@ async function loadUsers() {
     const response = await ApiService.get<{ data: User[] }>('/users');
     users = response.data || [];
   } catch (error) {
-    console.error('Erro ao carregar usuários:', error);
+    // console.error('Erro ao carregar usuários:', error);
   }
 }
 
@@ -100,7 +100,7 @@ async function loadTables() {
     const response = await ApiService.get<{ data: Table[] }>('/tables');
     tables = response.data || [];
   } catch (error) {
-    console.error('Erro ao carregar mesas:', error);
+    // console.error('Erro ao carregar mesas:', error);
   }
 }
 
@@ -220,7 +220,7 @@ function createOrderCard(order: Order, type: 'open' | 'finished'): HTMLElement {
   `;
 
   card.addEventListener('click', () => {
-    console.log(`Open details for order ${order.id}`);
+    // console.log(`Open details for order ${order.id}`);
 
     if (table) {
       window.location.href = `./createOrder.html?table_id=${table.id}&order_id=${order.id}`;
@@ -248,7 +248,7 @@ function initDarkMode() {
   const savedTheme = localStorage.getItem('theme');
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-  console.log('Init Dark Mode:', { savedTheme, prefersDark });
+  // console.log('Init Dark Mode:', { savedTheme, prefersDark });
 
   if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
     document.body.classList.add('dark-mode');
@@ -270,11 +270,11 @@ function updateDarkModeIcon(isDark: boolean) {
 }
 
 function toggleDarkMode() {
-  console.log('Toggling Dark Mode');
+  // console.log('Toggling Dark Mode');
   const isDark = document.body.classList.toggle('dark-mode');
   localStorage.setItem('theme', isDark ? 'dark' : 'light');
   updateDarkModeIcon(isDark);
-  console.log('Dark Mode is now:', isDark);
+  // console.log('Dark Mode is now:', isDark);
 }
 
 function setupHeaderListeners() {
@@ -293,7 +293,7 @@ function setupHeaderListeners() {
   if (userBtn) {
     userBtn.addEventListener('click', () => {
       // Optional: Navigate to profile
-      console.log('User profile clicked');
+      // console.log('User profile clicked');
     });
   }
 
@@ -303,7 +303,7 @@ function setupHeaderListeners() {
       try {
         await ApiService.post('/auth/logout', {});
       } catch (e) {
-        console.error('Logout error', e);
+        // console.error('Logout error', e);
       } finally {
         localStorage.removeItem('user');
         window.location.href = 'landingPage.html';

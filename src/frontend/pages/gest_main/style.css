@@ -56,7 +56,8 @@ body {
   width: auto;
   cursor: pointer;
   transition: transform var(--transition-base);
-  filter: brightness(0) saturate(100%) invert(25%) sepia(12%) saturate(2476%) hue-rotate(147deg) brightness(95%) contrast(93%);
+  filter: brightness(0) saturate(100%) invert(25%) sepia(12%) saturate(2476%)
+    hue-rotate(147deg) brightness(95%) contrast(93%);
 }
 
 .logo-image:hover {
@@ -64,7 +65,8 @@ body {
 }
 
 body.dark-mode .logo-image {
-  filter: brightness(0) saturate(100%) invert(59%) sepia(53%) saturate(434%) hue-rotate(147deg) brightness(93%) contrast(88%);
+  filter: brightness(0) saturate(100%) invert(59%) sepia(53%) saturate(434%)
+    hue-rotate(147deg) brightness(93%) contrast(88%);
 }
 
 .page-title {
@@ -72,8 +74,6 @@ body.dark-mode .logo-image {
   font-weight: var(--font-semibold);
   color: var(--text-primary);
 }
-
-
 
 /* ========================================
    SIDEBAR
@@ -120,7 +120,11 @@ body.dark-mode .logo-image {
 }
 
 .nav-item.active {
-  background: linear-gradient(90deg, rgba(var(--color-primary-rgb), 0.1) 0%, transparent 100%);
+  background: linear-gradient(
+    90deg,
+    rgba(var(--color-primary-rgb), 0.1) 0%,
+    transparent 100%
+  );
   color: var(--color-primary);
   border-left-color: var(--color-primary);
   font-weight: var(--font-semibold);
@@ -1037,5 +1041,39 @@ body.dark-mode .data-table tbody tr:hover {
   .section-header {
     flex-direction: column;
     align-items: flex-start;
+  }
+}
+
+/* ========================================
+   FORM VALIDATION STYLES
+   ======================================== */
+.form-input:not(:placeholder-shown):valid {
+  border-color: #66bb6a; /* Green 400 */
+  box-shadow: 0 0 0 3px rgba(102, 187, 106, 0.2);
+}
+
+.form-input:not(:placeholder-shown):invalid {
+  border-color: #ef5350; /* Red 400 */
+  box-shadow: 0 0 0 3px rgba(239, 83, 80, 0.2);
+  animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes shake {
+  10%,
+  90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+  20%,
+  80% {
+    transform: translate3d(2px, 0, 0);
+  }
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+  40%,
+  60% {
+    transform: translate3d(4px, 0, 0);
   }
 }

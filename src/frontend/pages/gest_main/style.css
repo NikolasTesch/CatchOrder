@@ -319,7 +319,93 @@ body.dark-mode #headerLogo {
   font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
-  margin-bottom: 1rem;
+  font-size: clamp(0.6875rem, 2vw, 0.8125rem);
+  margin-bottom: var(--space-md);
+}
+
+.table-status-display.AVAILABLE {
+  background: var(--color-success-light);
+  color: var(--color-success-dark);
+}
+
+.table-status-display.OCCUPIED {
+  background: var(--color-warning-light);
+  color: var(--color-warning-dark);
+}
+
+.table-status-display.RESERVED {
+  background: var(--color-info-light);
+  color: var(--color-info-dark);
+}
+
+/* ========================================
+   MODAL
+   ======================================== */
+.gest-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.gest-modal.active {
+  display: flex;
+}
+
+.gest-modal-content {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  animation: slideUp 0.3s ease-in-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.gest-modal-header {
+  padding: var(--space-lg);
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.gest-modal-header h3 {
+  font-size: clamp(1.125rem, 2.5vw, 1.25rem);
+  font-weight: var(--font-semibold);
+}
+
+.close-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: var(--bg-secondary);
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-base);
 }
 .table-status-display.AVAILABLE { background: rgba(16, 185, 129, 0.2); color: var(--emerald); }
 .table-status-display.OCCUPIED { background: rgba(239, 68, 68, 0.2); color: var(--red); }

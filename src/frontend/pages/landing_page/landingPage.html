@@ -1,73 +1,198 @@
-﻿<!DOCTYPE html>
-<html lang="pt-br">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CatchOrder - Login</title>
-  <link rel='icon' href='/public/img/icon.svg' type='image/svg+xml'>
-  
-  <!-- Noto Sans JP Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap"
-    rel="stylesheet">
-
-  <!-- Material Icons -->
-  <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-</head>
-
-<body>
-  <!-- Dark Mode Toggle -->
-  <button class="dark-mode-toggle" aria-label="Alternar modo escuro" id="darkModeToggle">
-    <span class="material-symbols-outlined">light_mode</span>
-  </button>
-
-  <main class="page-wrapper">
-    <header class="login-header">
-      <div class="logo-box">
-        <span class="material-symbols-outlined icon-main">restaurant_menu</span>
+<!doctype html>
+<html class="light" lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>CatchOrder - Acesso ao Sistema</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@200..800&family=Noto+Sans:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="left-panel">
+        <div class="bg-image-wrapper">
+          <div class="bg-image"></div>
+          <div class="bg-overlay"></div>
+        </div>
+        <div class="panel-content">
+          <div class="brand-header">
+            <div class="logo-circle">
+              <img
+                alt="CatchOrder Icon"
+                src="../../../../public/img/icon.svg"
+              />
+            </div>
+            <img
+              class="brand-logo-text-svg"
+              alt="CatchOrder"
+              src="../../../../public/img/logoName.svg"
+            />
+          </div>
+          <div>
+            <div>
+              <h2 class="hero-title">
+                A excelência <br />que seu restaurante merece.
+              </h2>
+              <p class="hero-subtitle">
+                Uma plataforma unificada para elevar a experiência gastronômica
+                e otimizar sua operação.
+              </p>
+            </div>
+            <div class="features-list">
+              <div class="feature-item">
+                <div class="feature-icon">
+                  <span class="material-symbols-outlined">soup_kitchen</span>
+                </div>
+                <div class="feature-text">
+                  <h3>Agilidade na Cozinha</h3>
+                  <p>Lançar pedidos em tempo real direto para as praças.</p>
+                </div>
+              </div>
+              <div class="feature-item">
+                <div class="feature-icon">
+                  <span class="material-symbols-outlined"
+                    >table_restaurant</span
+                  >
+                </div>
+                <div class="feature-text">
+                  <h3>Controle Total</h3>
+                  <p>Gestão completa de mesas, reservas e fila de espera.</p>
+                </div>
+              </div>
+              <div class="feature-item">
+                <div class="feature-icon">
+                  <span class="material-symbols-outlined">analytics</span>
+                </div>
+                <div class="feature-text">
+                  <h3>Visão de Negócio</h3>
+                  <p>Relatórios financeiros e operacionais detalhados.</p>
+                </div>
+              </div>
+            </div>
+            <div class="social-proof">
+              <div class="avatars">
+                <img
+                  alt="User Avatar"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAIVuc6_jZhJcwhYuGGf7GhfD_gGtCNThSGcGt0eWAd3lPZ0xtMEhXyX4Bpbdm9NoFVoVFI_uxgL0KMKLFRhbcDVwWRZ2Rg59YmdQWlqyd8MuCSnbFMBblgVSQ2Rnwsv6xFDrYVoxxBf04NOZULkxfbRYUNUAwbak9aT-zJCC0XaEIyFpx5j2_FcQWIbwLri3-R2kmjjCJoRfS_NiPdPoa-mpCgvrS7SRzRR9iwZN78wJPOnVO5FrVJGbL2Xivp7jCda1EiKMR01Qc"
+                />
+                <img
+                  alt="User Avatar"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8aS_x9nlQaAMZiohxaFMrJBPTZrbA-esYAi8YUwfszH6CgbyZ4rYqfYe1S10wtN7yBibJwfKsJIDhEzQYP6XA4qjdBFG5-mziPcwrB684LZM5LiNXMHDN9Jc2Tgxd7H48rL6PqsOuWwGvhFKowszPhYlVY-KGdpXgzIfaY1YssEzfxI4rwgHQkeYNtK26d8EhW2TWMPFyknbUe1ggklyZmOqyTbMZ3hwVrumLvKPGm-T2ojA9fwx9gr4_geuiq7-DYz0OVclpSgw"
+                />
+                <img
+                  alt="User Avatar"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCu1eNT_QeG3pYCxLcjFghfQiW8QW8P2FFmK1mL9_4pXYncEv2_IB5lCYTkPIHs-B1EpyLdHe6Q_GCnr42iTjNpG3xzLpcqMzsnNOL04GAOYLgzL64pHdzEIo3c3VCEEdsrZWt-N-SSDOyHWYn8enNiIHii-1njTlVVyyVhEE99GCDF2thnvhqLvM1zjQE5YNI3vYE4rDD_Tumfma8ae9-6uetP4cR0ocOKiFzwPzxjJoFFJp0pqQ3y5zC665OdKwgSp7nmeoL7zsU"
+                />
+              </div>
+              <span>Usado por +1.500 restaurantes</span>
+            </div>
+          </div>
+        </div>
       </div>
-      <h2 class="brand-name">CatchOrder</h2>
-      <p class="subtitle">Sistema de Gestão de Restaurantes</p>
-    </header>
-
-    <section class="login-card card" aria-label="Formulário de login">
-      <h1 class="card-title">Bem-vindo ao CatchOrder</h1>
-
-      <form class="login-form" id="loginForm">
-        <div class="form-group">
-          <label for="username">Usuário</label>
-          <input type="text" id="username" placeholder="Digite seu nome de usuário" class="input-field" required>
+      <div class="right-panel">
+        <div class="mobile-logo">
+          <div class="logo-circle">
+            <img
+              alt="CatchOrder Icon"
+              src="../../../../public/img/icon.svg"
+              style="filter: invert(1)"
+            />
+          </div>
+          <img
+            class="brand-logo-text-svg"
+            alt="CatchOrder"
+            src="../../../../public/img/logoName.svg"
+          />
         </div>
-
-        <div class="form-group">
-          <label for="password">Senha</label>
-          <div class="input-password-wrapper">
-            <input type="password" id="password" placeholder="Digite a sua senha" class="password-input" required>
-            <button type="button" class="password-toggle" aria-label="Mostrar/ocultar senha" id="passwordToggle">
-              <span class="material-symbols-outlined">visibility</span>
+        <div class="form-container">
+          <div class="form-header">
+            <h1>Acesse sua conta</h1>
+            <p>Gerencie sua operação com inteligência e sofisticação.</p>
+          </div>
+          <form class="login-card" id="loginForm" novalidate="">
+            <div class="input-group">
+              <label class="input-label" for="username"
+                >E-mail ou Usuário</label
+              >
+              <div class="input-wrapper">
+                <span class="material-symbols-outlined input-icon">person</span>
+                <input
+                  class="form-input"
+                  id="username"
+                  placeholder="Usuário"
+                  required=""
+                  type="text"
+                  maxlength="15"
+                />
+              </div>
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="password">
+                Senha
+                <a
+                  class="forgot-pass"
+                  href="https://wa.me/5511999999999?text=Ol%C3%A1%2C%20preciso%20de%20ajuda%20para%20recuperar%20minha%20senha%20do%20CatchOrder."
+                  target="_blank"
+                  >Esqueceu a senha?</a
+                >
+              </label>
+              <div class="input-wrapper">
+                <span class="material-symbols-outlined input-icon">lock</span>
+                <input
+                  class="form-input"
+                  id="password"
+                  minlength="6"
+                  placeholder="Senha"
+                  required=""
+                  type="password"
+                  maxlength="15"
+                />
+                <button
+                  class="toggle-password"
+                  id="togglePasswordBtn"
+                  type="button"
+                >
+                  <span class="material-symbols-outlined">visibility_off</span>
+                </button>
+              </div>
+            </div>
+            <div class="error-msg" id="errorMessage">
+              <span
+                class="material-symbols-outlined"
+                style="font-size: 18px; margin-top: 2px"
+                >error</span
+              >
+              <span id="errorText">E-mail/usuário ou senha incorretos.</span>
+            </div>
+            <button class="submit-btn" id="submitBtn" type="submit">
+              <span class="btn-text">Entrar no Sistema</span>
+              <div class="spinner"></div>
+              <span class="material-symbols-outlined">arrow_forward</span>
             </button>
-          </div>
-          <div class="forgot-password">
-            <a href="#">Esqueceu sua senha? Entre em contato com seu gestor.</a>
+          </form>
+          <div class="footer-links">
+            <p>
+              Novo no CatchOrder?
+              <a href="#" onclick="openModal('demoModal')"
+                >Solicite uma demonstração</a
+              >
+            </p>
           </div>
         </div>
-
-        <div id="login-error" class="error-message"></div>
-        <button type="submit" class="btn btn-primary">Continuar</button>
-      </form>
-    </section>
-
-    <footer class="login-footer">
-      <p>Ao continuar, você concorda com os
-        <a href="#" class="link-bold">Termos de Serviço</a> e
-        <a href="#" class="link-bold">Política de Privacidade</a>.
-      </p>
-    </footer>
-  </main>
-
-
-</body>
-
+        <div class="bottom-nav">
+          <a href="#" onclick="openModal('privacyModal')">Privacidade</a>
+          <a href="#" onclick="openModal('termsModal')">Termos de Serviço</a>
+          <a href="#" onclick="openModal('helpModal')">Ajuda</a>
+        </div>
+      </div>
+    </div>
+    <script src="landingPage.js" defer></script>
+  </body>
 </html>
-

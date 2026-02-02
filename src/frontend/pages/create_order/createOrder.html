@@ -22,17 +22,13 @@
       <button class="icon-btn" aria-label="Voltar" id="headerBackBtn">
         <span class="material-symbols-outlined">arrow_back</span>
       </button>
-      <button class="icon-btn" aria-label="Menu de navegação" id="menuBtn">
-        <span class="material-symbols-outlined">menu</span>
-      </button>
-      <span class="header-title">Pedidos</span>
     </div>
 
     <div class="header-center">
       <img src="../img/logoName.svg" alt="CatchOrder Logo" class="logo-image" id="logoImage">
     </div>
 
-    <nav class="header-right" aria-label="Ações do cabeçalho">
+    <nav class="header-actions" aria-label="Ações do cabeçalho">
       <button class="icon-btn-small" aria-label="Alternar modo escuro" id="darkModeToggle">
         <span class="material-symbols-outlined">light_mode</span>
       </button>
@@ -45,64 +41,71 @@
     </nav>
   </header>
 
-  <!-- Sidebar Navigation (Waiter) -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-    <nav class="sidebar-content">
-      <div class="sidebar-header">
-        <h2>Menu</h2>
-        <button class="close-btn" id="closeSidebar" aria-label="Fechar menu">
-          <span class="material-symbols-outlined">close</span>
-        </button>
-      </div>
-      <ul class="sidebar-menu">
-        <li><a href="waiterMain.html" class="nav-item">
-            <span class="material-symbols-outlined">dashboard</span>
-            Dashboard
-          </a></li>
-        <li><a href="orders.html" class="nav-item">
-            <span class="material-symbols-outlined">receipt_long</span>
-            Pedidos
-          </a></li>
-      </ul>
-    </nav>
-  </aside>
+
 
   <!-- Main Content -->
   <main class="content-wrapper">
-    <!-- Barra de Informações -->
-    <section class="info-bar card" aria-label="Informações do pedido">
-      <div class="info-item">
-        <span class="info-label">Qtd Produtos</span>
-      </div>
-      <div class="info-item">
-        <span class="info-label">Total: R$00,00</span>
-      </div>
-    </section>
+    <div class="create-order-layout">
+      <!-- Left Column: Products -->
+      <section class="products-area">
+        <!-- Breadcrumb / Header in Content if needed, otherwise just products -->
+        <div class="page-header-inline">
+          <span class="breadcrumb">Pedidos / <b>Novo Pedido</b></span>
+        </div>
 
-    <!-- Container para Produtos Dinâmicos -->
-    <div id="products-container"></div>
+        <!-- Container para Produtos Dinâmicos -->
+        <div id="products-container"></div>
+      </section>
 
-    <!-- Seção de Observações -->
-    <section class="observations-section card">
-      <h3 class="obs-title">Obs.</h3>
-      <p class="obs-subtitle">Adicione as observações do pedido aqui.</p>
+      <!-- Right Column: Order Summary Sidebar -->
+      <aside class="order-sidebar">
+        <div class="order-summary-card">
+          <div class="order-card-header">
+            <h3>Resumo do Pedido</h3>
+            <span class="material-symbols-outlined toggle-icon">expand_less</span>
+          </div>
 
-      <textarea class="obs-textarea input" rows="3" placeholder="Digite suas observações..."
-        aria-label="Campo de observações do pedido"></textarea>
-    </section>
+          <div class="order-card-body">
+            <!-- Table Info -->
+            <div class="table-info-display">
+              <h4 id="table-name-display">Mesa --</h4>
+            </div>
 
-    <!-- Botões de Ação -->
-    <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">
+            <!-- Items List Container (Existing + New) -->
+            <div id="order-items-list" class="items-list-container">
+              <!-- TS will inject items here -->
+            </div>
 
+            <!-- Observations -->
+            <div class="observations-wrapper">
+              <label class="obs-label">Observações (Obs.)</label>
+              <textarea class="obs-textarea" rows="4" placeholder="Digite suas observações..."
+                aria-label="Campo de observações do pedido"></textarea>
+            </div>
+          </div>
 
-      <!-- Botão Salvar/Enviar (Primary Action for Items) -->
-      <button class="btn btn-primary btn-full btn-lg btn-send" style="background-color: #10b981;">Salvar / Atualizar
-        Itens</button>
+          <!-- Footer with Totals and Actions -->
+          <div class="order-card-footer">
+            <div class="summary-row subtotal">
+              <span>Subtotal:</span>
+              <span id="summary-subtotal">R$ 0.00</span>
+            </div>
+            <div class="summary-row total">
+              <span>Total:</span>
+              <span id="summary-total">R$ 0.00</span>
+            </div>
 
-      <!-- Botão Finalizar (Close Table) -->
-      <button class="btn btn-full btn-lg btn-finalize"
-        style="background-color: #ef4444; color: white; border: none;">Finalizar Pedido</button>
+            <!-- Botão Salvar/Enviar (Primary Action) -->
+            <button class="btn btn-primary btn-full btn-lg btn-send" style="background-color: #10b981;">Criar
+              Pedido</button>
+
+            <!-- Botão Finalizar (Conditional) -->
+            <button class="btn btn-full btn-lg btn-finalize"
+              style="background-color: #ef4444; color: white; border: none; display: none; margin-top: 0.5rem;">Finalizar
+              Pedido</button>
+          </div>
+        </div>
+      </aside>
     </div>
   </main>
 

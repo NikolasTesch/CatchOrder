@@ -507,24 +507,62 @@ async function finalizeOrder() {
 
 // --- Utils & Events ---
 
+
+// --- Utils & Events ---
+
 function setupEventListeners() {
   // Header Back
   const headerBackBtn = document.getElementById('headerBackBtn');
   if (headerBackBtn) {
     headerBackBtn.addEventListener('click', () => {
-      window.location.href = 'waiterMain.html';
+      window.location.href = '../pages/waiterMain.html';
+    });
+  }
+
+  // Logo Click
+  const logoImage = document.getElementById('logoImage');
+  if (logoImage) {
+    logoImage.addEventListener('click', () => {
+      window.location.href = '../pages/waiterMain.html';
     });
   }
 
   // Logout Button
   const logoutBtn = document.getElementById('logoutBtn');
   if (logoutBtn) {
-    logoutBtn.addEventListener('click', () => {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '../../../index.html';
+    logoutBtn.addEventListener('click', async () => {
+      try {
+        await ApiService.post("/auth/logout", {});
+      } catch (e) {
+        console.error("Logout error", e);
+      } finally {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '../pages/landingPage.html';
+      }
     });
   }
+
+  // User Profile Click
+  const userBtn = document.getElementById("userBtn");
+  const headerActions = document.querySelector(".header-actions") as HTMLElement;
+
+  if (headerActions) {
+    headerActions.style.position = "relative";
+  }
+
+  if (userBtn) {
+    userBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggleProfilePopover(userBtn);
+    });
+  }
+
+  // Close popovers on click outside
+  document.addEventListener("click", () => {
+    closePopovers();
+  });
+
 
   // Primary Action (Send/Save)
   const sendBtn = document.querySelector('.btn-send') as HTMLButtonElement | null;
@@ -604,3 +642,61 @@ function showError(message: string) {
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 3000);
 }
+
+// --- Profile Popover Logic ---
+
+function toggleProfilePopover(btn: HTMLElement) {
+  closePopovers(); // Close others
+  let popover = document.getElementById("profilePopover");
+
+  if (!popover) {
+    popover = document.createElement("div");
+    popover.id = "profilePopover";
+    popover.className = "popover";
+
+    // Try to get user from local storage first as a fallback, or use a loaded variable
+    // For now, let's parse localStorage 'user' again if we don't have a global user state
+    let user: User | null = null;
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      try { user = JSON.parse(userStr); } catch (e) { }
+    }
+
+    if (user) {
+      popover.innerHTML = `
+        <div class="popover-header">Perfil de Usuário</div>
+        <div class="popover-body">
+          <div class="user-info-card">
+            <div class="user-name">${user.name}</div>
+            <div class="user-username">@${user.username}</div>
+            <div class="user-role-badge">
+              <span class="role-badge ${user.role.toLowerCase()}">${user.role}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    } else {
+      popover.innerHTML = `<div class="popover-body">Usuário não identificado</div>`;
+    }
+
+    // Append to header-actions
+    const headerActions = document.querySelector(".header-actions");
+    if (headerActions) headerActions.appendChild(popover);
+  }
+
+  popover.classList.toggle("active");
+}
+
+function closePopovers() {
+  document
+    .querySelectorAll(".popover")
+    .forEach((p) => p.classList.remove("active"));
+}
+
+interface User {
+  id: string;
+  name: string;
+  username: string;
+  role: string;
+}
+

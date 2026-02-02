@@ -1,7 +1,16 @@
+import '../../styles/global.css';
 import './style.css';
 import { ApiService } from '../../services/apiService';
 
 // Interfaces
+interface OrderItem {
+  product_id: string;
+  product_name?: string;
+  name?: string;
+  quantity: number;
+  price?: number;
+}
+
 interface Table {
   id: string;
   number: number;
@@ -15,7 +24,8 @@ interface Order {
   status: 'OPEN' | 'CLOSED' | 'CANCELLED';
   total: number;
   tip: number;
-  opened_at: string;
+  created_at: string;
+  items?: OrderItem[];
 }
 
 interface User {
@@ -43,10 +53,10 @@ async function init() {
   setupEventListeners();
   updateDateDisplay();
   loadTables();
-  loadTables();
   loadSummary();
+  loadActiveOrders(); // NEW
 
-  // Check for action param
+  // Check for auto-open modal
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.get('action') === 'new_order') {
     openTableSelectionModal();
@@ -58,6 +68,7 @@ async function init() {
   setInterval(() => {
     loadTables();
     loadSummary();
+    loadActiveOrders(); // NEW
   }, 30000);
 
   console.log('WaiterMain page initialized (TS)');
@@ -157,42 +168,20 @@ function setupEventListeners() {
 
   // Sidebar Toggle
   if (menuBtn && sidebar) {
-    menuBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      sidebar.classList.toggle('active');
+    menuBtn.addEventListener("click", () => {
+      sidebar.classList.toggle("active");
     });
-
-    // Close sidebar when clicking outside
-    document.addEventListener('click', (e) => {
-      if (
-        sidebar.classList.contains('active') &&
-        !sidebar.contains(e.target as Node) &&
-        !menuBtn.contains(e.target as Node)
-      ) {
-        sidebar.classList.remove('active');
-      }
-    });
-
-    // Close button inside sidebar
-    const closeSidebarBtn = document.getElementById('closeSidebarBtn');
-    if (closeSidebarBtn) {
-      closeSidebarBtn.addEventListener('click', () => {
-        sidebar.classList.remove('active');
-      });
-    }
   }
 
-  // New Order Button - opens modal if it exists, otherwise redirects
+  // New Order Button - Scroll to Available Tables
   const newOrderBtn = document.getElementById("newOrderBtn");
   if (newOrderBtn) {
-    const modalOverlay = document.getElementById("tableModalOverlay");
-    if (modalOverlay) {
-      newOrderBtn.addEventListener("click", openTableSelectionModal);
-    } else {
-      newOrderBtn.addEventListener("click", () => {
-        window.location.href = "createOrder.html";
-      });
-    }
+    newOrderBtn.addEventListener("click", () => {
+      const availableSection = document.getElementById("availableTablesSection");
+      if (availableSection) {
+        availableSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
   }
 
   // Modal Close
@@ -260,6 +249,7 @@ async function handleLogout() {
     console.error("Logout error", e);
   } finally {
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
     window.location.href = "landingPage.html";
   }
 }
@@ -278,8 +268,8 @@ function toggleProfilePopover(btn: HTMLElement) {
       const createdDate =
         "created_at" in currentUser && currentUser.created_at
           ? new Date(currentUser.created_at as string).toLocaleDateString(
-              "pt-BR",
-            )
+            "pt-BR",
+          )
           : "-";
 
       popover.innerHTML = `
@@ -292,8 +282,21 @@ function toggleProfilePopover(btn: HTMLElement) {
               <span class="role-badge ${currentUser.role.toLowerCase()}">${currentUser.role}</span>
             </div>
           </div>
+          <div class="popover-footer" style="padding-top: 1rem; border-top: 1px solid var(--border-light); margin-top: 1rem;">
+            <button class="btn btn-danger btn-full btn-sm" id="popoverLogoutBtn">
+              <span class="material-symbols-outlined" style="font-size: 18px; margin-right: 8px;">logout</span>
+              Sair
+            </button>
+          </div>
         </div>
       `;
+
+      // Attach listener to new button
+      const popoverBtn = popover.querySelector("#popoverLogoutBtn");
+      if (popoverBtn) {
+        popoverBtn.addEventListener("click", handleLogout);
+      }
+
     } else {
       popover.innerHTML = `<div class="popover-body">Carregando perfil...</div>`;
     }
@@ -345,8 +348,18 @@ function renderOccupiedTables(tables: Table[]) {
   container.innerHTML = tables
     .map(
       (table) => `
-        <button class="table-card occupied" data-table-id="${table.id}" aria-label="Mesa ${table.number}">
-          <span class="table-number">${table.number}</span>
+        <button class="table-card occupied" data-table-id="${table.id}" data-status="OCCUPIED">
+          <div class="card-header">
+             <span class="table-number">${table.number < 10 ? '0' + table.number : table.number}</span>
+             <span class="table-label">MESA</span>
+          </div>
+          <div class="card-body">
+             <span class="material-symbols-outlined">group</span>
+             <span>4 pessoas</span>
+          </div>
+          <div class="card-footer">
+             <span class="status-badge status-waiting">Aguardando Pedido</span>
+          </div>
         </button>
     `,
     )
@@ -354,7 +367,7 @@ function renderOccupiedTables(tables: Table[]) {
 
   container.querySelectorAll('.table-card').forEach((card) => {
     (card as HTMLElement).addEventListener('click', () => {
-      handleTableClick((card as HTMLElement).dataset.tableId!);
+      handleTableClick((card as HTMLElement).dataset.tableId!, 'OCCUPIED');
     });
   });
 }
@@ -372,8 +385,18 @@ function renderAvailableTables(tables: Table[]) {
   container.innerHTML = tables
     .map(
       (table) => `
-    <button class="table-card available" data-table-id="${table.id}" aria-label="Mesa ${table.number}">
-      <span class="table-number">${table.number}</span>
+    <button class="table-card available" data-table-id="${table.id}" data-status="AVAILABLE">
+      <div class="card-header">
+         <span class="table-number">${table.number < 10 ? '0' + table.number : table.number}</span>
+         <span class="table-label">MESA</span>
+      </div>
+      <div class="card-body">
+         <span class="material-symbols-outlined">group</span>
+         <span>-</span>
+      </div>
+      <div class="card-footer">
+         <span class="status-badge status-free">Livre</span>
+      </div>
     </button>
   `,
     )
@@ -381,7 +404,7 @@ function renderAvailableTables(tables: Table[]) {
 
   container.querySelectorAll('.table-card').forEach((card) => {
     (card as HTMLElement).addEventListener('click', () => {
-      handleTableClick((card as HTMLElement).dataset.tableId!);
+      handleTableClick((card as HTMLElement).dataset.tableId!, 'AVAILABLE');
     });
   });
 }
@@ -423,46 +446,144 @@ function renderModalAvailableTables(tables: Table[]) {
   });
 }
 
-function handleTableClick(tableId: string) {
-  // Navigate to Create Order Page
-  window.location.href = `createOrder.html?table_id=${tableId}`;
+function handleTableClick(tableId: string, status: string = 'OCCUPIED') {
+  if (status === 'AVAILABLE') {
+    window.location.href = `createOrder.html?table_id=${tableId}`;
+  } else {
+    window.location.href = `orders.html?tableId=${tableId}`;
+  }
 }
 
 async function loadSummary() {
   try {
     if (!currentUser) return;
+    const user = currentUser; // Capture user to ensure it's not null in callback
 
     const response = await ApiService.get<{ data: Order[] }>('/orders');
     const orders = response.data || [];
 
-    const today = new Date().toDateString();
-    const todayOrders = orders.filter((o) => {
-      // Use opened_at which matches the database field
-      if (!o.opened_at) return false;
+    const now = new Date();
 
-      const orderDate = new Date(o.opened_at).toDateString();
-      return (
-        orderDate === today &&
-        o.status === 'CLOSED' &&
-        o.user_id === currentUser!.id
-      );
+    // Robust date parsing handles "YYYY-MM-DD HH:mm:ss" vs ISO
+    const isToday = (dateStr: string) => {
+      if (!dateStr) return false;
+      let d = new Date(dateStr);
+      // Fallback for SQL-style timestamps
+      if (isNaN(d.getTime())) {
+        d = new Date(dateStr.replace(' ', 'T'));
+      }
+      if (isNaN(d.getTime())) return false;
+
+      return d.getDate() === now.getDate() &&
+        d.getMonth() === now.getMonth() &&
+        d.getFullYear() === now.getFullYear();
+    };
+
+    const todayOrders = orders.filter((o) => {
+      // Robust logging for debugging
+      // console.log('Checking order:', o); 
+
+      const orderSameDay = isToday(o.created_at);
+      // Loose comparison for IDs (string vs number)
+      const isMyOrder = (o.user_id == user.id || String(o.user_id) === String(user.id));
+      const status = (o.status || '').toUpperCase();
+      const isClosed = ['CLOSED', 'PAID'].includes(status);
+
+      return orderSameDay && isMyOrder && isClosed;
     });
 
-    // Calculate tips in cents, then convert to reais
-    const totalTipsCents = todayOrders.reduce(
-      (sum, order) => sum + (Number(order.tip) || 0),
-      0,
-    );
+    const totalSales = todayOrders.reduce((sum, order) => {
+      const val = typeof order.total === 'string' ? parseFloat(order.total) : order.total;
+      return sum + (val || 0);
+    }, 0);
+    const totalTip = totalSales * 0.10;
 
     const valueEl = document.querySelector('.summary-value');
     const subtitleEl = document.querySelector('.summary-subtitle');
+    const badgeEl = document.querySelector('.badge-today');
 
-    if (valueEl) valueEl.textContent = formatCurrency(totalTipsCents);
+    if (badgeEl) badgeEl.textContent = 'Minhas Comissões (10%)';
+    if (valueEl) valueEl.textContent = formatCurrency(totalTip); // formatCurrency expects cents
     if (subtitleEl)
-      subtitleEl.textContent = `${todayOrders.length} mesa${todayOrders.length !== 1 ? 's' : ''} atendida${todayOrders.length !== 1 ? 's' : ''} hoje`;
+      subtitleEl.textContent = `${todayOrders.length} mesa${todayOrders.length !== 1 ? 's' : ''} finalizada${todayOrders.length !== 1 ? 's' : ''} por mim`;
   } catch (error) {
     console.error('Error loading summary:', error);
   }
+}
+
+// Active Orders
+async function loadActiveOrders() {
+  try {
+    if (!currentUser) return;
+    const user = currentUser;
+
+    const response = await ApiService.get<{ data: Order[] }>('/orders');
+    const orders = response.data || [];
+
+    // Also load tables to resolve table numbers
+    const tablesResponse = await ApiService.get<{ data: Table[] }>('/tables');
+    const tables = tablesResponse.data || [];
+
+    // Filter active orders for the current user
+    const activeOrders = orders.filter((o) => {
+      const isMyOrder = o.user_id === user.id;
+      const isActive = ['OPEN', 'IN_PROGRESS'].includes(o.status);
+      return isMyOrder && isActive;
+    });
+
+    renderActiveOrders(activeOrders, tables);
+  } catch (error) {
+    console.error('Error loading active orders:', error);
+  }
+}
+
+function renderActiveOrders(orders: Order[], tables: Table[]) {
+  const container = document.getElementById('activeOrdersGrid');
+  if (!container) return;
+
+  if (orders.length === 0) {
+    container.innerHTML = '<p class="empty-message">Nenhum pedido em andamento</p>';
+    return;
+  }
+
+  container.innerHTML = orders.map(order => {
+    const table = tables.find(t => t.id === order.table_id);
+    const tableNumber = table ? table.number : '?';
+    const itemsDescription = order.items && order.items.length > 0
+      ? order.items.map(i => `${i.quantity}x ${i.name || i.product_name}`).join(', ')
+      : 'Sem itens';
+    const total = order.total ? parseFloat(order.total.toString()) : 0;
+
+    return `
+      <div class="table-card active-order" data-order-id="${order.id}">
+        <div class="card-header">
+           <span class="table-number">${typeof tableNumber === 'number' && tableNumber < 10 ? '0' + tableNumber : tableNumber}</span>
+           <span class="table-label">MESA</span>
+        </div>
+        <div class="card-body">
+           <span class="material-symbols-outlined">receipt_long</span>
+           <span class="items-summary">${itemsDescription}</span>
+        </div>
+        <div class="card-footer">
+           <span class="order-total">${formatCurrency(total)}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Add click listeners
+  container.querySelectorAll('.active-order').forEach(card => {
+    card.addEventListener('click', () => {
+      const orderId = (card as HTMLElement).dataset.orderId;
+      if (orderId) {
+        // Find the table id for this order
+        const order = orders.find(o => o.id === orderId);
+        if (order) {
+          window.location.href = `createOrder.html?table_id=${order.table_id}&order_id=${order.id}`;
+        }
+      }
+    });
+  });
 }
 
 // Initialize

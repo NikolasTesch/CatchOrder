@@ -8,577 +8,340 @@
   padding: var(--space-md);
   padding-top: clamp(4rem, 12vw, 5rem);
   width: 100%;
+  max-width: 600px;
+  /* Limit width for card look */
   margin: 0 auto;
-  background-color: var(--bg-secondary);
+  /* background-color: var(--bg-secondary); Removed to let body bg show or use gradient */
+  background: linear-gradient(180deg, #fcfcfc 0%, #e0e0e0 100%);
+  /* Subtle gradient background */
   min-height: 100vh;
   padding-bottom: clamp(5rem, 15vw, 6rem);
+  display: flex;
+  flex-direction: column;
+}
+
+.center-content {
+  justify-content: center;
+  /* Vertically center if wanted, or just top padded */
 }
 
 /* Header Fixo */
 .main-header {
   position: fixed;
   top: 0;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
   width: 100%;
   height: clamp(54px, 15vw, 60px);
-  background-color: var(--bg-primary);
+  background-color: var(--bg-white);
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  box-sizing: border-box;
   padding: 0 clamp(0.75rem, 3vw, 1rem);
   z-index: var(--z-fixed);
   box-shadow: var(--shadow-sm);
 }
 
-.icon-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  color: var(--color-primary);
-  font-weight: var(--font-bold);
-  font-size: clamp(0.875rem, 3vw, 1rem);
-  min-height: 44px;
-  padding: var(--space-xs);
-  transition: all var(--transition-base);
-}
-
-.icon-btn:hover {
-  opacity: 0.8;
-}
-
-.icon-btn .material-symbols-outlined {
-  font-size: 28px;
-}
-
-.header-title {
-  font-family: var(--font-primary);
-}
-
-.header-center {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-}
-
-/* Logo Image */
-.logo-image {
-  height: clamp(50px, 12vw, 60px);
-  width: auto;
-  cursor: pointer;
-  filter: brightness(0) saturate(100%) invert(25%) sepia(12%) saturate(2476%)
-    hue-rotate(147deg) brightness(95%) contrast(93%);
-  transition: transform var(--transition-base);
-}
-
-.logo-image:hover {
-  transform: scale(1.05);
-}
-
-/* Icon Button Small (for header actions) */
+.icon-btn,
 .icon-btn-small {
   background: none;
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: var(--space-xs);
-  min-height: 44px;
-  min-width: 44px;
+  gap: var(--space-sm);
   color: var(--color-primary);
+  /* font-weight: var(--font-bold); Removed to match lighter look */
   transition: all var(--transition-base);
-  border-radius: var(--radius-md);
 }
 
-.icon-btn-small:hover {
-  background-color: rgba(var(--color-primary-rgb), 0.1);
-  transform: scale(1.05);
+.header-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 
-.icon-btn-small:active {
-  transform: scale(0.95);
+.header-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+
+.icon-btn .material-symbols-outlined {
+  font-size: 28px;
 }
 
 .icon-btn-small .material-symbols-outlined {
   font-size: 24px;
 }
 
-/* Summary Section */
-.summary-section {
-  background-color: var(--bg-primary);
-  padding: clamp(1rem, 4vw, 1.5rem);
-  padding-top: clamp(0.75rem, 3vw, 1rem);
-  border-bottom-left-radius: clamp(1.5rem, 5vw, 2rem);
-  border-bottom-right-radius: clamp(1.5rem, 5vw, 2rem);
-  text-align: center;
+.header-title {
+  font-family: var(--font-primary);
+  font-weight: 600;
+}
+
+.logo-image {
+  height: clamp(90px, 8vw, 40px);
+  width: auto;
+}
+
+/* ========================================
+   BILL CARD COMPONENT
+   ======================================== */
+.bill-card {
+  background-color: transparent;
+  width: 100%;
+  /* box-shadow: var(--shadow-lg); Drop shadow handled by parts or container if needed */
+  border-radius: 20px;
+  overflow: hidden;
   margin-bottom: var(--space-xl);
-  box-shadow: var(--shadow-md);
+  font-family: 'Noto Sans JP', sans-serif;
 }
 
-.page-title {
-  font-size: clamp(1.125rem, 4vw, 1.5rem);
-  color: var(--color-primary);
-  font-weight: var(--font-bold);
-  margin-bottom: clamp(1rem, 4vw, 1.5rem);
+/* Card Header */
+.bill-header {
+  background-color: #dbe4e6;
+  /* Light Grey/Blueish from image */
+  padding: 20px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
 }
 
-/* Close Box (Red X) */
-.close-icon-container {
-  display: flex;
-  justify-content: center;
-  margin-bottom: var(--space-md);
+.bill-title {
+  color: #154a57;
+  /* Dark Teal */
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
 }
 
-.close-box {
-  width: clamp(70px, 20vw, 80px);
-  height: clamp(70px, 20vw, 80px);
-  background-color: var(--color-danger);
-  border-radius: var(--radius-lg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow:
-    var(--shadow-md),
-    0 0 0 clamp(4px, 1.5vw, 6px) var(--border-light);
-  transition: transform var(--transition-base);
+/* Card Body */
+.bill-body {
+  background-color: #ffffff;
+  padding: 20px;
+  padding-bottom: 10px;
 }
 
-.close-box:hover {
-  transform: scale(1.05);
-}
-
-.close-symbol {
-  color: var(--text-white);
-  font-size: clamp(2.5rem, 8vw, 3rem);
-  font-weight: var(--font-regular);
-  font-family: var(--font-primary);
-}
-
-/* Consumed Section */
-.consumed-section {
-  background-color: var(--bg-primary);
-  border-radius: clamp(1.5rem, 5vw, 2rem);
-  padding: clamp(1rem, 4vw, 1.5rem);
-  margin: 0 var(--space-xs);
-  margin-bottom: var(--space-lg);
-  box-shadow: var(--shadow-md);
-}
-
-.section-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: clamp(1rem, 4vw, 1.5rem);
-}
-
-.section-title {
-  font-size: clamp(1rem, 3.5vw, 1.25rem);
-  color: var(--color-primary);
-  font-weight: var(--font-bold);
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-}
-
-.arrow-icon {
-  font-weight: var(--font-bold);
-  font-size: clamp(1.25rem, 4vw, 1.5rem);
-}
-
-.consumed-list {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(1rem, 4vw, 1.5rem);
-}
-
-.consumed-item {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(0.125rem, 0.5vw, 0.25rem);
-}
-
-.item-price {
-  font-size: clamp(0.875rem, 3vw, 1rem);
-  font-weight: var(--font-bold);
-  color: var(--color-primary);
-}
-
-.item-name {
-  font-size: clamp(0.75rem, 2.5vw, 0.875rem);
-  font-weight: var(--font-bold);
-  color: var(--color-primary);
-  opacity: 0.9;
-}
-
-.item-divider {
-  height: 2px;
-  background-color: var(--border-medium);
-  margin-top: clamp(0.125rem, 0.5vw, 0.25rem);
-  width: 100%;
-}
-
-.item-header {
+.bill-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 12px;
 }
 
-.item-quantity {
-  font-size: clamp(0.75rem, 2.5vw, 0.875rem);
-  font-weight: var(--font-semibold);
-  color: var(--text-secondary);
+.bill-item-name {
+  color: #000000;
+  font-size: 1rem;
+  font-weight: 400;
 }
 
-/* Totals Section */
-.totals-section {
-  background-color: var(--bg-primary);
-  border-radius: clamp(1.5rem, 5vw, 2rem);
-  padding: clamp(1rem, 4vw, 1.5rem);
-  margin: 0 var(--space-xs);
-  margin-bottom: var(--space-lg);
-  box-shadow: var(--shadow-md);
+.bill-item-price {
+  color: #000000;
+  font-size: 1rem;
+  font-weight: 400;
 }
 
-.total-row {
+.bill-divider {
+  height: 1px;
+  background-color: #e0e0e0;
+  margin-bottom: 12px;
+  width: 100%;
+}
+
+/* Card Footer */
+.bill-footer {
+  background-color: #e9ecef;
+  /* Slightly darker grey than header, matching image footer */
+  padding: 20px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+.bill-total-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: clamp(0.5rem, 2vw, 0.75rem) 0;
-  border-bottom: 1px solid var(--border-light);
+  margin-bottom: 8px;
 }
 
-.total-row:last-child {
-  border-bottom: none;
+.total-label-sm {
+  font-size: 1rem;
+  color: #000000;
 }
 
-.total-row.total-final {
-  padding-top: clamp(0.75rem, 3vw, 1rem);
-  margin-top: clamp(0.5rem, 2vw, 0.75rem);
-  border-top: 2px solid var(--color-primary);
+.total-value-sm {
+  font-size: 1rem;
+  color: #000000;
+  font-weight: 500;
 }
 
-.total-label {
-  font-size: clamp(0.875rem, 3vw, 1rem);
-  font-weight: var(--font-semibold);
-  color: var(--text-primary);
+.final-total {
+  margin-top: 15px;
+  align-items: baseline;
 }
 
-.total-final .total-label {
-  font-size: clamp(1rem, 3.5vw, 1.25rem);
-  font-weight: var(--font-bold);
-  color: var(--color-primary);
+.total-label-lg {
+  font-size: 1.5rem;
+  /* Larger "Total:" */
+  color: #154a57;
+  font-weight: 800;
 }
 
-.total-value {
-  font-size: clamp(0.875rem, 3vw, 1rem);
-  font-weight: var(--font-bold);
-  color: var(--color-primary);
+.total-value-lg {
+  font-size: 1.5rem;
+  color: #154a57;
+  font-weight: 800;
 }
 
-.total-final .total-value {
-  font-size: clamp(1.125rem, 4vw, 1.5rem);
-}
-
-/* Actions Section */
-.actions-section {
-  margin-bottom: var(--space-md);
-}
-
-.actions-container {
+/* Checkbox specific styling to match image */
+.checkbox-label {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
-  padding: 0 clamp(1.5rem, 5vw, 2rem);
-}
-
-/* Buttons */
-.btn {
-  width: 100%;
-  padding: clamp(0.625rem, 2.5vw, 0.75rem);
-  border-radius: clamp(1.5rem, 5vw, 2rem);
-  border: none;
-  font-size: clamp(0.875rem, 3vw, 1rem);
-  font-weight: var(--font-bold);
+  align-items: center;
+  gap: 8px;
   cursor: pointer;
-  box-shadow: var(--shadow-md);
-  font-family: var(--font-primary);
-  transition: all var(--transition-base);
-  min-height: 44px;
+  color: #154a57;
+  /* Teal text for Service Fee label based on image? Or black? Image looks dark teal/black */
+  font-weight: 500;
 }
 
-.btn:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+.checkbox-label input {
+  accent-color: #154a57;
+  width: 18px;
+  height: 18px;
+}
+
+/* ========================================
+   ACTIONS
+   ======================================== */
+.bill-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.btn {
+  flex: 1;
+  padding: 15px;
+  border-radius: 25px;
+  /* Pill shape */
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: transform 0.1s;
 }
 
 .btn:active {
-  transform: translateY(0);
-  box-shadow: var(--shadow-sm);
+  transform: scale(0.98);
 }
 
-.btn-secondary {
-  background-color: var(--color-primary);
-  color: var(--text-white);
+.btn-dark-grey {
+  background-color: #3b3b3b;
+  /* Dark Grey for Back button */
+  color: #ffffff;
 }
 
-.btn-primary {
-  background-color: var(--color-primary);
-  color: var(--text-white);
+.btn-teal {
+  background-color: #004d55;
+  /* Dark Teal for Close Bill */
+  color: #ffffff;
 }
 
-/* Bottom Bar */
-.bottom-bar {
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  height: clamp(54px, 15vw, 60px);
-  background-color: var(--bg-primary);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 clamp(1rem, 4vw, 1.5rem);
-  border-top: 1px solid var(--border-light);
-  z-index: var(--z-fixed);
-  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.total-label {
-  font-size: clamp(1.25rem, 5vw, 1.75rem);
-  font-weight: var(--font-bold);
-  color: var(--color-primary);
-}
-
-.cart-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--text-primary);
-  padding: var(--space-xs);
-  min-height: 44px;
-  min-width: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all var(--transition-base);
-  border-radius: var(--radius-md);
-}
-
-.cart-btn:hover {
-  background-color: rgba(var(--color-primary-rgb), 0.1);
-  transform: scale(1.1);
-}
-
-.cart-btn .material-symbols-outlined {
-  font-size: clamp(28px, 7vw, 32px);
-}
-
-/* Dark mode logo filter */
-@media (prefers-color-scheme: dark) {
-  .logo-image {
-    filter: brightness(0) saturate(100%) invert(59%) sepia(53%) saturate(434%)
-      hue-rotate(147deg) brightness(93%) contrast(88%);
-  }
-}
-
-body.dark-mode .logo-image {
-  filter: brightness(0) saturate(100%) invert(59%) sepia(53%) saturate(434%)
-    hue-rotate(147deg) brightness(93%) contrast(88%);
-}
-
-/* Responsive Breakpoints */
-@media (max-width: 360px) {
-  .page-wrapper {
-    padding: clamp(0.5rem, 2vw, 0.75rem);
-  }
-
-  .actions-container {
-    padding: 0 var(--space-md);
-  }
-
-  .consumed-section {
-    padding: var(--space-md);
-  }
-
-  .summary-section {
-    padding: var(--space-md);
-  }
-}
-
-/* Modal Styles */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10000;
-  animation: fadeIn 0.2s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.modal-container {
-  background-color: var(--bg-primary);
-  border-radius: clamp(1rem, 4vw, 1.5rem);
-  padding: clamp(1.5rem, 5vw, 2rem);
-  max-width: 90%;
-  width: clamp(300px, 90vw, 450px);
-  box-shadow: var(--shadow-lg);
-  animation: slideUp 0.3s ease-out;
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.modal-header {
-  margin-bottom: var(--space-md);
-}
-
-.modal-title {
-  font-size: clamp(1.25rem, 4vw, 1.5rem);
-  font-weight: var(--font-bold);
-  color: var(--color-primary);
-  margin: 0;
-}
-
-.modal-body {
-  margin-bottom: var(--space-lg);
-}
-
-.modal-message {
-  font-size: clamp(0.875rem, 3vw, 1rem);
-  color: var(--text-primary);
-  line-height: 1.5;
-  margin: 0;
-}
-
-.modal-footer {
-  display: flex;
-  gap: var(--space-md);
-  justify-content: flex-end;
-}
-
-.btn-modal {
-  padding: clamp(0.625rem, 2.5vw, 0.75rem) clamp(1rem, 4vw, 1.5rem);
-  border-radius: clamp(0.5rem, 2vw, 0.75rem);
-  border: none;
-  font-size: clamp(0.875rem, 3vw, 1rem);
-  font-weight: var(--font-semibold);
-  cursor: pointer;
-  font-family: var(--font-primary);
-  transition: all var(--transition-base);
-  min-height: 44px;
-  min-width: 100px;
-}
-
-.btn-modal:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-.btn-modal:active {
-  transform: translateY(0);
-}
-
-.btn-cancel {
-  background-color: var(--bg-secondary);
-  color: var(--text-primary);
-  border: 1px solid var(--border-medium);
-}
-
-.btn-cancel:hover {
-  background-color: var(--border-light);
-}
-
-.btn-confirm {
-  background-color: var(--color-primary);
-  color: var(--text-white);
-}
-
-.btn-confirm:hover {
-  opacity: 0.9;
-}
-
-/* ========================================
-   OBSERVATIONS
-   ======================================== */
-.observations-section {
-  margin-top: var(--space-md);
-  margin-bottom: var(--space-md);
-  background-color: var(--bg-card);
-  padding: var(--space-md);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
-  border-left: 4px solid var(--color-warning);
-}
-
-.section-title-small {
-  font-size: var(--text-sm);
-  font-weight: 700;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  margin-bottom: var(--space-xs);
-}
-
+/* Helper for observations */
 .observations-text {
-  font-size: var(--text-base);
-  color: var(--text-primary);
   font-style: italic;
-  line-height: 1.5;
+  color: #666;
+}
+
+/* Responsive */
+@media (max-width: 400px) {
+  .bill-card {
+    border-radius: 15px;
+  }
 }
 
 /* ========================================
-   MODAL STYLES (Restored for Confirmation)
+   TABLE BADGE
    ======================================== */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
+.table-badge-container {
   display: flex;
-  align-items: center;
   justify-content: center;
-  z-index: 10000;
-  animation: fadeIn 0.2s ease-in-out;
+  margin-bottom: -15px;
+  /* Overlap with card */
+  position: relative;
+  z-index: 5;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+.table-badge {
+  background-color: #154a57;
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  /* Simple rounded box */
+  font-family: var(--font-primary);
+  font-size: 1.1rem;
+  font-weight: 700;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  text-transform: capitalize;
+  text-align: center;
+  border: 1px solid #3d8aa5;
+}
+
+/* Update Bill Card top margin/padding to account for badge overlap if needed */
+.bill-card {
+  padding-top: 25px;
+  /* Add padding so content doesn't hit the overlap */
+  background-color: transparent;
+}
+
+/* ========================================
+   DARK MODE OVERRIDES
+   ======================================== */
+body.dark-mode .page-wrapper {
+  background: var(--bg-primary);
+}
+
+body.dark-mode .bill-header {
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-dark);
+}
+
+body.dark-mode .bill-title {
+  color: var(--text-primary);
+}
+
+body.dark-mode .bill-body {
+  background-color: var(--bg-card);
+}
+
+body.dark-mode .bill-item-name,
+body.dark-mode .bill-item-price,
+body.dark-mode .total-label-sm,
+body.dark-mode .total-value-sm {
+  color: var(--text-primary);
+}
+
+body.dark-mode .bill-divider {
+  background-color: var(--border-dark);
+}
+
+body.dark-mode .bill-footer {
+  background-color: var(--bg-secondary);
+  border-top: 1px solid var(--border-dark);
+}
+
+body.dark-mode .total-label-lg,
+body.dark-mode .total-value-lg {
+  color: var(--color-primary-light);
+}
+
+body.dark-mode .checkbox-label {
+  color: var(--text-primary);
+}
+
+body.dark-mode .btn-dark-grey {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-light);
 }

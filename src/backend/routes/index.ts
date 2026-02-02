@@ -8,12 +8,14 @@ import { authRoutes } from './authRoutes';
 import { authenticateToken } from '../middlewares/jwtAuth';
 import authController from '../controllers/authController';
 import { validateLogin } from '../middlewares/validateAuth';
+import { authRateLimiter } from '../middlewares/rateLimiter';
 
 const routes = Router();
 
 // Rotas públicas
 routes.post(
   '/auth/login',
+  authRateLimiter, // Rate limiter específico para autenticação (10 tentativas/15min)
   validateLogin,
   authController.login.bind(authController),
 );

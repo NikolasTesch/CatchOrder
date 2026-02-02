@@ -1,10 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-br">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CatchOrder - Garçom</title>
+  <link rel='icon' href='/img/icon.svg' type='image/svg+xml'>
 
   <!-- Noto Sans JP Font -->
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap"
@@ -13,41 +14,40 @@
   <!-- Material Icons -->
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+
 </head>
 
 <body>
-  <!-- Cabeçalho Principal -->
   <header class="main-header">
     <div class="header-left">
-      <button class="icon-btn" aria-label="Menu" id="menuBtn">
+      <button class="icon-btn" id="menuBtn" aria-label="Menu de navegação">
         <span class="material-symbols-outlined">menu</span>
       </button>
+      <span class="header-title">Dashboard</span>
     </div>
 
+    <!-- Center: Logo -->
     <div class="header-center">
-      <img src="../img/logoName.svg" alt="CatchOrder Logo" class="logo-image" id="logoImage">
+      <img src="../img/logoName.svg" alt="CatchOrder Logo" class="logo-image">
     </div>
 
-    <nav class="header-actions" aria-label="Ações do cabeçalho">
-      <button class="icon-btn-small" aria-label="Alternar modo escuro" id="darkModeToggle">
+    <!-- Right: Actions -->
+    <nav class="header-actions">
+      <button class="icon-btn-small" id="darkModeToggle" aria-label="Alternar modo escuro">
         <span class="material-symbols-outlined">light_mode</span>
       </button>
-      <button class="icon-btn-small" aria-label="Acessar perfil do usuário" id="userBtn">
+      <button class="icon-btn-small" id="userBtn" aria-label="Perfil do usuário">
         <span class="material-symbols-outlined">account_circle</span>
       </button>
-      <button class="icon-btn-small" aria-label="Sair" id="logoutBtn">
+      <button class="icon-btn-small" id="logoutBtn" aria-label="Sair">
         <span class="material-symbols-outlined">logout</span>
       </button>
     </nav>
   </header>
 
-  <!-- Sidebar de Navegação -->
+  <!-- Sidebar Navigation -->
   <aside class="sidebar" id="sidebar">
-    <div class="sidebar-header" style="display: flex; justify-content: flex-end; padding: 1rem;">
-      <button class="icon-btn-small" id="closeSidebarBtn" aria-label="Fechar menu">
-        <span class="material-symbols-outlined">close</span>
-      </button>
-    </div>
     <nav class="sidebar-nav">
       <button class="nav-item active" data-href="waiterMain.html">
         <span class="material-symbols-outlined">dashboard</span>
@@ -60,52 +60,55 @@
     </nav>
   </aside>
 
-  <!-- Main Content -->
   <main class="page-wrapper">
-    <!-- Card de Resumo do Dia -->
-    <section class="summary-card" aria-label="Resumo do dia">
-      <p class="summary-title">HOJE</p>
-      <h2 class="summary-value">R$00,00</h2>
-      <p class="summary-subtitle">0 mesas atendidas hoje</p>
-      <button class="btn btn-primary btn-full" id="newOrderBtn">Novo Pedido</button>
-    </section>
+    <section class="summary-card">
+      <div class="summary-left">
+        <span class="badge-today">Visão Geral de Hoje</span>
+        <p class="summary-date summary-title">Carregando data...</p>
+        <h2 class="summary-value">R$ 0,00</h2>
+        <p class="summary-subtitle">0 mesas atendidas hoje</p>
+      </div>
 
-    <!-- Seção: Mesas Ocupadas -->
-    <section class="tables-section" aria-label="Mesas ocupadas">
-      <h3 class="section-title">Mesas Ocupadas <span class="material-symbols-outlined icon-arrow">arrow_forward</span>
-      </h3>
-      <div class="occupied-scroll">
-        <!-- Tables injected by script -->
+      <div class="summary-right">
+        <button class="btn btn-gold" id="newOrderBtn">
+          Novo Pedido
+        </button>
+
       </div>
     </section>
 
-    <!-- Seção: Mesas Disponíveis -->
-    <section class="tables-section" aria-label="Mesas disponíveis">
-      <h3 class="section-title">Mesas Disponíveis <span
-          class="material-symbols-outlined icon-arrow">arrow_forward</span></h3>
+
+
+    <!-- Active Orders -->
+    <section class="tables-section active-orders-section">
+      <div class="section-header">
+        <div class="title-group">
+          <h3 class="section-title">Pedidos em Andamento</h3>
+        </div>
+      </div>
+      <div class="active-orders-grid" id="activeOrdersGrid">
+        <!-- Injected by TS -->
+      </div>
+    </section>
+
+    <!-- Available Tables -->
+    <section class="tables-section available-section" id="availableTablesSection">
+      <div class="section-header">
+        <div class="title-group">
+          <h3 class="section-title">Mesas Disponíveis</h3>
+        </div>
+
+      </div>
       <div class="available-tables-grid">
-        <!-- Available tables injected by script -->
+        <!-- Injected by TS -->
       </div>
     </section>
   </main>
 
-  <!-- Table Selection Modal -->
-  <div class="modal-overlay" id="tableModalOverlay">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Selecione uma Mesa</h3>
-        <button class="icon-btn-small" id="closeTableModal">
-          <span class="material-symbols-outlined">close</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div id="availableTablesGrid" class="tables-grid">
-          <!-- Tables injected by script -->
-        </div>
-      </div>
-    </div>
-  </div>
 
+
+  <script src="waiterMain.js"></script>
 </body>
 
 </html>
+

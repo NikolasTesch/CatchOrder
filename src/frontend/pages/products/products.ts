@@ -49,7 +49,7 @@ function getUserId(): string | null {
       const user = JSON.parse(userStr);
       return user.id || null;
     } catch (error) {
-      console.error("Error parsing user data:", error);
+      // console.error("Error parsing user data:", error);
       return null;
     }
   }
@@ -88,7 +88,7 @@ function openUserModal(): void {
 
       document.body.classList.add("user-modal-open");
     } catch (error) {
-      console.error("Error parsing user data:", error);
+      // console.error("Error parsing user data:", error);
     }
   }
 }
@@ -114,7 +114,7 @@ async function handleLogout(): Promise<void> {
         headers: getAuthHeaders()
       });
     } catch (e) {
-      console.error("Logout API call failed", e);
+      // console.error("Logout API call failed", e);
     } finally {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
@@ -300,10 +300,10 @@ document.addEventListener("DOMContentLoaded", () => {
           window.location.href = "landingPage.html";
           return;
         }
-        console.error("Failed to fetch products:", data.message);
+        // console.error("Failed to fetch products:", data.message);
       }
     } catch (error) {
-      console.error("Error fetching products:", error);
+      // console.error("Error fetching products:", error);
     }
   }
 

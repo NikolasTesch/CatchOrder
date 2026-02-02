@@ -24,7 +24,8 @@ interface Order {
   status: 'OPEN' | 'CLOSED' | 'CANCELLED';
   total: number;
   tip: number;
-  created_at: string;
+  created_at?: string;
+  opened_at?: string;
   items?: OrderItem[];
 }
 
@@ -465,7 +466,7 @@ async function loadSummary() {
     const now = new Date();
 
     // Robust date parsing handles "YYYY-MM-DD HH:mm:ss" vs ISO
-    const isToday = (dateStr: string) => {
+    const isToday = (dateStr?: string) => {
       if (!dateStr) return false;
       let d = new Date(dateStr);
       // Fallback for SQL-style timestamps
@@ -483,7 +484,10 @@ async function loadSummary() {
       // Robust logging for debugging
       // console.log('Checking order:', o); 
 
-      const orderSameDay = isToday(o.created_at);
+      // Check both probable date fields
+      const orderDate = o.created_at || o.opened_at;
+      const orderSameDay = isToday(orderDate);
+
       // Loose comparison for IDs (string vs number)
       const isMyOrder = (o.user_id == user.id || String(o.user_id) === String(user.id));
       const status = (o.status || '').toUpperCase();

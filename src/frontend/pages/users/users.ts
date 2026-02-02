@@ -2,6 +2,7 @@
 export { };
 
 import { ApiService } from '../../services/apiService';
+import { ModalService } from '../../utils/modalService';
 import './style.css';
 
 // API Configuration
@@ -36,8 +37,9 @@ function checkAuth(): boolean {
     const allowedRoles = ['admin', 'manager'];
 
     if (!allowedRoles.includes(user.role)) {
-      alert('Acesso negado: Você não tem permissão para acessar esta página.');
-      window.location.href = 'products.html'; // Redirect to a safe page
+      ModalService.alert('Acesso Negado', 'Você não tem permissão para acessar esta página.', 'error', () => {
+        window.location.href = 'products.html'; // Redirect to a safe page
+      });
       return false;
     }
   } catch (e) {

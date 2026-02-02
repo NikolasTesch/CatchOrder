@@ -1,5 +1,6 @@
 import './style.css';
 import { ApiService } from '../../services/apiService';
+import { ModalService } from '../../utils/modalService';
 
 
 
@@ -140,12 +141,13 @@ async function handleCreateUser(e: Event) {
             image_url: image_url || null
         });
 
-        alert('Usuário criado com sucesso!');
-        // Redirect to users list
-        window.location.href = '/pages/users.html';
+        ModalService.alert('Sucesso', 'Usuário criado com sucesso!', 'success', () => {
+            // Redirect to users list
+            window.location.href = '/pages/users.html';
+        });
     } catch (error: any) {
         // console.error('Error creating user:', error);
-        alert(error.message || 'Erro ao criar usuário');
+        ModalService.alert('Erro', error.message || 'Erro ao criar usuário', 'error');
     }
 }
 

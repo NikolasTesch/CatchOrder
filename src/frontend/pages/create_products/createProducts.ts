@@ -1,5 +1,6 @@
 import './style.css';
 import { ApiService } from "../../services/apiService";
+import { ModalService } from "../../utils/modalService";
 
 export { };
 
@@ -59,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     } catch (error) {
       // console.error("Error fetching categories:", error);
-      alert("Erro ao carregar categorias.");
+      ModalService.alert("Erro", "Erro ao carregar categorias.", "error");
     }
   }
 
@@ -73,8 +74,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const description = "Descricao automatica"; // Placeholder
 
     if (!name || isNaN(price) || !category_id) {
-      alert(
+      ModalService.alert(
+        "Erro de Validação",
         "Por favor, preencha todos os campos obrigatórios (Nome, Preço, Categoria).",
+        "warning"
       );
       return;
     }
@@ -91,11 +94,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
       await ApiService.post("/products", payload);
 
-      alert("Produto criado com sucesso!");
-      window.location.href = "../products/products.html";
+      ModalService.alert("Sucesso", "Produto criado com sucesso!", "success", () => {
+        window.location.href = "../products/products.html";
+      });
     } catch (error: any) {
       // console.error("Error creating product:", error);
-      alert(error.message || "Erro ao criar produto");
+      ModalService.alert("Erro", error.message || "Erro ao criar produto", "error");
     }
   }
 });

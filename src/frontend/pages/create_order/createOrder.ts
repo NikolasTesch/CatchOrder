@@ -1,6 +1,7 @@
 import './style.css';
 import { ApiService } from '../../services/apiService';
 import { centsToReais, formatCurrency } from '../../utils/currency';
+import { ModalService } from '../../utils/modalService';
 
 // Interfaces
 interface Category {
@@ -189,11 +190,11 @@ function closeUserModal() {
 }
 
 function handleLogout() {
-  if (confirm('Tem certeza que deseja sair?')) {
+  ModalService.confirm('Sair', 'Tem certeza que deseja sair?', () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     window.location.href = 'landingPage.html';
-  }
+  });
 }
 
 function formatRole(role: string): string {
@@ -483,10 +484,10 @@ function renderExistingItems() {
       if (btnEl.style.opacity === '0.5') return;
       const itemId = btnEl.dataset.id;
       if (itemId && currentOrderId) {
-        if (confirm('Tem certeza que deseja remover este item?')) {
+        ModalService.confirm('Remover Item', 'Tem certeza que deseja remover este item?', async () => {
           btnEl.style.opacity = '0.5';
-          await removeOrderItem(currentOrderId, itemId);
-        }
+          await removeOrderItem(currentOrderId!, itemId);
+        });
       }
     });
   });

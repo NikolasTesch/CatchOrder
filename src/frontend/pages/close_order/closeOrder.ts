@@ -37,16 +37,20 @@ const consumedList = document.getElementById('consumed-list') as HTMLElement;
 const subtotalEl = document.getElementById('subtotal') as HTMLElement;
 const tipEl = document.getElementById('tip-value') as HTMLElement;
 const totalEl = document.getElementById('total-final') as HTMLElement;
-const btnBack = document.getElementById('btn-back') as HTMLButtonElement;
+const tipToggle = document.getElementById("tip-toggle") as HTMLInputElement;
+const btnBack = document.getElementById("btn-back") as HTMLButtonElement;
 const btnCloseOrder = document.getElementById(
-  'btn-close-order',
+  "btn-close-order",
 ) as HTMLButtonElement;
 const displayTableNumberEl = document.getElementById(
   'display-table-number',
 ) as HTMLElement;
 
+const observationsSection = document.getElementById("observations-section");
+const observationsText = document.getElementById("observations-text");
+
 // Initialize
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
   initDarkMode();
@@ -54,12 +58,12 @@ async function init() {
 
   // Get URL parameters
   const params = new URLSearchParams(window.location.search);
-  orderId = params.get('order_id');
-  tableId = params.get('table_id');
+  orderId = params.get("order_id");
+  tableId = params.get("table_id");
 
   if (!orderId) {
-    showError('Pedido não encontrado');
-    setTimeout(() => (window.location.href = 'waiterMain.html'), 2000);
+    showError("Pedido não encontrado");
+    setTimeout(() => (window.location.href = "waiterMain.html"), 2000);
     return;
   }
 
@@ -77,8 +81,8 @@ async function loadOrder() {
 
     renderOrderDetails();
   } catch (error) {
-    console.error('Erro ao carregar pedido:', error);
-    showError('Erro ao carregar pedido');
+    console.error("Erro ao carregar pedido:", error);
+    showError("Erro ao carregar pedido");
   }
 }
 
@@ -98,7 +102,7 @@ async function loadTable() {
       displayTableNumberEl.textContent = tableNumber;
     }
   } catch (error) {
-    console.error('Erro ao carregar mesa:', error);
+    console.error("Erro ao carregar mesa:", error);
   }
 }
 
@@ -123,15 +127,36 @@ function renderOrderDetails() {
       </article>
     `,
       )
-      .join('');
+      .join("");
   } else if (consumedList) {
     consumedList.innerHTML =
       '<p style="text-align: center; color: var(--text-secondary);">Nenhum item no pedido</p>';
   }
 
+  // Render Observations
+  if (observationsSection && observationsText) {
+    if (currentOrder.observations) {
+      observationsText.textContent = currentOrder.observations;
+      observationsSection.style.display = "block";
+    } else {
+      observationsSection.style.display = "none";
+    }
+  }
+
   // Calculate values
+  updateTotals();
+}
+
+function updateTotals() {
+  if (!currentOrder) return;
+
   const subtotal = currentOrder.total || 0;
-  const tipAmount = Math.round(subtotal * 0.1); // 10% tip in cents
+  let tipAmount = 0;
+
+  if (tipToggle && tipToggle.checked) {
+    tipAmount = Math.round(subtotal * 0.1); // 10% tip in cents
+  }
+
   const totalFinal = subtotal + tipAmount;
 
   // Update values on screen
@@ -142,13 +167,17 @@ function renderOrderDetails() {
 
 function setupEventListeners() {
   if (btnBack) {
-    btnBack.addEventListener('click', () => {
+    btnBack.addEventListener("click", () => {
       window.location.href = `createOrder.html?order_id=${orderId}&table_id=${tableId}`;
     });
   }
 
   if (btnCloseOrder) {
-    btnCloseOrder.addEventListener('click', closeOrder);
+    btnCloseOrder.addEventListener("click", closeOrder);
+  }
+
+  if (tipToggle) {
+    tipToggle.addEventListener("change", updateTotals);
   }
 }
 
@@ -157,26 +186,30 @@ function closeOrder() {
 
   // Show custom confirmation modal
   showConfirmModal(
-    'Fechar Comanda',
-    'Deseja realmente fechar a comanda? A mesa será liberada e esta ação não pode ser desfeita.',
+    "Fechar Comanda",
+    "Deseja realmente fechar a comanda? A mesa será liberada e esta ação não pode ser desfeita.",
     async () => {
       try {
-        // Calculate 10% tip
+        // Calculate tip based on checkbox
         const subtotal = currentOrder!.total || 0;
-        const tipAmount = Math.round(subtotal * 0.1);
+        let tipAmount = 0;
+
+        if (tipToggle && tipToggle.checked) {
+          tipAmount = Math.round(subtotal * 0.1);
+        }
 
         // Close order on backend
         await ApiService.patch(`/orders/${orderId}/close`, { tip: tipAmount });
 
-        showSuccess('Comanda fechada com sucesso!');
+        showSuccess("Comanda fechada com sucesso!");
 
         // Redirect to waiterMain
         setTimeout(() => {
-          window.location.href = 'waiterMain.html';
+          window.location.href = "waiterMain.html";
         }, 1500);
       } catch (error: any) {
-        console.error('Erro ao fechar comanda:', error);
-        showError(error.message || 'Erro ao fechar comanda');
+        console.error("Erro ao fechar comanda:", error);
+        showError(error.message || "Erro ao fechar comanda");
       }
     },
   );

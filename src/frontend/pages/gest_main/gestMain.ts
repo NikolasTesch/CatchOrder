@@ -798,7 +798,7 @@ function showProductForm(productId: string | null = null) {
     <form id="productForm" onsubmit="submitProductForm(event, ${isEdit ? `'${productId}'` : "null"})">
       <div class="form-group">
         <label class="form-label">Nome</label>
-        <input type="text" class="form-input" name="name" value="${product?.name || ""}" required>
+        <input type="text" class="form-input" name="name" value="${product?.name || ""}" required maxlength="50">
       </div>
       <div class="form-group">
         <label class="form-label">Categoria</label>
@@ -817,11 +817,11 @@ function showProductForm(productId: string | null = null) {
       </div>
       <div class="form-group">
         <label class="form-label">Descrição</label>
-        <textarea class="form-textarea" name="description">${product?.description || ""}</textarea>
+        <textarea class="form-textarea" name="description" maxlength="200" rows="3">${product?.description || ""}</textarea>
       </div>
       <div class="form-group">
         <label class="form-label">Preço (R$)</label>
-        <input type="number" step="0.01" class="form-input" name="price" value="${product ? centsToReais(product.price) : ""}" required>
+        <input type="number" step="0.01" min="0" class="form-input" name="price" value="${product ? centsToReais(product.price) : ""}" required>
       </div>
       <div class="form-group">
         <label class="form-label">Status</label>
@@ -959,7 +959,7 @@ function showTableForm(tableId: string | null = null) {
     <form id="tableForm" onsubmit="submitTableForm(event, ${isEdit ? `'${tableId}'` : "null"})">
       <div class="form-group">
         <label class="form-label">Número da Mesa</label>
-        <input type="number" class="form-input" name="number" value="${table?.number || ""}" required min="1">
+        <input type="number" class="form-input" name="number" value="${table?.number || ""}" required min="1" max="999" step="1">
       </div>
       <div class="form-group">
         <label class="form-label">Status</label>
@@ -1190,11 +1190,11 @@ function showCategoryForm(categoryId: string | null = null) {
     <form id="categoryForm" onsubmit="submitCategoryForm(event, ${isEdit ? `'${categoryId}'` : "null"})">
       <div class="form-group">
         <label class="form-label">Nome</label>
-        <input type="text" class="form-input" name="name" value="${category?.name || ""}" required>
+        <input type="text" class="form-input" name="name" value="${category?.name || ""}" required maxlength="30">
       </div>
       <div class="form-group">
         <label class="form-label">Slug</label>
-        <input type="text" class="form-input" name="slug" value="${category?.slug || ""}" required>
+        <input type="text" class="form-input" name="slug" value="${category?.slug || ""}" required maxlength="30" pattern="[a-z0-9-]+" title="Apenas letras minúsculas, números e hifens.">
       </div>
       <div class="form-actions">
         <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>

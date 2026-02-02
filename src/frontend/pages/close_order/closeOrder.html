@@ -60,6 +60,12 @@
       </div>
     </section>
 
+    <!-- Observations Section (Hidden by default, shown if exists) -->
+    <section class="observations-section card" id="observations-section" style="display: none;" aria-label="Observações do pedido">
+      <h3 class="section-title-small">Observações</h3>
+      <p class="observations-text" id="observations-text"></p>
+    </section>
+
     <!-- Totals Section -->
     <section class="totals-section card" aria-label="Resumo de valores">
       <div class="total-row">
@@ -67,7 +73,10 @@
         <span class="total-value" id="subtotal">R$ 0,00</span>
       </div>
       <div class="total-row">
-        <span class="total-label">Gorjeta (10%):</span>
+        <label class="total-label checkbox-label">
+          <input type="checkbox" id="tip-toggle" checked>
+          Taxa de Serviço (10%):
+        </label>
         <span class="total-value" id="tip-value">R$ 0,00</span>
       </div>
       <div class="total-row total-final">
@@ -84,6 +93,19 @@
       </div>
     </section>
   </main>
+  <style>
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    .checkbox-label input {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--color-primary);
+    }
+  </style>
 </body>
 
 </html>

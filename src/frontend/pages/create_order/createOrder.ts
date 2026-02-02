@@ -153,7 +153,7 @@ async function checkAuth(): Promise<boolean> {
     return true;
   } catch (error) {
     console.error('Auth check failed:', error);
-    window.location.href = '/pages/landingPage.html';
+    window.location.href = 'landingPage.html';
     return false;
   }
 }

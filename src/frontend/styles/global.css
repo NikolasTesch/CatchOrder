@@ -405,6 +405,51 @@ body.dark-mode {
   min-height: 52px;
 }
 
+/* Icon Buttons (Standardized) */
+.icon-btn,
+.icon-btn-small {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  transition: all var(--transition-base);
+  border-radius: var(--radius-md);
+}
+
+.icon-btn {
+  min-height: 48px;
+  min-width: 48px;
+  padding: var(--space-xs);
+}
+
+.icon-btn-small {
+  min-height: 40px;
+  min-width: 40px;
+  padding: var(--space-xs);
+}
+
+.icon-btn:hover,
+.icon-btn-small:hover {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  transform: scale(1.05);
+}
+
+.icon-btn:active,
+.icon-btn-small:active {
+  transform: scale(0.95);
+}
+
+.icon-btn .material-symbols-outlined {
+  font-size: 28px;
+}
+
+.icon-btn-small .material-symbols-outlined {
+  font-size: 24px;
+}
+
 .btn-full {
   width: 100%;
 }
@@ -794,8 +839,81 @@ body.dark-mode {
 .mt-lg {
   margin-top: var(--space-lg);
 }
-.mt-xl {
-  margin-top: var(--space-xl);
+
+/* ========================================
+   POPOVER & DROPDOWNS
+   ======================================== */
+.popover {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: var(--space-sm);
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  width: 300px;
+  z-index: var(--z-popover);
+  display: none;
+  animation: slideDownFade 0.2s ease-out;
+  overflow: hidden;
+}
+
+.popover.active {
+  display: block;
+}
+
+@keyframes slideDownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.popover-header {
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--border-light);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+}
+
+.popover-body {
+  padding: var(--space-md);
+}
+
+/* Profile Card in Popover */
+.user-info-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.user-name {
+  font-size: var(--text-base);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+}
+
+.user-username {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.user-role-badge {
+  align-self: flex-start;
+  margin-top: var(--space-xs);
+}
+
+.notification-empty {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  padding: var(--space-md) 0;
 }
 
 .mb-xs {

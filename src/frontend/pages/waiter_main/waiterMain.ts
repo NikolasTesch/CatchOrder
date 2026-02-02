@@ -148,8 +148,20 @@ function setupEventListeners() {
 
   // Sidebar Toggle
   if (menuBtn && sidebar) {
-    menuBtn.addEventListener('click', () => {
+    menuBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
       sidebar.classList.toggle('active');
+    });
+
+    // Close sidebar when clicking outside
+    document.addEventListener('click', (e) => {
+      if (
+        sidebar.classList.contains('active') &&
+        !sidebar.contains(e.target as Node) &&
+        !menuBtn.contains(e.target as Node)
+      ) {
+        sidebar.classList.remove('active');
+      }
     });
   }
 

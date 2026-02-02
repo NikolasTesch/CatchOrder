@@ -59,9 +59,9 @@ class OrdersController {
   async update(req: Request, res: Response): Promise<Response> {
     try {
       const id = req.params.id as string;
-      const { status, total, tip, closed_at } = req.body;
+      const { status, total, tip, closed_at, observations } = req.body;
 
-      const updatedOrder = await OrderModel.update(id, { status, total, tip, closed_at });
+      const updatedOrder = await OrderModel.update(id, { status, total, tip, closed_at, observations });
 
       if (!updatedOrder) {
         return res.status(404).json({ message: 'Pedido não encontrado' });

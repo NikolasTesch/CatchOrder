@@ -119,8 +119,8 @@ export class OrderModel {
     const updated = { ...current, ...data };
 
     await db.run(
-      `UPDATE orders SET status = ?, total = ?, tip = ?, closed_at = ? WHERE id = ?`,
-      [updated.status, updated.total, updated.tip, updated.closed_at, id],
+      `UPDATE orders SET status = ?, total = ?, tip = ?, closed_at = ?, observations = ? WHERE id = ?`,
+      [updated.status, updated.total, updated.tip, updated.closed_at, updated.observations, id],
     );
 
     return OrderModel.findById(id);

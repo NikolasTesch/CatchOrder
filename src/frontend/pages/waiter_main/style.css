@@ -71,8 +71,7 @@
   height: clamp(50px, 12vw, 60px);
   width: auto;
   cursor: pointer;
-  filter: brightness(0) saturate(100%) invert(25%) sepia(12%) saturate(2476%)
-    hue-rotate(147deg) brightness(95%) contrast(93%);
+  filter: brightness(0) saturate(100%) invert(25%) sepia(12%) saturate(2476%) hue-rotate(147deg) brightness(95%) contrast(93%);
   transition: transform var(--transition-base);
 }
 
@@ -244,10 +243,8 @@
 /* All Tables - Grid */
 .tables-grid {
   display: grid;
-  grid-template-columns: repeat(
-    auto-fill,
-    minmax(clamp(56px, 16vw, 60px), 1fr)
-  );
+  grid-template-columns: repeat(auto-fill,
+      minmax(clamp(56px, 16vw, 60px), 1fr));
   gap: var(--space-md);
   justify-items: center;
 }
@@ -259,14 +256,12 @@
 /* Dark mode logo filter */
 @media (prefers-color-scheme: dark) {
   .logo-image {
-    filter: brightness(0) saturate(100%) invert(59%) sepia(53%) saturate(434%)
-      hue-rotate(147deg) brightness(93%) contrast(88%);
+    filter: brightness(0) saturate(100%) invert(59%) sepia(53%) saturate(434%) hue-rotate(147deg) brightness(93%) contrast(88%);
   }
 }
 
 body.dark-mode .logo-image {
-  filter: brightness(0) saturate(100%) invert(59%) sepia(53%) saturate(434%)
-    hue-rotate(147deg) brightness(93%) contrast(88%);
+  filter: brightness(0) saturate(100%) invert(59%) sepia(53%) saturate(434%) hue-rotate(147deg) brightness(93%) contrast(88%);
 }
 
 /* Responsive Adjustments */
@@ -350,10 +345,8 @@ body.dark-mode .sidebar {
 /* Available Tables Grid - Same style as all tables */
 .available-tables-grid {
   display: grid;
-  grid-template-columns: repeat(
-    auto-fill,
-    minmax(clamp(56px, 16vw, 60px), 1fr)
-  );
+  grid-template-columns: repeat(auto-fill,
+      minmax(clamp(56px, 16vw, 60px), 1fr));
   gap: var(--space-md);
   justify-items: center;
 }
@@ -369,6 +362,7 @@ body.dark-mode .sidebar {
    DESKTOP RESPONSIVENESS (≥1024px)
    ======================================== */
 @media (min-width: 1024px) {
+
   /* Fixed Sidebar for Desktop */
   .sidebar {
     transform: translateX(0);
@@ -378,10 +372,7 @@ body.dark-mode .sidebar {
     height: calc(100vh - 64px);
   }
 
-  /* Hide only hamburger menu on desktop, keep other icon buttons */
-  .header-left .icon-btn {
-    display: none;
-  }
+
 
   /* Adjust header for desktop */
   .main-header {
@@ -411,8 +402,10 @@ body.dark-mode .sidebar {
   .page-wrapper {
     width: 100%;
     margin-left: 0;
-    padding-left: 240px; /* Space for fixed sidebar */
-    padding-right: 240px; /* Balance for screen centering */
+    padding-left: 240px;
+    /* Space for fixed sidebar */
+    padding-right: 240px;
+    /* Balance for screen centering */
     padding-top: calc(64px + var(--space-xl));
     padding-bottom: var(--space-xl);
     box-sizing: border-box;

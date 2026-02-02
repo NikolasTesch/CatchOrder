@@ -45,6 +45,14 @@ async function init() {
   loadTables();
   loadSummary();
 
+  // Check for auto-open modal
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('action') === 'new_order') {
+    openTableSelectionModal();
+    // Clean URL
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+
   // Auto-refresh every 30 seconds
   setInterval(() => {
     loadTables();

@@ -339,7 +339,7 @@ function setupEventListeners() {
 
   if (newOrderButton) {
     newOrderButton.addEventListener('click', () => {
-      window.location.href = '/pages/waiterMain.html';
+      window.location.href = 'waiterMain.html?action=new_order';
     });
   }
 }

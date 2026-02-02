@@ -723,7 +723,10 @@ body.dark-mode .logo-image {
 /* ========================================
    MODAL
    ======================================== */
-.modal {
+/* ========================================
+   MODAL
+   ======================================== */
+.gest-modal {
   display: none;
   position: fixed;
   top: 0;
@@ -737,11 +740,11 @@ body.dark-mode .logo-image {
   animation: fadeIn 0.2s ease-in-out;
 }
 
-.modal.active {
+.gest-modal.active {
   display: flex;
 }
 
-.modal-content {
+.gest-modal-content {
   background: var(--bg-card);
   border-radius: var(--radius-lg);
   width: 90%;
@@ -764,7 +767,7 @@ body.dark-mode .logo-image {
   }
 }
 
-.modal-header {
+.gest-modal-header {
   padding: var(--space-lg);
   border-bottom: 1px solid var(--border-light);
   display: flex;
@@ -772,7 +775,7 @@ body.dark-mode .logo-image {
   align-items: center;
 }
 
-.modal-header h3 {
+.gest-modal-header h3 {
   font-size: clamp(1.125rem, 2.5vw, 1.25rem);
   font-weight: var(--font-semibold);
 }
@@ -795,7 +798,7 @@ body.dark-mode .logo-image {
   color: var(--text-white);
 }
 
-.modal-body {
+.gest-modal-body {
   padding: var(--space-lg);
 }
 

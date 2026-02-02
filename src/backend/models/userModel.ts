@@ -48,13 +48,21 @@ export class UserModel {
   }
 
   static async update(id: string, user: UpdateUserDTO): Promise<boolean> {
-    const current = await UserModel.findById(id);
-    if (!current) return false;
-
     const db = await getDb();
+
+    // Fetch current user WITH password_hash to preserve it if needed
+    // We cannot use findById because it excludes sensitive data
+    const current = await db.get<User>("SELECT * FROM users WHERE id = ?", [
+      id,
+    ]);
+
+    if (!current) return false;
 
     // Merge current data with updates
     const updated = { ...current, ...user };
+
+    // Use usage of password_hash from current record if not provided in update
+    const newPasswordHash = user.password_hash || current.password_hash;
 
     const result = await db.run(
       `UPDATE users SET name = ?, username = ?, role = ?, password_hash = ?, image_url = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
@@ -62,7 +70,7 @@ export class UserModel {
         updated.name,
         updated.username,
         updated.role,
-        user.password_hash || (current as any).password_hash, // Keep current password if not updating
+        newPasswordHash,
         updated.image_url,
         id,
       ],

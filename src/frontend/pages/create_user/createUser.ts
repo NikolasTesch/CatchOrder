@@ -1,7 +1,7 @@
 import './style.css';
 import { ApiService } from '../../services/apiService';
 
-console.log('Create User Script Loaded');
+
 
 document.addEventListener('DOMContentLoaded', () => {
     init();
@@ -78,7 +78,7 @@ function setupEventListeners() {
                         window.location.href = '/pages/gestMain.html';
                     }
                 } catch (e) {
-                    console.error('Error parsing user data:', e);
+                    // console.error('Error parsing user data:', e);
                     window.location.href = '/pages/gestMain.html';
                 }
             } else {
@@ -104,7 +104,7 @@ function setupEventListeners() {
 
 async function handleCreateUser(e: Event) {
     e.preventDefault();
-    console.log('Validating user creation form...');
+    // console.log('Validating user creation form...');
 
     // Clear all previous errors
     clearAllErrors();
@@ -125,11 +125,11 @@ async function handleCreateUser(e: Event) {
     const isFormValid = validateForm(name, username, password, role, image_url);
 
     if (!isFormValid) {
-        console.log('Form validation failed');
+        // console.log('Form validation failed');
         return;
     }
 
-    console.log('Form valid, submitting...');
+    // console.log('Form valid, submitting...');
 
     try {
         await ApiService.post('/users', {
@@ -144,7 +144,7 @@ async function handleCreateUser(e: Event) {
         // Redirect to users list
         window.location.href = '/pages/users.html';
     } catch (error: any) {
-        console.error('Error creating user:', error);
+        // console.error('Error creating user:', error);
         alert(error.message || 'Erro ao criar usuário');
     }
 }

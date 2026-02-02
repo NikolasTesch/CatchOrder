@@ -60,7 +60,7 @@ async function init() {
     loadSummary();
   }, 30000);
 
-  console.log('WaiterMain page initialized (TS)');
+  // console.log('WaiterMain page initialized (TS)');
 }
 
 // Utility Functions
@@ -116,7 +116,7 @@ async function loadCurrentUser(): Promise<User | null> {
     currentUser = response.user;
     return currentUser;
   } catch (error) {
-    console.error('Failed to load user:', error);
+    // console.error('Failed to load user:', error);
     window.location.href = 'landingPage.html';
     return null;
   }
@@ -257,7 +257,7 @@ async function handleLogout() {
   try {
     await ApiService.post("/auth/logout", {});
   } catch (e) {
-    console.error("Logout error", e);
+    // console.error("Logout error", e);
   } finally {
     localStorage.removeItem("user");
     window.location.href = "landingPage.html";
@@ -278,8 +278,8 @@ function toggleProfilePopover(btn: HTMLElement) {
       const createdDate =
         "created_at" in currentUser && currentUser.created_at
           ? new Date(currentUser.created_at as string).toLocaleDateString(
-              "pt-BR",
-            )
+            "pt-BR",
+          )
           : "-";
 
       popover.innerHTML = `
@@ -329,7 +329,7 @@ async function loadTables() {
       );
     }
   } catch (error) {
-    console.error('Error loading tables:', error);
+    // console.error('Error loading tables:', error);
   }
 }
 
@@ -461,7 +461,7 @@ async function loadSummary() {
     if (subtitleEl)
       subtitleEl.textContent = `${todayOrders.length} mesa${todayOrders.length !== 1 ? 's' : ''} atendida${todayOrders.length !== 1 ? 's' : ''} hoje`;
   } catch (error) {
-    console.error('Error loading summary:', error);
+    // console.error('Error loading summary:', error);
   }
 }
 

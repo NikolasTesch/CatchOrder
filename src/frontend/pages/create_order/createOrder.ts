@@ -101,13 +101,13 @@ async function init() {
       );
 
       if (openOrder) {
-        console.warn('Mesa ocupada. Redirecionando para ordem existente:', openOrder.id);
+        // console.warn('Mesa ocupada. Redirecionando para ordem existente:', openOrder.id);
         // Redirect to existing order
         window.location.href = `createOrder.html?table_id=${currentTableId}&order_id=${openOrder.id}`;
         return;
       }
     } catch (e) {
-      console.error('Erro ao verificar pedidos da mesa:', e);
+      // console.error('Erro ao verificar pedidos da mesa:', e);
     }
   }
 
@@ -120,21 +120,21 @@ async function init() {
       );
 
       if (openOrder) {
-        console.warn(
-          'Mesa ocupada. Redirecionando para ordem existente:',
-          openOrder.id,
-        );
+        // console.warn(
+        //   'Mesa ocupada. Redirecionando para ordem existente:',
+        //   openOrder.id,
+        // );
         // Redirect to existing order
         window.location.href = `/pages/createOrder.html?table_id=${currentTableId}&order_id=${openOrder.id}`;
         return;
       }
     } catch (e) {
-      console.error('Erro ao verificar pedidos da mesa:', e);
+      // console.error('Erro ao verificar pedidos da mesa:', e);
     }
   }
 
   if (currentOrderId) {
-    console.log('Edit Mode: Order ID present', currentOrderId);
+    // console.log('Edit Mode: Order ID present', currentOrderId);
     await loadOrderDetails(currentOrderId);
   }
 
@@ -152,7 +152,7 @@ async function checkAuth(): Promise<boolean> {
     await ApiService.get('/auth/me');
     return true;
   } catch (error) {
-    console.error('Auth check failed:', error);
+    // console.error('Auth check failed:', error);
     window.location.href = 'landingPage.html';
     return false;
   }
@@ -179,7 +179,7 @@ function openUserModal() {
       if (roleEl) roleEl.textContent = formatRole(user.role || '');
       document.body.classList.add('user-modal-open');
     } catch (error) {
-      console.error('Error parsing user data:', error);
+      // console.error('Error parsing user data:', error);
     }
   }
 }
@@ -221,7 +221,7 @@ async function loadTableDetails(tableId: string) {
       if (found) currentTableNumber = found.number;
     }
   } catch (e) {
-    console.error('Error loading table details', e);
+    // console.error('Error loading table details', e);
     currentTableNumber = 'Unknown';
   }
 }
@@ -249,7 +249,7 @@ async function loadOrderDetails(orderId: string) {
       }
     }
   } catch (error) {
-    console.error('Error loading order details', error);
+    // console.error('Error loading order details', error);
     showError('Erro ao carregar detalhes do pedido');
   }
 }
@@ -588,7 +588,7 @@ async function removeOrderItem(orderId: string, itemId: string) {
     showSuccess('Item removido com sucesso!');
     await loadOrderDetails(orderId);
   } catch (error: any) {
-    console.error('Erro ao remover item:', error);
+    // console.error('Erro ao remover item:', error);
     showError('Erro ao remover item');
   }
 }
@@ -643,7 +643,7 @@ async function saveItems() {
       window.location.href = `createOrder.html?table_id=${currentTableId}&order_id=${orderId}`;
     }, 1500);
   } catch (error: any) {
-    console.error('Erro ao salvar:', error);
+    // console.error('Erro ao salvar:', error);
     showError(error.message || 'Erro ao processar pedido.');
     if (sendBtn) {
       sendBtn.disabled = false;

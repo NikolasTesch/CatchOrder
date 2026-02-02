@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (response.ok) {
-                console.log('Registration successful');
+                // console.log('Registration successful');
                 alert('Conta criada com sucesso! Redirecionando para o login...');
                 // Redirect to login page
                 window.location.href = 'landingPage.html';
@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 showError(data.message || 'Falha ao criar conta. Tente novamente.');
             }
         } catch (error) {
-            console.error('Registration error:', error);
+            // console.error('Registration error:', error);
             showError('Erro ao conectar com o servidor. Tente novamente mais tarde.');
         } finally {
             setLoadingState(false);

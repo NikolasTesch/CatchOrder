@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
     } catch (error) {
-      console.error("Error fetching categories:", error);
+      // console.error("Error fetching categories:", error);
       alert("Erro ao carregar categorias.");
     }
   }
@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("Produto criado com sucesso!");
       window.location.href = "../products/products.html";
     } catch (error: any) {
-      console.error("Error creating product:", error);
+      // console.error("Error creating product:", error);
       alert(error.message || "Erro ao criar produto");
     }
   }

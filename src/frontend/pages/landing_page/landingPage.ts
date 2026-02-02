@@ -2,10 +2,10 @@ import '../../styles/global.css';
 import './style.css';
 import { ApiService } from '../../services/apiService';
 
-console.log('Landing Page Script Loaded'); // Debug 1
+
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM Content Loaded'); // Debug 2
+
 
     const usernameInput = document.getElementById('username') as HTMLInputElement | null;
     const passwordInput = document.getElementById('password') as HTMLInputElement | null;
@@ -57,10 +57,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (loginButton) {
-            console.log('Attaching click listener to login button'); // Debug 4
+
             loginButton.addEventListener('click', handleLogin);
         } else {
-            console.error('Login button NOT found'); // Debug Error
+
         }
 
         // Clear error on input
@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function handleLogin(e: Event): Promise<void> {
-        console.log('Login button clicked'); // Debug 5
+
         if (e) e.preventDefault();
 
         if (!usernameInput || !passwordInput) return;
@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const username = usernameInput.value.trim();
         const password = passwordInput.value.trim();
 
-        console.log('Values:', { username, password }); // Debug 6
+
 
         // Reset error
         clearError();
@@ -110,11 +110,11 @@ document.addEventListener('DOMContentLoaded', () => {
         setLoadingState(true);
 
         try {
-            console.log('Sending request to /auth/login...'); // Debug 7
+
             // Using ApiService for consistent request handling
             const response = await ApiService.post<{ user: { role: string; id: string; name: string; username: string }, token: string }>('/auth/login', { username, password });
 
-            console.log('Login successful', response);
+
 
             // Save user and token to localStorage
             if (response.user) {
@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
         } catch (error: any) {
-            console.error('Login error:', error);
+            // console.error('Login error:', error);
             showError(error.message || 'Falha no login. Verifique suas credenciais.');
         } finally {
             setLoadingState(false);

@@ -131,7 +131,7 @@ function openUserModal(): void {
       // This enables ALL overlays. We need to refrain from using body class for multiple modals or separate them.
       // For now, I'll use specific ID handling for the DETAILS modal to avoid conflict with the PROFILE modal.
     } catch (error) {
-      console.error('Error parsing user data:', error);
+      // console.error('Error parsing user data:', error);
     }
   }
 }
@@ -157,7 +157,7 @@ async function handleLogout(): Promise<void> {
         headers: getAuthHeaders()
       });
     } catch (e) {
-      console.error("Logout API call failed", e);
+      // console.error("Logout API call failed", e);
     } finally {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
@@ -436,7 +436,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
     } catch (error) {
-      console.error('Error fetching users:', error);
+      // console.error('Error fetching users:', error);
       showToast('Erro de conexão ao carregar usuários', 'error');
       if (usersGrid) usersGrid.innerHTML = '<p class="empty-text">Erro de conexão</p>';
     }

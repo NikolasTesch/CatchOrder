@@ -3,6 +3,8 @@ import { hashPassword } from '../utils/passwordHash';
 import { UserModel } from '../models/userModel';
 import type { CreateUserDTO, UpdateUserDTO } from '../../shared/dtos/userDto';
 
+import { userRole } from "../../shared/types/user";
+
 type IdParam = { id: string };
 
 /**
@@ -17,13 +19,13 @@ class UsersController {
     try {
       const users = await UserModel.findAll();
       return res.status(200).json({
-        message: 'Lista de usuários',
+        message: "Lista de usuários",
         data: users,
       });
     } catch (error) {
       return res.status(500).json({
-        message: 'Erro ao listar usuários',
-        error: error instanceof Error ? error.message : 'Erro desconhecido',
+        message: "Erro ao listar usuários",
+        error: error instanceof Error ? error.message : "Erro desconhecido",
       });
     }
   }
@@ -38,7 +40,7 @@ class UsersController {
       const user = await UserModel.findById(id);
 
       if (!user) {
-        return res.status(404).json({ message: 'Usuário não encontrado' });
+        return res.status(404).json({ message: "Usuário não encontrado" });
       }
 
       return res.status(200).json({
@@ -47,8 +49,8 @@ class UsersController {
       });
     } catch (error) {
       return res.status(500).json({
-        message: 'Erro ao buscar usuário',
-        error: error instanceof Error ? error.message : 'Erro desconhecido',
+        message: "Erro ao buscar usuário",
+        error: error instanceof Error ? error.message : "Erro desconhecido",
       });
     }
   }
@@ -61,10 +63,22 @@ class UsersController {
     try {
       const { name, username, password, role, image_url } = req.body;
 
+      // Validate character limits (max 20 characters)
+      const CHAR_LIMIT_REGEX = /^.{1,20}$/;
+      if (
+        !CHAR_LIMIT_REGEX.test(name) ||
+        !CHAR_LIMIT_REGEX.test(username) ||
+        !CHAR_LIMIT_REGEX.test(password)
+      ) {
+        return res.status(400).json({
+          message: "Nome, usuário e senha devem ter no máximo 20 caracteres.",
+        });
+      }
+
       // Check if user already exists
       const existingUser = await UserModel.findByUsername(username);
       if (existingUser) {
-        return res.status(409).json({ message: 'Usuário já existe' });
+        return res.status(409).json({ message: "Usuário já existe" });
       }
 
       const password_hash = await hashPassword(password);
@@ -80,13 +94,13 @@ class UsersController {
       const createdUser = await UserModel.create(newUser);
 
       return res.status(201).json({
-        message: 'Usuário criado com sucesso',
+        message: "Usuário criado com sucesso",
         data: createdUser,
       });
     } catch (error) {
       return res.status(500).json({
-        message: 'Erro ao criar usuário',
-        error: error instanceof Error ? error.message : 'Erro desconhecido',
+        message: "Erro ao criar usuário",
+        error: error instanceof Error ? error.message : "Erro desconhecido",
       });
     }
   }
@@ -99,6 +113,30 @@ class UsersController {
     try {
       const { id } = req.params;
       const userData: UpdateUserDTO & { password?: string } = req.body;
+      const currentUser = req.user;
+
+      if (currentUser) {
+        // Restriction 1: User cannot change their own role
+        if (
+          currentUser.id === id &&
+          userData.role &&
+          userData.role !== currentUser.role
+        ) {
+          return res.status(403).json({
+            message: "Você não pode alterar seu próprio cargo.",
+          });
+        }
+
+        // Restriction 2: Manager cannot promote to Admin
+        if (
+          currentUser.role === userRole.MANAGER &&
+          userData.role === userRole.ADMIN
+        ) {
+          return res.status(403).json({
+            message: "Gerentes não podem promover usuários a Administrador.",
+          });
+        }
+      }
 
       // Prevent password update via this method if not intended, or handle hashing if involved.
       // For now, assuming standard update. If password is included, it should be hashed.
@@ -112,7 +150,7 @@ class UsersController {
       if (!updated) {
         return res
           .status(404)
-          .json({ message: 'Usuário não encontrado ou sem alterações' });
+          .json({ message: "Usuário não encontrado ou sem alterações" });
       }
 
       return res.status(200).json({
@@ -121,8 +159,8 @@ class UsersController {
       });
     } catch (error) {
       return res.status(500).json({
-        message: 'Erro ao atualizar usuário',
-        error: error instanceof Error ? error.message : 'Erro desconhecido',
+        message: "Erro ao atualizar usuário",
+        error: error instanceof Error ? error.message : "Erro desconhecido",
       });
     }
   }
@@ -138,7 +176,7 @@ class UsersController {
       const deleted = await UserModel.delete(id);
 
       if (!deleted) {
-        return res.status(404).json({ message: 'Usuário não encontrado' });
+        return res.status(404).json({ message: "Usuário não encontrado" });
       }
 
       return res.status(200).json({
@@ -146,8 +184,8 @@ class UsersController {
       });
     } catch (error) {
       return res.status(500).json({
-        message: 'Erro ao remover usuário',
-        error: error instanceof Error ? error.message : 'Erro desconhecido',
+        message: "Erro ao remover usuário",
+        error: error instanceof Error ? error.message : "Erro desconhecido",
       });
     }
   }

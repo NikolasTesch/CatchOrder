@@ -758,6 +758,13 @@ function setupEventListeners() {
   ) as HTMLButtonElement | null;
   if (sendBtn) sendBtn.onclick = saveItems;
 
+  const headerBackBtn = document.getElementById('headerBackBtn');
+  if (headerBackBtn) {
+    headerBackBtn.addEventListener('click', () => {
+      window.location.href = 'waiterMain.html';
+    });
+  }
+
   const finalizeBtn = document.querySelector(
     '.btn-finalize',
   ) as HTMLButtonElement | null;
@@ -773,6 +780,16 @@ function setupEventListeners() {
   const sidebar = document.getElementById('sidebar');
   if (menuBtn && sidebar) {
     menuBtn.addEventListener('click', toggleSidebar);
+  }
+
+  const closeSidebarBtn = document.getElementById('closeSidebar');
+  if (closeSidebarBtn) {
+    closeSidebarBtn.addEventListener('click', closeSidebar);
+  }
+
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
+  if (sidebarOverlay) {
+    sidebarOverlay.addEventListener('click', closeSidebar);
   }
 
   const logoutBtn = document.getElementById('logoutBtn');

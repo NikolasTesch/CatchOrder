@@ -29,7 +29,7 @@ export const securityHeaders = (
   // Content Security Policy - Política restritiva
   const cspDirectives = [
     "default-src 'self'", // Apenas recursos do mesmo domínio
-    "script-src 'self' 'unsafe-inline'", // Scripts apenas do domínio (unsafe-inline para compatibilidade)
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval'", // Scripts apenas do domínio (unsafe-inline para compatibilidade)
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com", // Estilos + Google Fonts
     "font-src 'self' https://fonts.gstatic.com", // Fontes + Google Fonts
     "img-src 'self' data: https:", // Imagens do domínio, data URIs e HTTPS

@@ -12,36 +12,26 @@ export const hppProtection = (
 ): void => {
   // Processa query parameters
   if (req.query && typeof req.query === 'object') {
-    const cleanedQuery: Record<string, any> = {};
-
     for (const key in req.query) {
-      if (Object.prototype.hasOwnProperty.call(req.query, key)) {
-        const value = req.query[key];
+      // Use type assertion to allow access/modification
+      const query = req.query as Record<string, any>;
+      if (Object.prototype.hasOwnProperty.call(query, key)) {
+        const value = query[key];
 
         // Se for array, mantém apenas o último valor
-        // (ou primeiro, dependendo da estratégia desejada)
         if (Array.isArray(value)) {
-          cleanedQuery[key] = value[value.length - 1]; // Último valor
-        } else {
-          cleanedQuery[key] = value;
+          query[key] = value[value.length - 1];
         }
       }
     }
-
-    req.query = cleanedQuery;
   }
 
-  // Processa body parameters (se for objeto simples)
+  // Processa body parameters
   if (req.body && typeof req.body === 'object' && !Array.isArray(req.body)) {
-    const cleanedBody: Record<string, any> = {};
-
     for (const key in req.body) {
       if (Object.prototype.hasOwnProperty.call(req.body, key)) {
         const value = req.body[key];
 
-        // Se for array não esperado, mantém apenas o último valor
-        // Exceção: alguns campos podem legitimamente ser arrays
-        // (ajuste conforme necessário para seu projeto)
         if (Array.isArray(value)) {
           // Lista de campos que podem ser arrays legítimos
           const allowedArrayFields = [
@@ -51,18 +41,12 @@ export const hppProtection = (
             'categories',
           ];
 
-          if (allowedArrayFields.includes(key)) {
-            cleanedBody[key] = value;
-          } else {
-            cleanedBody[key] = value[value.length - 1];
+          if (!allowedArrayFields.includes(key)) {
+            req.body[key] = value[value.length - 1];
           }
-        } else {
-          cleanedBody[key] = value;
         }
       }
     }
-
-    req.body = cleanedBody;
   }
 
   next();

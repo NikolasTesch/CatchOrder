@@ -151,67 +151,81 @@ function updateDarkModeIcon(isDark: boolean) {
 function setupEventListeners() {
   // Dark mode
   if (darkModeToggle) {
-    darkModeToggle.addEventListener('click', toggleDarkMode);
+    darkModeToggle.addEventListener("click", toggleDarkMode);
   }
 
   // Sidebar Toggle
   if (menuBtn && sidebar) {
-    menuBtn.addEventListener('click', () => {
-      sidebar.classList.toggle('active');
+    menuBtn.addEventListener("click", () => {
+      sidebar.classList.toggle("active");
     });
   }
 
   // New Order Button - opens modal if it exists, otherwise redirects
-  const newOrderBtn = document.getElementById('newOrderBtn');
+  const newOrderBtn = document.getElementById("newOrderBtn");
   if (newOrderBtn) {
-    const modalOverlay = document.getElementById('tableModalOverlay');
+    const modalOverlay = document.getElementById("tableModalOverlay");
     if (modalOverlay) {
-      newOrderBtn.addEventListener('click', openTableSelectionModal);
+      newOrderBtn.addEventListener("click", openTableSelectionModal);
     } else {
-      newOrderBtn.addEventListener('click', () => {
-        window.location.href = 'createOrder.html';
+      newOrderBtn.addEventListener("click", () => {
+        window.location.href = "createOrder.html";
       });
     }
   }
 
   // Modal Close
-  const closeTableModal = document.getElementById('closeTableModal');
-  const modalOverlay = document.getElementById('tableModalOverlay');
+  const closeTableModal = document.getElementById("closeTableModal");
+  const modalOverlay = document.getElementById("tableModalOverlay");
   if (closeTableModal && modalOverlay) {
-    closeTableModal.addEventListener('click', () => {
-      modalOverlay.classList.remove('active');
+    closeTableModal.addEventListener("click", () => {
+      modalOverlay.classList.remove("active");
     });
-    modalOverlay.addEventListener('click', (e) => {
-      if (e.target === modalOverlay) modalOverlay.classList.remove('active');
+    modalOverlay.addEventListener("click", (e) => {
+      if (e.target === modalOverlay) modalOverlay.classList.remove("active");
     });
   }
 
   // Logout
-  const logoutBtnHeader = document.getElementById('logoutBtn');
+  const logoutBtnHeader = document.getElementById("logoutBtn");
   if (logoutBtnHeader) {
-    logoutBtnHeader.addEventListener('click', handleLogout);
+    logoutBtnHeader.addEventListener("click", handleLogout);
   }
 
   // Logo Click
-  const logoImage = document.getElementById('logoImage');
+  const logoImage = document.getElementById("logoImage");
   if (logoImage) {
-    logoImage.addEventListener('click', () => {
-      window.location.href = 'waiterMain.html';
+    logoImage.addEventListener("click", () => {
+      window.location.href = "waiterMain.html";
     });
   }
 
   // User Profile Click
-  const userBtn = document.getElementById('userBtn');
+  const userBtn = document.getElementById("userBtn");
+  const headerActions = document.querySelector(
+    ".header-actions",
+  ) as HTMLElement;
+
+  if (headerActions) {
+    headerActions.style.position = "relative";
+  }
+
   if (userBtn) {
-    userBtn.addEventListener('click', () => {
-      console.log('User profile clicked');
+    userBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggleProfilePopover(userBtn);
     });
   }
 
+  // Close popovers on click outside
+  document.addEventListener("click", () => {
+    closePopovers();
+  });
+
   // Sidebar Navigation Links
-  const navItems = document.querySelectorAll('.nav-item');
+  const navItems = document.querySelectorAll(".nav-item");
   navItems.forEach((item) => {
-    item.addEventListener('click', () => {
+    item.addEventListener("click", () => {
       const dest = (item as HTMLElement).dataset.href;
       if (dest) window.location.href = dest;
     });
@@ -220,13 +234,61 @@ function setupEventListeners() {
 
 async function handleLogout() {
   try {
-    await ApiService.post('/auth/logout', {});
+    await ApiService.post("/auth/logout", {});
   } catch (e) {
-    console.error('Logout error', e);
+    console.error("Logout error", e);
   } finally {
-    localStorage.removeItem('user');
-    window.location.href = 'landingPage.html';
+    localStorage.removeItem("user");
+    window.location.href = "landingPage.html";
   }
+}
+
+function toggleProfilePopover(btn: HTMLElement) {
+  closePopovers(); // Close others
+  let popover = document.getElementById("profilePopover");
+
+  if (!popover) {
+    popover = document.createElement("div");
+    popover.id = "profilePopover";
+    popover.className = "popover";
+
+    if (currentUser) {
+      // Logic to handle potential different role format if needed
+      const createdDate =
+        "created_at" in currentUser && currentUser.created_at
+          ? new Date(currentUser.created_at as string).toLocaleDateString(
+              "pt-BR",
+            )
+          : "-";
+
+      popover.innerHTML = `
+        <div class="popover-header">Perfil de Usuário</div>
+        <div class="popover-body">
+          <div class="user-info-card">
+            <div class="user-name">${currentUser.name}</div>
+            <div class="user-username">@${currentUser.username}</div>
+            <div class="user-role-badge">
+              <span class="role-badge ${currentUser.role.toLowerCase()}">${currentUser.role}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    } else {
+      popover.innerHTML = `<div class="popover-body">Carregando perfil...</div>`;
+    }
+
+    // Append to header-actions
+    const headerActions = document.querySelector(".header-actions");
+    if (headerActions) headerActions.appendChild(popover);
+  }
+
+  popover.classList.toggle("active");
+}
+
+function closePopovers() {
+  document
+    .querySelectorAll(".popover")
+    .forEach((p) => p.classList.remove("active"));
 }
 
 // Data Loading

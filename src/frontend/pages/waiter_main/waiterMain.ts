@@ -108,7 +108,7 @@ async function loadCurrentUser(): Promise<User | null> {
     return currentUser;
   } catch (error) {
     console.error('Failed to load user:', error);
-    window.location.href = '/pages/landingPage.html';
+    window.location.href = 'landingPage.html';
     return null;
   }
 }

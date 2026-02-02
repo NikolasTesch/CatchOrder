@@ -1206,7 +1206,7 @@ document.addEventListener("DOMContentLoaded", () => {
     logoutBtn.addEventListener('click', async () => {
       try {
         await apiCall('/auth/logout', { method: 'POST' });
-        window.location.href = '/pages/landingPage.html';
+        window.location.href = 'landingPage.html';
       } catch (error) {
         console.error('Logout error:', error);
       }

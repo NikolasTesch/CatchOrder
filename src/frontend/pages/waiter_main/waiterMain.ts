@@ -282,8 +282,21 @@ function toggleProfilePopover(btn: HTMLElement) {
               <span class="role-badge ${currentUser.role.toLowerCase()}">${currentUser.role}</span>
             </div>
           </div>
+          <div class="popover-footer" style="padding-top: 1rem; border-top: 1px solid var(--border-light); margin-top: 1rem;">
+            <button class="btn btn-danger btn-full btn-sm" id="popoverLogoutBtn">
+              <span class="material-symbols-outlined" style="font-size: 18px; margin-right: 8px;">logout</span>
+              Sair
+            </button>
+          </div>
         </div>
       `;
+
+      // Attach listener to new button
+      const popoverBtn = popover.querySelector("#popoverLogoutBtn");
+      if (popoverBtn) {
+        popoverBtn.addEventListener("click", handleLogout);
+      }
+
     } else {
       popover.innerHTML = `<div class="popover-body">Carregando perfil...</div>`;
     }
@@ -449,18 +462,40 @@ async function loadSummary() {
     const response = await ApiService.get<{ data: Order[] }>('/orders');
     const orders = response.data || [];
 
-    const today = new Date().toDateString();
+    const now = new Date();
+
+    // Robust date parsing handles "YYYY-MM-DD HH:mm:ss" vs ISO
+    const isToday = (dateStr: string) => {
+      if (!dateStr) return false;
+      let d = new Date(dateStr);
+      // Fallback for SQL-style timestamps
+      if (isNaN(d.getTime())) {
+        d = new Date(dateStr.replace(' ', 'T'));
+      }
+      if (isNaN(d.getTime())) return false;
+
+      return d.getDate() === now.getDate() &&
+        d.getMonth() === now.getMonth() &&
+        d.getFullYear() === now.getFullYear();
+    };
+
     const todayOrders = orders.filter((o) => {
-      if (!o.created_at) return false;
+      // Robust logging for debugging
+      // console.log('Checking order:', o); 
 
-      const orderDate = new Date(o.created_at).toDateString();
-      const isMyOrder = o.user_id === user.id;
-      const isClosed = ['CLOSED', 'PAID'].includes(o.status);
+      const orderSameDay = isToday(o.created_at);
+      // Loose comparison for IDs (string vs number)
+      const isMyOrder = (o.user_id == user.id || String(o.user_id) === String(user.id));
+      const status = (o.status || '').toUpperCase();
+      const isClosed = ['CLOSED', 'PAID'].includes(status);
 
-      return orderDate === today && isMyOrder && isClosed;
+      return orderSameDay && isMyOrder && isClosed;
     });
 
-    const totalSales = todayOrders.reduce((sum, order) => sum + Number(order.total || 0), 0);
+    const totalSales = todayOrders.reduce((sum, order) => {
+      const val = typeof order.total === 'string' ? parseFloat(order.total) : order.total;
+      return sum + (val || 0);
+    }, 0);
     const totalTip = totalSales * 0.10;
 
     const valueEl = document.querySelector('.summary-value');

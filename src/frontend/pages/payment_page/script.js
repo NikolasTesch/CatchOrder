@@ -12,7 +12,7 @@ require('./style.css');
 function initDarkMode() {
   const savedTheme = localStorage.getItem('theme');
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  
+
   if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
     document.body.classList.add('dark-mode');
     updateDarkModeIcon(true);
@@ -56,7 +56,7 @@ function setupEventListeners() {
   if (menuBtn) {
     menuBtn.addEventListener('click', () => {
       // TODO: Implement menu functionality
-      console.log('Menu button clicked');
+      // console.log('Menu button clicked');
     });
   }
 
@@ -65,7 +65,7 @@ function setupEventListeners() {
   if (userBtn) {
     userBtn.addEventListener('click', () => {
       // TODO: Implement user profile functionality
-      console.log('User button clicked');
+      // console.log('User button clicked');
     });
   }
 
@@ -74,23 +74,23 @@ function setupEventListeners() {
   if (logo) {
     logo.addEventListener('click', () => {
       // TODO: Navigate to home page
-      console.log('Logo clicked - navigate to home');
+      // console.log('Logo clicked - navigate to home');
     });
   }
 
   // Payment method buttons
   const paymentBtns = document.querySelectorAll('.payment-btn');
   paymentBtns.forEach(btn => {
-    btn.addEventListener('click', function() {
+    btn.addEventListener('click', function () {
       // Remove active class from all buttons
       paymentBtns.forEach(b => b.classList.remove('active'));
       // Add active class to clicked button
       this.classList.add('active');
-      
+
       // Log selected payment method
       const method = this.querySelector('.material-symbols-outlined')?.textContent ||
-                     this.querySelector('.pix-text')?.textContent;
-      console.log('Payment method selected:', method);
+        this.querySelector('.pix-text')?.textContent;
+      // console.log('Payment method selected:', method);
     });
   });
 }
@@ -101,12 +101,12 @@ function setupEventListeners() {
 async function init() {
   // CRITICAL: Dark mode must be initialized first
   initDarkMode();
-  
+
   // Setup event listeners second
   setupEventListeners();
-  
+
   // Additional initialization logic can go here
-  console.log('Payment page initialized');
+  // console.log('Payment page initialized');
 }
 
 // Run initialization when DOM is ready

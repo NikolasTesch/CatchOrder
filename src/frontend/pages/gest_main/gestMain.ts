@@ -159,8 +159,8 @@ async function apiCall<T>(
     // ApiService already returns the data directly (T) or throws error
     return response as T;
   } catch (error: any) {
-    console.error('API Error:', error);
-    showToast(error.message || 'Erro na requisição', 'error');
+    // console.error("API Error:", error);
+    showToast(error.message || "Erro na requisição", "error");
     throw error;
   }
 }
@@ -352,7 +352,7 @@ async function loadDashboard() {
     renderTopProducts(ordersData.data || []);
     renderBiggestSales(ordersData.data || []);
   } catch (error) {
-    console.error('Error loading dashboard:', error);
+    // console.error("Error loading dashboard:", error);
   }
 }
 
@@ -427,7 +427,7 @@ function renderTopProducts(ordersData: Order[]) {
         <div class="recent-item">
             <div class="recent-item-header">
                 <span class="recent-item-id">${name}</span>
-                <span class="recent-item-status" style="background: #e3f2fd; color: #1976d2;">${qty} item(s)</span>
+                <span class="recent-item-status">${qty} item(s)</span>
             </div>
         </div>
     `,
@@ -454,7 +454,7 @@ function renderBiggestSales(ordersData: Order[]) {
         <div class="recent-item">
             <div class="recent-item-header">
                 <span class="recent-item-id">Pedido #${order.id.substring(0, 8)}</span>
-                <span class="recent-item-status" style="background: #e8f5e9; color: #2e7d32;">${formatCurrency(order.total || 0)}</span>
+                <span class="recent-item-status">${formatCurrency(order.total || 0)}</span>
             </div>
              <div class="recent-item-info">
                 ${order.opened_at ? new Date(order.opened_at).toLocaleDateString('pt-BR') : '-'}
@@ -474,7 +474,7 @@ async function loadCurrentUser() {
     currentUser = response.user;
     setupHeaderListeners();
   } catch (error) {
-    console.error('Error loading current user:', error);
+    // console.error("Error loading current user:", error);
     // Redirect to login if auth fails? Or just hide profile?
     // window.location.href = '/pages/landingPage.html';
   }
@@ -589,7 +589,7 @@ async function loadUsers() {
     users = response.data || [];
     renderUsers(users);
   } catch (error) {
-    console.error('Error loading users:', error);
+    // console.error("Error loading users:", error);
   }
 }
 
@@ -782,7 +782,7 @@ async function submitUserForm(event: Event, userId: string | null) {
     closeModal();
     loadUsers();
   } catch (error) {
-    console.error('Error submitting user:', error);
+    // console.error("Error submitting user:", error);
   }
 }
 
@@ -794,7 +794,7 @@ async function deleteUser(userId: string) {
     showToast('Usuário deletado com sucesso', 'success');
     loadUsers();
   } catch (error) {
-    console.error('Error deleting user:', error);
+    // console.error("Error deleting user:", error);
   }
 }
 
@@ -823,7 +823,7 @@ async function loadProducts() {
 
     renderProducts(products);
   } catch (error) {
-    console.error('Error loading products:', error);
+    // console.error("Error loading products:", error);
   }
 }
 

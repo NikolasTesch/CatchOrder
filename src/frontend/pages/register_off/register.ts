@@ -1,4 +1,5 @@
 import './style.css';
+import { ModalService } from '../../utils/modalService';
 
 document.addEventListener('DOMContentLoaded', () => {
     const nameInput = document.getElementById('name') as HTMLInputElement | null;
@@ -88,15 +89,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (response.ok) {
-                console.log('Registration successful');
-                alert('Conta criada com sucesso! Redirecionando para o login...');
-                // Redirect to login page
-                window.location.href = 'landingPage.html';
+                // console.log('Registration successful');
+                ModalService.alert('Sucesso', 'Conta criada com sucesso! Redirecionando para o login...', 'success', () => {
+                    // Redirect to login page
+                    window.location.href = 'landingPage.html';
+                });
             } else {
                 showError(data.message || 'Falha ao criar conta. Tente novamente.');
             }
         } catch (error) {
-            console.error('Registration error:', error);
+            // console.error('Registration error:', error);
             showError('Erro ao conectar com o servidor. Tente novamente mais tarde.');
         } finally {
             setLoadingState(false);

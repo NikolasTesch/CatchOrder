@@ -6,7 +6,7 @@
 function initDarkMode() {
   const savedTheme = localStorage.getItem('theme');
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  
+
   if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
     document.body.classList.add('dark-mode');
     updateDarkModeIcon(true);
@@ -51,7 +51,7 @@ function setupEventListeners() {
   const backBtn = document.getElementById('backBtn');
   if (backBtn) {
     backBtn.addEventListener('click', () => {
-      console.log('Back button clicked');
+      // console.log('Back button clicked');
       // TODO: Navigate back or to previous page
       window.history.back();
     });
@@ -61,7 +61,7 @@ function setupEventListeners() {
   const userBtn = document.getElementById('userBtn');
   if (userBtn) {
     userBtn.addEventListener('click', () => {
-      console.log('User profile clicked');
+      // console.log('User profile clicked');
       // TODO: Navigate to user profile
     });
   }
@@ -70,7 +70,7 @@ function setupEventListeners() {
   const logoImage = document.getElementById('logoImage');
   if (logoImage) {
     logoImage.addEventListener('click', () => {
-      console.log('Logo clicked');
+      // console.log('Logo clicked');
       // TODO: Navigate to home
     });
   }
@@ -120,13 +120,13 @@ function setActiveTab(tabName) {
 function init() {
   // Initialize dark mode first (must be before any early returns)
   initDarkMode();
-  
+
   // Setup UI event listeners (must be second)
   setupEventListeners();
-  
+
   // Page-specific initialization
-  console.log('Create Products page initialized');
-  
+  // console.log('Create Products page initialized');
+
   // TODO: Load categories
   // TODO: Setup form validation
   // TODO: Setup submit handler

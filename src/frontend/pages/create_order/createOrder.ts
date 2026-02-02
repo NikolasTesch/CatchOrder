@@ -57,6 +57,7 @@ let currentTableNumber: string | null = null;
 let currentOrderId: string | null = null;
 let currentOrderStatus: string | null = null;
 let existingOrderItems: OrderItem[] = [];
+let existingObservation: string = '';
 
 // DOM Elements
 const infoBar = document.querySelector('.info-bar') as HTMLElement;
@@ -89,26 +90,26 @@ async function init() {
     return;
   }
 
-    await loadTableDetails(currentTableId);
+  await loadTableDetails(currentTableId);
 
-    // [New Logic] Check if table already has an OPEN order
-    if (!currentOrderId) {
-        try {
-            const allOrdersResp = await ApiService.get<{ data: Order[] }>('/orders');
-            const openOrder = (allOrdersResp.data || []).find(o =>
-                o.table_id === currentTableId && o.status === 'OPEN'
-            );
+  // [New Logic] Check if table already has an OPEN order
+  if (!currentOrderId) {
+    try {
+      const allOrdersResp = await ApiService.get<{ data: Order[] }>('/orders');
+      const openOrder = (allOrdersResp.data || []).find(o =>
+        o.table_id === currentTableId && o.status === 'OPEN'
+      );
 
-            if (openOrder) {
-                console.warn('Mesa ocupada. Redirecionando para ordem existente:', openOrder.id);
-                // Redirect to existing order
-                window.location.href = `createOrder.html?table_id=${currentTableId}&order_id=${openOrder.id}`;
-                return;
-            }
-        } catch (e) {
-            console.error('Erro ao verificar pedidos da mesa:', e);
-        }
+      if (openOrder) {
+        console.warn('Mesa ocupada. Redirecionando para ordem existente:', openOrder.id);
+        // Redirect to existing order
+        window.location.href = `createOrder.html?table_id=${currentTableId}&order_id=${openOrder.id}`;
+        return;
+      }
+    } catch (e) {
+      console.error('Erro ao verificar pedidos da mesa:', e);
     }
+  }
 
   // [New Logic] Check if table already has an OPEN order
   if (!currentOrderId) {
@@ -233,12 +234,16 @@ async function loadOrderDetails(orderId: string) {
     if (response.data) {
       existingOrderItems = response.data.items || [];
       currentOrderStatus = response.data.status;
+      existingObservation = response.data.observations || '';
 
       renderExistingItems();
 
+      if (response.data.observations && observationsTextarea) {
+        observationsTextarea.value = response.data.observations;
+      }
+
       if (response.data.status === 'CLOSED') {
         if (observationsTextarea) {
-          observationsTextarea.value = response.data.observations || '';
           observationsTextarea.disabled = true;
         }
       }
@@ -319,7 +324,11 @@ function renderProductsByCategory() {
       grid.appendChild(card);
     });
 
-    if (categoryContainer && obsSection) {
+    const productsContainer = document.getElementById('products-container');
+    if (productsContainer) {
+      productsContainer.appendChild(section);
+    } else if (categoryContainer && obsSection) {
+      // Fallback
       categoryContainer.insertBefore(section, obsSection);
     }
   });
@@ -433,8 +442,8 @@ function renderExistingItems() {
         </h3>
         <ul style="list-style: none; padding: 0;">
             ${existingOrderItems
-              .map(
-                (item) => `
+      .map(
+        (item) => `
                 <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid var(--border-light);">
                     <div style="flex: 1;">
                          <div style="font-weight: bold; color: var(--color-primary);">
@@ -446,21 +455,26 @@ function renderExistingItems() {
                     </div>
                     <div style="display: flex; align-items: center; gap: 1rem;">
                          <strong style="color: var(--color-primary);">${formatCurrency(item.total_item || item.unit_price * item.quantity)}</strong>
-                         ${
-                           currentOrderStatus !== 'CLOSED'
-                             ? `
+                         ${currentOrderStatus !== 'CLOSED'
+            ? `
                          <button class="btn-remove-item" data-id="${item.id}" style="background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; padding: 6px; border-radius: 6px; cursor: pointer; transition: all 0.2s;" title="Deletar Item Salvo">
                             <span class="material-symbols-outlined" style="font-size: 20px;">delete</span>
                          </button>
                          `
-                             : ''
-                         }
+            : ''
+          }
                     </div>
                 </li>
             `,
-              )
-              .join('')}
+      )
+      .join('')}
         </ul>
+        ${existingObservation ? `
+            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed var(--border-light);">
+                <strong style="color: var(--text-primary); display: block; margin-bottom: 0.25rem;">Observações:</strong>
+                <p style="color: var(--text-secondary); font-style: italic;">${existingObservation}</p>
+            </div>
+            ` : ''}
     `;
 
   existingSection.querySelectorAll('.btn-remove-item').forEach((btn) => {
@@ -519,8 +533,8 @@ function renderCartItems() {
         </h3>
         <ul style="list-style: none; padding: 0;">
             ${cart
-              .map(
-                (item, index) => `
+      .map(
+        (item, index) => `
                 <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid var(--border-light);">
                     <div style="flex: 1;">
                          <div style="font-weight: bold; color: var(--text-primary);">
@@ -535,8 +549,8 @@ function renderCartItems() {
                     </button>
                 </li>
             `,
-              )
-              .join('')}
+      )
+      .join('')}
         </ul>
     `;
 
@@ -666,7 +680,7 @@ function getUserIdFromSession() {
     try {
       const user = JSON.parse(userStr);
       return user.id;
-    } catch (e) {}
+    } catch (e) { }
   }
   return '140e6988-51f7-418b-96c2-05452d3999e5';
 }

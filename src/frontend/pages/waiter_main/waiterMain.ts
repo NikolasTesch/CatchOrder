@@ -163,6 +163,14 @@ function setupEventListeners() {
         sidebar.classList.remove('active');
       }
     });
+
+    // Close button inside sidebar
+    const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+    if (closeSidebarBtn) {
+      closeSidebarBtn.addEventListener('click', () => {
+        sidebar.classList.remove('active');
+      });
+    }
   }
 
   // New Order Button - opens modal if it exists, otherwise redirects

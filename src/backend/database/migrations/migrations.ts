@@ -90,6 +90,7 @@ export const runMigrations = async () => {
         CHECK (status IN ('OPEN', 'CLOSED', 'CANCELLED')),
       total INTEGER DEFAULT 0 CHECK (total >= 0),
       tip INTEGER DEFAULT 0 CHECK (tip >= 0),
+      observations TEXT,
       opened_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       closed_at DATETIME,
       FOREIGN KEY (table_id) REFERENCES restaurant_tables(id) 
@@ -101,24 +102,32 @@ export const runMigrations = async () => {
     )
   `);
 
+  // Migration for existing databases: Add observations column if not exists
+  try {
+    await db.exec(`ALTER TABLE orders ADD COLUMN observations TEXT`);
+  } catch (error) {
+    // Column likely already exists, ignore error
+  }
+
+
   // ========================================
   // TABELA: order_items
   // ========================================
   await db.exec(`
-    CREATE TABLE IF NOT EXISTS order_items (
-      id TEXT PRIMARY KEY,
-      order_id TEXT NOT NULL,
-      product_id TEXT NOT NULL,
-      quantity INTEGER NOT NULL CHECK (quantity > 0),
-      unit_price INTEGER NOT NULL CHECK (unit_price >= 0),
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (order_id) REFERENCES orders(id) 
+    CREATE TABLE IF NOT EXISTS order_items(
+    id TEXT PRIMARY KEY,
+    order_id TEXT NOT NULL,
+    product_id TEXT NOT NULL,
+    quantity INTEGER NOT NULL CHECK(quantity > 0),
+    unit_price INTEGER NOT NULL CHECK(unit_price >= 0),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(order_id) REFERENCES orders(id) 
         ON DELETE CASCADE 
         ON UPDATE CASCADE,
-      FOREIGN KEY (product_id) REFERENCES products(id) 
+    FOREIGN KEY(product_id) REFERENCES products(id) 
         ON DELETE RESTRICT 
         ON UPDATE CASCADE
-    )
+  )
   `);
 
   // ========================================

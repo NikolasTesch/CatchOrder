@@ -372,6 +372,10 @@ body.dark-mode .sidebar {
     height: calc(100vh - 64px);
   }
 
+  .sidebar-header {
+    display: none !important;
+  }
+
 
 
   /* Adjust header for desktop */

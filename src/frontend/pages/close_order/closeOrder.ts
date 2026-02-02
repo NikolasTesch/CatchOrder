@@ -32,19 +32,16 @@ let tableId: string | null = null;
 let tableNumber: string | null = null;
 
 // DOM Elements
-const tableNumberEl = document.getElementById('table-number') as HTMLElement;
-const consumedList = document.getElementById('consumed-list') as HTMLElement;
-const subtotalEl = document.getElementById('subtotal') as HTMLElement;
-const tipEl = document.getElementById('tip-value') as HTMLElement;
-const totalEl = document.getElementById('total-final') as HTMLElement;
+// Table number display removed from UI in this redesign
+// Table number display removed from UI in this redesign
+const consumedList = document.getElementById("consumed-list");
+const displayTableNumberEl = document.getElementById("display-table-number");
+const subtotalEl = document.getElementById("subtotal");
+const tipEl = document.getElementById("tip-value");
+const totalEl = document.getElementById("total-final");
 const tipToggle = document.getElementById("tip-toggle") as HTMLInputElement;
-const btnBack = document.getElementById("btn-back") as HTMLButtonElement;
-const btnCloseOrder = document.getElementById(
-  "btn-close-order",
-) as HTMLButtonElement;
-const displayTableNumberEl = document.getElementById(
-  'display-table-number',
-) as HTMLElement;
+const btnBack = document.getElementById("btn-back");
+const btnCloseOrder = document.getElementById("btn-close-order");
 
 const observationsSection = document.getElementById("observations-section");
 const observationsText = document.getElementById("observations-text");
@@ -95,9 +92,7 @@ async function loadTable() {
     );
     tableNumber = response.data.number.toString();
 
-    if (tableNumberEl) {
-      tableNumberEl.textContent = tableNumber;
-    }
+
     if (displayTableNumberEl) {
       displayTableNumberEl.textContent = tableNumber;
     }
@@ -115,22 +110,18 @@ function renderOrderDetails() {
     consumedList.innerHTML = currentOrder.items
       .map(
         (item) => `
-      <article class="consumed-item">
-        <div class="item-header">
-          <span class="item-quantity">${item.quantity}x</span>
-          <span class="item-price">${formatCurrency(item.total_item)}</span>
-        </div>
-        <div class="item-details">
-          <span class="item-name">${item.product_name}</span>
-        </div>
-        <div class="item-divider"></div>
-      </article>
-    `,
+      <div class="bill-row">
+        <span class="bill-item-name">${item.quantity}x ${item.product_name}</span>
+        <span class="bill-item-price">${formatCurrency(item.total_item)}</span>
+      </div>
+      <div class="bill-divider"></div>
+      `,
       )
       .join("");
+    // Remove last divider if desired, but image shows separators.
   } else if (consumedList) {
     consumedList.innerHTML =
-      '<p style="text-align: center; color: var(--text-secondary);">Nenhum item no pedido</p>';
+      '<p style="text-align: center; color: #999;">Nenhum item no pedido</p>';
   }
 
   // Render Observations
@@ -150,7 +141,10 @@ function renderOrderDetails() {
 function updateTotals() {
   if (!currentOrder) return;
 
-  const subtotal = currentOrder.total || 0;
+  // Calculate subtotal from items to ensure it matches the displayed list
+  const subtotal = currentOrder.items
+    ? currentOrder.items.reduce((acc, item) => acc + item.total_item, 0)
+    : 0;
   let tipAmount = 0;
 
   if (tipToggle && tipToggle.checked) {
@@ -191,7 +185,9 @@ function closeOrder() {
     async () => {
       try {
         // Calculate tip based on checkbox
-        const subtotal = currentOrder!.total || 0;
+        const subtotal = currentOrder!.items
+          ? currentOrder!.items.reduce((acc, item) => acc + item.total_item, 0)
+          : 0;
         let tipAmount = 0;
 
         if (tipToggle && tipToggle.checked) {
@@ -215,7 +211,6 @@ function closeOrder() {
   );
 }
 
-// Dark Mode Functions
 function initDarkMode() {
   const savedTheme = localStorage.getItem('theme');
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -312,11 +307,11 @@ function showConfirmModal(
 ) {
   // Create modal overlay
   const overlay = document.createElement('div');
-  overlay.className = 'modal-overlay';
+  overlay.className = 'modal-backdrop active'; // Use global class and ensure it's active
 
   // Create modal container
   const modal = document.createElement('div');
-  modal.className = 'modal-container';
+  modal.className = 'modal'; // Use global class
 
   modal.innerHTML = `
     <div class="modal-header">
@@ -326,8 +321,8 @@ function showConfirmModal(
       <p class="modal-message">${message}</p>
     </div>
     <div class="modal-footer">
-      <button class="btn-modal btn-cancel" id="modal-cancel">Cancelar</button>
-      <button class="btn-modal btn-confirm" id="modal-confirm">Confirmar</button>
+      <button class="btn btn-secondary" id="modal-cancel">Cancelar</button>
+      <button class="btn btn-primary" id="modal-confirm">Confirmar</button>
     </div>
   `;
 

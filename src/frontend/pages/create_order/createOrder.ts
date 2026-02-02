@@ -61,14 +61,12 @@ let existingOrderItems: OrderItem[] = [];
 let existingObservation: string = '';
 
 // DOM Elements
-const infoBar = document.querySelector('.info-bar') as HTMLElement;
-// Updated selector from .page-wrapper to .content-wrapper
-const categoryContainer = document.querySelector(
-  '.content-wrapper',
-) as HTMLElement;
-const observationsTextarea = document.querySelector(
-  '.obs-textarea',
-) as HTMLTextAreaElement;
+const productsContainer = document.getElementById('products-container') as HTMLElement;
+const orderItemsList = document.getElementById('order-items-list') as HTMLElement;
+const observationsTextarea = document.querySelector('.obs-textarea') as HTMLTextAreaElement;
+const subtotalEl = document.getElementById('summary-subtotal') as HTMLElement;
+const totalEl = document.getElementById('summary-total') as HTMLElement;
+const tableNameDisplay = document.getElementById('table-name-display') as HTMLElement;
 
 document.addEventListener('DOMContentLoaded', () => {
   init();
@@ -92,8 +90,9 @@ async function init() {
   }
 
   await loadTableDetails(currentTableId);
+  updateTableDisplay();
 
-  // [New Logic] Check if table already has an OPEN order
+  // Check if table already has an OPEN order
   if (!currentOrderId) {
     try {
       const allOrdersResp = await ApiService.get<{ data: Order[] }>('/orders');
@@ -142,11 +141,12 @@ async function init() {
   await Promise.all([loadCategories(), loadProducts()]);
 
   renderProductsByCategory();
-  updateInfoBar();
+  renderOrderSummary();
+  updateTotals();
   updateUIVisibility();
 }
 
-// --- Auth & Helpers (Standard Pattern) ---
+// --- Auth & Helpers ---
 
 async function checkAuth(): Promise<boolean> {
   try {
@@ -159,52 +159,14 @@ async function checkAuth(): Promise<boolean> {
   }
 }
 
-// --- UI Logic from Products Page (Sidebar, Modal) ---
-
-function toggleSidebar() {
-  document.body.classList.toggle('sidebar-open');
-}
-
-function closeSidebar() {
-  document.body.classList.remove('sidebar-open');
-}
-
-function openUserModal() {
-  const userStr = localStorage.getItem('user');
-  if (userStr) {
-    try {
-      const user = JSON.parse(userStr);
-      const nameEl = document.getElementById('modalUserName');
-      const roleEl = document.getElementById('modalUserRole');
-      if (nameEl) nameEl.textContent = user.name || 'Usuário';
-      if (roleEl) roleEl.textContent = formatRole(user.role || '');
-      document.body.classList.add('user-modal-open');
-    } catch (error) {
-      // console.error('Error parsing user data:', error);
-    }
+function initDarkMode() {
+  // Basic Dark Mode Logic if needed, usually global.js handles this
+  const darkModeToggle = document.getElementById('darkModeToggle');
+  if (darkModeToggle) {
+    darkModeToggle.onclick = () => {
+      document.body.classList.toggle('dark-mode');
+    };
   }
-}
-
-function closeUserModal() {
-  document.body.classList.remove('user-modal-open');
-}
-
-function handleLogout() {
-  ModalService.confirm('Sair', 'Tem certeza que deseja sair?', () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    window.location.href = 'landingPage.html';
-  });
-}
-
-function formatRole(role: string): string {
-  const roleMap: { [key: string]: string } = {
-    admin: 'Administrador',
-    manager: 'Gerente',
-    waiter: 'Garçom',
-    kitchen: 'Cozinha',
-  };
-  return roleMap[role] || role;
 }
 
 // --- Business Logic ---
@@ -212,9 +174,7 @@ function formatRole(role: string): string {
 async function loadTableDetails(tableId: string) {
   try {
     try {
-      const response = await ApiService.get<{ data: Table }>(
-        `/tables/${tableId}`,
-      );
+      const response = await ApiService.get<{ data: Table }>(`/tables/${tableId}`);
       if (response.data) currentTableNumber = response.data.number;
     } catch (e) {
       const allTabs = await ApiService.get<{ data: Table[] }>('/tables');
@@ -222,22 +182,24 @@ async function loadTableDetails(tableId: string) {
       if (found) currentTableNumber = found.number;
     }
   } catch (e) {
-    // console.error('Error loading table details', e);
-    currentTableNumber = 'Unknown';
+    console.error('Error loading table details', e);
+    currentTableNumber = '?';
+  }
+}
+
+function updateTableDisplay() {
+  if (tableNameDisplay) {
+    tableNameDisplay.textContent = currentTableNumber ? `Mesa ${currentTableNumber}` : 'Mesa ?';
   }
 }
 
 async function loadOrderDetails(orderId: string) {
   try {
-    const response = await ApiService.get<{ data: Order }>(
-      `/orders/${orderId}`,
-    );
+    const response = await ApiService.get<{ data: Order }>(`/orders/${orderId}`);
     if (response.data) {
       existingOrderItems = response.data.items || [];
       currentOrderStatus = response.data.status;
       existingObservation = response.data.observations || '';
-
-      renderExistingItems();
 
       if (response.data.observations && observationsTextarea) {
         observationsTextarea.value = response.data.observations;
@@ -266,22 +228,17 @@ async function loadCategories() {
 
 async function loadProducts() {
   try {
-    const response = await ApiService.get<{ data: Product[] }>(
-      '/products/active',
-    );
+    const response = await ApiService.get<{ data: Product[] }>('/products/active');
     if (!response.data) {
-      const allProdResponse = await ApiService.get<{ data: Product[] }>(
-        '/products',
-      );
+      const allProdResponse = await ApiService.get<{ data: Product[] }>('/products');
       products = (allProdResponse.data || []).filter((p) => p.active);
     } else {
       products = response.data || [];
     }
   } catch (error) {
     try {
-      const allProdResponse = await ApiService.get<{ data: Product[] }>(
-        '/products',
-      );
+      // Fallback
+      const allProdResponse = await ApiService.get<{ data: Product[] }>('/products');
       products = (allProdResponse.data || []).filter((p) => p.active);
     } catch (e) {
       showError('Erro ao carregar produtos');
@@ -290,34 +247,24 @@ async function loadProducts() {
 }
 
 function renderProductsByCategory() {
-  const existingSections = document.querySelectorAll('.category-section');
-  existingSections.forEach((section) => section.remove());
-
-  const obsSection = document.querySelector('.observations-section');
+  if (!productsContainer) return;
+  productsContainer.innerHTML = '';
 
   if (categories.length === 0 || products.length === 0) {
-    const emptyMessage = document.createElement('p');
-    emptyMessage.textContent = 'Nenhum produto disponível no momento.';
-    emptyMessage.style.cssText =
-      'text-align: center; padding: 2rem; color: var(--text-secondary);';
-    if (categoryContainer && obsSection) {
-      categoryContainer.insertBefore(emptyMessage, obsSection);
-    }
+    productsContainer.innerHTML = '<div class="empty-message">Nenhum produto disponível.</div>';
     return;
   }
 
   categories.forEach((category) => {
-    const categoryProducts = products.filter(
-      (p) => p.category_id === category.id,
-    );
+    const categoryProducts = products.filter((p) => p.category_id === category.id);
     if (categoryProducts.length === 0) return;
 
     const section = document.createElement('section');
     section.className = 'category-section';
     section.innerHTML = `
-            <h2 class="category-title">${category.name} <span class="arrow">→</span></h2>
-            <div class="products-grid"></div>
-        `;
+        <h2 class="category-title">${category.name}</h2>
+        <div class="products-grid"></div>
+    `;
 
     const grid = section.querySelector('.products-grid') as HTMLElement;
     categoryProducts.forEach((product) => {
@@ -325,13 +272,7 @@ function renderProductsByCategory() {
       grid.appendChild(card);
     });
 
-    const productsContainer = document.getElementById('products-container');
-    if (productsContainer) {
-      productsContainer.appendChild(section);
-    } else if (categoryContainer && obsSection) {
-      // Fallback
-      categoryContainer.insertBefore(section, obsSection);
-    }
+    productsContainer.appendChild(section);
   });
 }
 
@@ -340,30 +281,48 @@ function createProductCard(product: Product): HTMLElement {
   card.className = 'product-card';
   card.dataset.productId = product.id;
 
-  const imageUrl = product.image_url || 'https://placehold.co/150';
+  const imageUrl = product.image_url || 'https://placehold.co/300x200/png?text=Product';
 
   card.innerHTML = `
         <div class="card-image" style="background-image: url('${imageUrl}');"></div>
         <div class="card-info">
             <h3 class="product-name">${product.name}</h3>
             <p class="product-desc">${product.description || ''}</p>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
+            <div class="card-footer-row">
                 <p class="product-price">R$ ${centsToReais(product.price)}</p>
-                <div class="btn-group">
-                   <button class="btn-add-action" aria-label="Adicionar">Adicionar</button>
-                </div>
+                   <button class="btn-add-action" aria-label="Adicionar">
+                     <span class="material-symbols-outlined" style="font-size: 18px;">add</span>
+                   </button>
             </div>
         </div>
     `;
 
+  // Card Click (Add to cart)
   card.addEventListener('click', (e) => {
     addToCart(product);
   });
+
+  // Explicit Button Click (Add to cart + Animation)
+  const addBtn = card.querySelector('.btn-add-action') as HTMLButtonElement;
+  if (addBtn) {
+    addBtn.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent card click from firing
+      addToCart(product);
+
+      // Visual feedback
+      addBtn.style.transform = 'scale(0.95)';
+      setTimeout(() => addBtn.style.transform = '', 150);
+    });
+  }
 
   return card;
 }
 
 function addToCart(product: Product) {
+  if (currentOrderStatus === 'CLOSED') {
+    showError("Pedido fechado. Não é possível adicionar itens.");
+    return;
+  }
   const existingItem = cart.find((item) => item.product_id === product.id);
   if (existingItem) {
     existingItem.quantity++;
@@ -371,223 +330,115 @@ function addToCart(product: Product) {
     cart.push({
       product_id: product.id,
       name: product.name,
-      price:
-        typeof product.price === 'string'
-          ? parseFloat(product.price)
-          : product.price,
+      price: typeof product.price === 'string' ? parseFloat(product.price) : product.price,
       quantity: 1,
     });
   }
-  updateInfoBar();
-  renderCartItems();
-  showSuccess(`${product.name} adicionado ao pedido`);
+  renderOrderSummary();
+  updateTotals();
 }
 
-function updateInfoBar() {
-  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0,
-  );
-  const displayTable = currentTableNumber
-    ? `Mesa ${currentTableNumber}`
-    : currentTableId || 'Mesa ?';
+function updateCartQuantity(index: number, delta: number) {
+  const item = cart[index];
+  if (!item) return;
 
-  if (infoBar) {
-    infoBar.innerHTML = `
-        <div class="info-item">
-          <span class="info-label">${totalItems} Produto${totalItems !== 1 ? 's' : ''} (Novo)</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">${displayTable}</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">Total (+${formatCurrency(totalPrice)})</span>
-        </div>
-      `;
+  item.quantity += delta;
+  if (item.quantity <= 0) {
+    cart.splice(index, 1);
   }
+  renderOrderSummary();
+  updateTotals();
 }
 
-function renderExistingItems() {
-  let existingSection = document.getElementById('existing-items-section');
-  if (!existingSection) {
-    existingSection = document.createElement('section');
-    existingSection.id = 'existing-items-section';
-    existingSection.className = 'card';
-    existingSection.style.cssText =
-      'margin-bottom: 2rem; padding: 1rem; background: var(--bg-card); border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid var(--color-primary);';
+function renderOrderSummary() {
+  if (!orderItemsList) return;
+  orderItemsList.innerHTML = '';
 
-    const infoBarEl = document.querySelector('.info-bar');
-    if (infoBarEl && infoBarEl.nextSibling) {
-      categoryContainer.insertBefore(existingSection, infoBarEl.nextSibling);
-    } else if (categoryContainer) {
-      categoryContainer.prepend(existingSection);
-    }
-  }
-
-  if (existingOrderItems.length === 0) {
-    existingSection.style.display = 'none';
-    return;
-  }
-
-  existingSection.style.display = 'block';
-  const totalExisting = existingOrderItems.reduce(
-    (acc, item) => acc + (item.total_item || item.unit_price * item.quantity),
-    0,
-  );
-
-  existingSection.innerHTML = `
-        <h3 style="color: var(--color-primary); margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--border-light); padding-bottom: 0.5rem;">
-            <span>Já no Pedido (${existingOrderItems.length})</span>
-            <span style="font-size: 0.9rem; font-weight: normal;">Total: ${formatCurrency(totalExisting)}</span>
-        </h3>
-        <ul style="list-style: none; padding: 0;">
-            ${existingOrderItems
-      .map(
-        (item) => `
-                <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid var(--border-light);">
-                    <div style="flex: 1;">
-                         <div style="font-weight: bold; color: var(--color-primary);">
-                            ${item.quantity}x <span style="font-weight: normal;">${item.product_name || 'Produto'}</span>
-                         </div>
-                         <div style="font-size: 0.85rem; color: var(--text-secondary);">
-                            Vl. Unit: ${formatCurrency(item.unit_price)}
-                         </div>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                         <strong style="color: var(--color-primary);">${formatCurrency(item.total_item || item.unit_price * item.quantity)}</strong>
-                         ${currentOrderStatus !== 'CLOSED'
-            ? `
-                         <button class="btn-remove-item" data-id="${item.id}" style="background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; padding: 6px; border-radius: 6px; cursor: pointer; transition: all 0.2s;" title="Deletar Item Salvo">
-                            <span class="material-symbols-outlined" style="font-size: 20px;">delete</span>
-                         </button>
-                         `
-            : ''
-          }
-                    </div>
-                </li>
-            `,
-      )
-      .join('')}
-        </ul>
-        ${existingObservation ? `
-            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed var(--border-light);">
-                <strong style="color: var(--text-primary); display: block; margin-bottom: 0.25rem;">Observações:</strong>
-                <p style="color: var(--text-secondary); font-style: italic;">${existingObservation}</p>
-            </div>
-            ` : ''}
-    `;
-
-  existingSection.querySelectorAll('.btn-remove-item').forEach((btn) => {
-    btn.addEventListener('click', async (e) => {
-      const btnEl = e.currentTarget as HTMLElement;
-      if (btnEl.style.opacity === '0.5') return;
-      const itemId = btnEl.dataset.id;
-      if (itemId && currentOrderId) {
-        ModalService.confirm('Remover Item', 'Tem certeza que deseja remover este item?', async () => {
-          btnEl.style.opacity = '0.5';
-          await removeOrderItem(currentOrderId!, itemId);
+  // 1. Render Existing Items (Read Only-ish)
+  if (existingOrderItems.length > 0) {
+    existingOrderItems.forEach(item => {
+      const el = document.createElement('div');
+      el.className = 'cart-item-row';
+      el.innerHTML = `
+                <div class="item-details">
+                    <span class="item-title">${item.product_name || 'Produto'}</span>
+                    <span class="item-meta">${item.quantity}x ${formatCurrency(item.unit_price)}</span>
+                </div>
+                <div class="item-controls">
+                     <span style="font-size: 0.9rem; font-weight: bold;">R$ ${centsToReais((item.total_item || item.unit_price * item.quantity))}</span>
+                     ${currentOrderStatus !== 'CLOSED' ? `
+                     <button class="qty-btn btn-delete-existing" data-id="${item.id}" style="color: #ef4444; border-color: #fee2e2; background: #fef2f2;">
+                        <span class="material-symbols-outlined" style="font-size: 16px;">delete</span>
+                     </button>` : ''}
+                </div>
+            `;
+      // Add delete logic for existing items
+      const delBtn = el.querySelector('.btn-delete-existing');
+      if (delBtn) {
+        delBtn.addEventListener('click', () => {
+          removeOrderItem(currentOrderId!, item.id);
         });
       }
+      orderItemsList.appendChild(el);
     });
-  });
-}
 
-function renderCartItems() {
-  let cartSection = document.getElementById('cart-items-section');
-  if (!cartSection) {
-    cartSection = document.createElement('section');
-    cartSection.id = 'cart-items-section';
-    cartSection.className = 'card';
-    cartSection.style.cssText =
-      'margin-bottom: 2rem; padding: 1rem; background: var(--bg-card); border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #10b981;';
-
-    const existingSection = document.getElementById('existing-items-section');
-    if (existingSection && existingSection.nextSibling) {
-      categoryContainer.insertBefore(cartSection, existingSection.nextSibling);
-    } else {
-      const infoBarEl = document.querySelector('.info-bar');
-      if (infoBarEl && infoBarEl.nextSibling) {
-        categoryContainer.insertBefore(cartSection, infoBarEl.nextSibling);
-      } else {
-        const obsSection = document.querySelector('.observations-section');
-        if (obsSection) categoryContainer.insertBefore(cartSection, obsSection);
-      }
+    // Separator if needed
+    if (cart.length > 0) {
+      const separator = document.createElement('div');
+      separator.style.cssText = "margin: 0.5rem 0; border-top: 1px dashed #e5e7eb;";
+      orderItemsList.appendChild(separator);
     }
   }
 
-  if (cart.length === 0) {
-    cartSection.style.display = 'none';
-    return;
-  }
-  cartSection.style.display = 'block';
+  // 2. Render Cart Items (New)
+  cart.forEach((item, index) => {
+    const el = document.createElement('div');
+    el.className = 'cart-item-row';
+    el.innerHTML = `
+            <div class="item-details">
+                <span class="item-title">${item.name} <span style="font-size: 0.75rem; color: #10b981;">(Novo)</span></span>
+                <span class="item-meta">${formatCurrency(item.price)} unit.</span>
+            </div>
+            <div class="item-controls">
+                 <button class="qty-btn btn-minus" data-index="${index}">-</button>
+                 <span class="item-qty-display">${item.quantity}</span>
+                 <button class="qty-btn btn-plus" data-index="${index}">+</button>
+            </div>
+        `;
 
-  const totalCart = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0,
-  );
-  cartSection.innerHTML = `
-        <h3 style="color: #10b981; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--border-light); padding-bottom: 0.5rem;">
-            <span>Novos Itens (A Enviar)</span>
-            <span style="font-size: 0.9rem; font-weight: normal;">Total: ${formatCurrency(totalCart)}</span>
-            <button id="btn-clear-cart" style="background:none; border:none; color: #ef4444; font-size: 0.8rem; cursor: pointer;">Limpar</button>
-        </h3>
-        <ul style="list-style: none; padding: 0;">
-            ${cart
-      .map(
-        (item, index) => `
-                <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid var(--border-light);">
-                    <div style="flex: 1;">
-                         <div style="font-weight: bold; color: var(--text-primary);">
-                            ${item.quantity}x <span style="font-weight: normal;">${item.name}</span>
-                         </div>
-                         <div style="font-size: 0.85rem; color: var(--text-secondary);">
-                            Vl. Unit: R$ ${centsToReais(item.price)}
-                         </div>
-                    </div>
-                    <button class="btn-remove-new" data-index="${index}" style="color: #ef4444; background: none; border: none; cursor: pointer;">
-                        <span class="material-symbols-outlined">delete</span>
-                    </button>
-                </li>
-            `,
-      )
-      .join('')}
-        </ul>
-    `;
+    el.querySelector('.btn-minus')?.addEventListener('click', (e) => { e.stopPropagation(); updateCartQuantity(index, -1); });
+    el.querySelector('.btn-plus')?.addEventListener('click', (e) => { e.stopPropagation(); updateCartQuantity(index, 1); });
 
-  // Add event listeners for remove buttons
-  cartSection.querySelectorAll('.btn-remove-new').forEach((btn) => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation(); // Prevent bubbling if needed
-      const index = parseInt(
-        (e.currentTarget as HTMLElement).dataset.index || '0',
-      );
-      removeFromCart(index);
-    });
+    orderItemsList.appendChild(el);
   });
 
-  const clearBtn = document.getElementById('btn-clear-cart');
-  if (clearBtn) {
-    clearBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      cart = [];
-      updateInfoBar();
-      renderCartItems();
-    });
+  if (existingOrderItems.length === 0 && cart.length === 0) {
+    orderItemsList.innerHTML = '<div style="text-align:center; color:#9ca3af; padding: 1rem;">Nenhum item selecionado</div>';
   }
 }
 
-function removeFromCart(index: number) {
-  cart.splice(index, 1);
-  updateInfoBar();
-  renderCartItems();
+function updateTotals() {
+  const cartTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const existingTotal = existingOrderItems.reduce(
+    (acc, item) => acc + (item.total_item || item.unit_price * item.quantity),
+    0
+  );
+
+  const grandTotal = cartTotal + existingTotal;
+
+  if (subtotalEl) subtotalEl.textContent = formatCurrency(grandTotal);
+  if (totalEl) totalEl.textContent = formatCurrency(grandTotal);
 }
+
+// --- API Actions ---
 
 async function removeOrderItem(orderId: string, itemId: string) {
   try {
     await ApiService.delete(`/orders/${orderId}/items/${itemId}`);
     showSuccess('Item removido com sucesso!');
     await loadOrderDetails(orderId);
+    renderOrderSummary(); // Re-render logic
+    updateTotals();
   } catch (error: any) {
     // console.error('Erro ao remover item:', error);
     showError('Erro ao remover item');
@@ -600,17 +451,16 @@ async function saveItems() {
     return;
   }
 
-  const sendBtn = document.querySelector(
-    '.btn-send',
-  ) as HTMLButtonElement | null;
+  const sendBtn = document.querySelector('.btn-send') as HTMLButtonElement | null;
   if (sendBtn) {
     sendBtn.disabled = true;
-    sendBtn.textContent = 'Enviando...';
+    sendBtn.textContent = 'Processando...';
   }
 
   try {
     let orderId = currentOrderId;
 
+    // Create order if not exists
     if (!orderId) {
       const orderResponse = await ApiService.post<{ data: Order }>('/orders', {
         table_id: currentTableId,
@@ -619,6 +469,7 @@ async function saveItems() {
       orderId = orderResponse.data.id;
     }
 
+    // Add items
     if (cart.length > 0) {
       for (const item of cart) {
         await ApiService.post(`/orders/${orderId}/items`, {
@@ -628,27 +479,31 @@ async function saveItems() {
       }
     }
 
+    // Update observations
     if (observationsTextarea) {
       const obs = observationsTextarea.value.trim();
-      if (obs) {
+      const existingObs = existingObservation || '';
+      // Simple logic: if obs changed, update. 
+      // Note: If reusing same text field, this logic assumes the user edited it.
+      if (obs !== existingObs) {
         await ApiService.put(`/orders/${orderId}`, { observations: obs });
       }
     }
 
-    showSuccess(
-      currentOrderId ? 'Pedido atualizado!' : 'Pedido criado com sucesso!',
-    );
+    showSuccess(currentOrderId ? 'Pedido atualizado!' : 'Pedido criado com sucesso!');
     cart = [];
 
+    // Redirect to waiter main
     setTimeout(() => {
-      window.location.href = `createOrder.html?table_id=${currentTableId}&order_id=${orderId}`;
-    }, 1500);
+      window.location.href = 'waiterMain.html';
+    }, 1000);
+
   } catch (error: any) {
     // console.error('Erro ao salvar:', error);
     showError(error.message || 'Erro ao processar pedido.');
     if (sendBtn) {
       sendBtn.disabled = false;
-      sendBtn.textContent = 'Salvar / Atualizar Itens';
+      sendBtn.textContent = 'Criar Pedido';
     }
   }
 }
@@ -659,21 +514,131 @@ async function finalizeOrder() {
     return;
   }
 
-  // Salvar itens pendentes antes de redirecionar
+  // Save pending items first use case
   if (cart.length > 0) {
+    if (!confirm("Existem itens não salvos. Deseja salvá-los e finalizar?")) return;
     try {
       await saveItems();
-    } catch (error) {
-      showError('Erro ao salvar itens. Tente novamente.');
-      return;
-    }
+      return; // Logic redirects after save, so user will click finalize again naturally or we chain it. 
+      // For simplicity, let's just redirect to closeOrder if save succeeds, but saveItems reloads page.
+      // Better flows exist, but let's stick to safe simple flow.
+    } catch (e) { return; }
   }
 
-  // Redirecionar para página de fechamento de comanda
   window.location.href = `closeOrder.html?order_id=${currentOrderId}&table_id=${currentTableId}`;
 }
 
-// --- Utils ---
+
+// --- Utils & Events ---
+
+
+// --- Utils & Events ---
+
+function setupEventListeners() {
+  // Header Back
+  const headerBackBtn = document.getElementById('headerBackBtn');
+  if (headerBackBtn) {
+    headerBackBtn.addEventListener('click', () => {
+      window.location.href = '../pages/waiterMain.html';
+    });
+  }
+
+  // Logo Click
+  const logoImage = document.getElementById('logoImage');
+  if (logoImage) {
+    logoImage.addEventListener('click', () => {
+      window.location.href = '../pages/waiterMain.html';
+    });
+  }
+
+  // Logout Button
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', async () => {
+      try {
+        await ApiService.post("/auth/logout", {});
+      } catch (e) {
+        console.error("Logout error", e);
+      } finally {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '../pages/landingPage.html';
+      }
+    });
+  }
+
+  // User Profile Click
+  const userBtn = document.getElementById("userBtn");
+  const headerActions = document.querySelector(".header-actions") as HTMLElement;
+
+  if (headerActions) {
+    headerActions.style.position = "relative";
+  }
+
+  if (userBtn) {
+    userBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggleProfilePopover(userBtn);
+    });
+  }
+
+  // Close popovers on click outside
+  document.addEventListener("click", () => {
+    closePopovers();
+  });
+
+
+  // Primary Action (Send/Save)
+  const sendBtn = document.querySelector('.btn-send') as HTMLButtonElement | null;
+  if (sendBtn) sendBtn.onclick = saveItems;
+
+  // Finalize
+  const finalizeBtn = document.querySelector('.btn-finalize') as HTMLButtonElement | null;
+  if (finalizeBtn) finalizeBtn.onclick = finalizeOrder;
+
+  // Toggle Summary
+  const bgHeader = document.querySelector('.order-card-header');
+  if (bgHeader) {
+    bgHeader.addEventListener('click', () => {
+      const body = document.querySelector('.order-card-body') as HTMLElement;
+      const icon = bgHeader.querySelector('.toggle-icon');
+      if (body.style.display === 'none') {
+        body.style.display = 'flex';
+        if (icon) icon.textContent = 'expand_less';
+      } else {
+        body.style.display = 'none';
+        if (icon) icon.textContent = 'expand_more';
+      }
+    });
+  }
+
+  // Regex Limit for Observations
+  if (observationsTextarea) {
+    observationsTextarea.addEventListener('input', function () {
+      // Regex to keep only the first 150 characters
+      const regexLimit = /^(.{0,100})[\s\S]*$/;
+      this.value = this.value.replace(regexLimit, '$1');
+    });
+  }
+}
+
+function updateUIVisibility() {
+  const sendBtn = document.querySelector('.btn-send') as HTMLButtonElement | null;
+  const finalizeBtn = document.querySelector('.btn-finalize') as HTMLButtonElement | null;
+
+  if (currentOrderId && currentOrderStatus !== 'CLOSED') {
+    if (finalizeBtn) finalizeBtn.style.display = 'block';
+    if (sendBtn) sendBtn.textContent = "Salvar / Adicionar";
+  }
+
+  if (currentOrderStatus === 'CLOSED') {
+    if (sendBtn) sendBtn.style.display = 'none';
+    if (finalizeBtn) finalizeBtn.style.display = 'none';
+    const products = document.querySelectorAll('.product-card');
+    products.forEach(p => (p as HTMLElement).style.pointerEvents = 'none');
+    if (observationsTextarea) observationsTextarea.disabled = true;
+  }
+}
 
 function getUserIdFromSession() {
   const userStr = localStorage.getItem('user');
@@ -689,9 +654,7 @@ function getUserIdFromSession() {
 function showSuccess(message: string) {
   const toast = document.createElement('div');
   toast.textContent = message;
-  toast.className = 'toast-success';
-  toast.style.cssText =
-    'position:fixed;top:80px;right:20px;background:#10b981;color:white;padding:1rem;border-radius:8px;z-index:9999';
+  toast.className = 'toast toast-success';
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 3000);
 }
@@ -699,157 +662,65 @@ function showSuccess(message: string) {
 function showError(message: string) {
   const toast = document.createElement('div');
   toast.textContent = message;
-  toast.style.cssText =
-    'position:fixed;top:80px;right:20px;background:#ef4444;color:white;padding:1rem;border-radius:8px;z-index:9999';
+  toast.className = 'toast toast-error';
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 3000);
 }
 
-function updateUIVisibility() {
-  const sendBtn = document.querySelector(
-    '.btn-send',
-  ) as HTMLButtonElement | null;
-  const finalizeBtn = document.querySelector(
-    '.btn-finalize',
-  ) as HTMLButtonElement | null;
+// --- Profile Popover Logic ---
 
-  if (currentOrderId) {
-    if (currentOrderStatus === 'CLOSED') {
-      if (sendBtn) sendBtn.style.display = 'none';
-      if (finalizeBtn) finalizeBtn.style.display = 'none';
+function toggleProfilePopover(btn: HTMLElement) {
+  closePopovers(); // Close others
+  let popover = document.getElementById("profilePopover");
 
-      // Disable product cards
-      const products = document.querySelectorAll('.product-card');
-      products.forEach(
-        (p) => ((p as HTMLElement).style.pointerEvents = 'none'),
-      );
+  if (!popover) {
+    popover = document.createElement("div");
+    popover.id = "profilePopover";
+    popover.className = "popover";
 
-      // Show a closed message
-      let msg = document.getElementById('closed-msg');
-      if (!msg) {
-        msg = document.createElement('div');
-        msg.id = 'closed-msg';
-        msg.className = 'alert alert-info';
-        msg.textContent = 'Este pedido já está fechado.';
-        msg.style.cssText =
-          'background: #e0f2fe; color: #0369a1; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; text-align: center; font-weight: bold; width: 100%;';
-        if (categoryContainer) categoryContainer.prepend(msg);
-      }
+    // Try to get user from local storage first as a fallback, or use a loaded variable
+    // For now, let's parse localStorage 'user' again if we don't have a global user state
+    let user: User | null = null;
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      try { user = JSON.parse(userStr); } catch (e) { }
+    }
+
+    if (user) {
+      popover.innerHTML = `
+        <div class="popover-header">Perfil de Usuário</div>
+        <div class="popover-body">
+          <div class="user-info-card">
+            <div class="user-name">${user.name}</div>
+            <div class="user-username">@${user.username}</div>
+            <div class="user-role-badge">
+              <span class="role-badge ${user.role.toLowerCase()}">${user.role}</span>
+            </div>
+          </div>
+        </div>
+      `;
     } else {
-      if (sendBtn) {
-        sendBtn.textContent = 'Salvar / Atualizar Itens';
-        sendBtn.style.display = 'block';
-      }
-      if (finalizeBtn) {
-        finalizeBtn.style.display = 'block';
-      }
+      popover.innerHTML = `<div class="popover-body">Usuário não identificado</div>`;
     }
-  } else {
-    if (sendBtn) {
-      sendBtn.textContent = 'Criar Pedido';
-      sendBtn.style.display = 'block';
-    }
-    if (finalizeBtn) finalizeBtn.style.display = 'none';
+
+    // Append to header-actions
+    const headerActions = document.querySelector(".header-actions");
+    if (headerActions) headerActions.appendChild(popover);
   }
+
+  popover.classList.toggle("active");
 }
 
-function setupEventListeners() {
-  const sendBtn = document.querySelector(
-    '.btn-send',
-  ) as HTMLButtonElement | null;
-  if (sendBtn) sendBtn.onclick = saveItems;
-
-  const headerBackBtn = document.getElementById('headerBackBtn');
-  if (headerBackBtn) {
-    headerBackBtn.addEventListener('click', () => {
-      window.location.href = 'waiterMain.html';
-    });
-  }
-
-  const finalizeBtn = document.querySelector(
-    '.btn-finalize',
-  ) as HTMLButtonElement | null;
-  if (finalizeBtn) finalizeBtn.onclick = finalizeOrder;
-
-  const darkModeToggle = document.getElementById('darkModeToggle');
-  if (darkModeToggle) {
-    darkModeToggle.onclick = toggleDarkMode;
-  }
-
-  // Sidebar & Navigation
-  const menuBtn = document.getElementById('menuBtn');
-  const sidebar = document.getElementById('sidebar');
-  if (menuBtn && sidebar) {
-    menuBtn.addEventListener('click', toggleSidebar);
-  }
-
-  const closeSidebarBtn = document.getElementById('closeSidebar');
-  if (closeSidebarBtn) {
-    closeSidebarBtn.addEventListener('click', closeSidebar);
-  }
-
-  const sidebarOverlay = document.getElementById('sidebarOverlay');
-  if (sidebarOverlay) {
-    sidebarOverlay.addEventListener('click', closeSidebar);
-  }
-
-  const logoutBtn = document.getElementById('logoutBtn');
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', async () => {
-      try {
-        await ApiService.post('/auth/logout', {});
-      } catch (e) {
-        console.error('Logout error', e);
-      } finally {
-        localStorage.removeItem('user');
-        window.location.href = 'landingPage.html';
-      }
-    });
-  }
-
-  // Sidebar Links
-  const navItems = document.querySelectorAll('.nav-item');
-  navItems.forEach((item) => {
-    item.addEventListener('click', () => {
-      const dest = (item as HTMLElement).dataset.href;
-      if (dest) window.location.href = dest;
-    });
-  });
-
-  const logo = document.getElementById('logoImage');
-  if (logo) {
-    logo.addEventListener('click', () => {
-      window.location.href = 'waiterMain.html';
-    });
-  }
-
-  const userBtn = document.getElementById('userBtn');
-  if (userBtn) {
-    userBtn.addEventListener('click', openUserModal);
-  }
+function closePopovers() {
+  document
+    .querySelectorAll(".popover")
+    .forEach((p) => p.classList.remove("active"));
 }
 
-// --- Dark Mode (Shared Logic) ---
-function initDarkMode() {
-  const savedTheme = localStorage.getItem('theme');
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-    document.body.classList.add('dark-mode');
-    updateDarkModeIcon(true);
-  } else {
-    document.body.classList.remove('dark-mode');
-    updateDarkModeIcon(false);
-  }
+interface User {
+  id: string;
+  name: string;
+  username: string;
+  role: string;
 }
-function toggleDarkMode() {
-  const isDark = document.body.classList.toggle('dark-mode');
-  localStorage.setItem('theme', isDark ? 'dark' : 'light');
-  updateDarkModeIcon(isDark);
-}
-function updateDarkModeIcon(isDark: boolean) {
-  const toggle = document.getElementById('darkModeToggle');
-  if (toggle) {
-    const icon = toggle.querySelector('.material-symbols-outlined');
-    if (icon) icon.textContent = isDark ? 'dark_mode' : 'light_mode';
-  }
-}
+

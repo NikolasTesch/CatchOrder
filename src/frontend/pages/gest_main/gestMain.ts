@@ -270,6 +270,12 @@ async function loadDashboard() {
       ],
     );
 
+    // Update global variables so helpers can use them
+    tables = tablesData.data || [];
+    users = usersData.data || [];
+    products = productsData.data || [];
+    orders = ordersData.data || [];
+
     // Update metrics
     const totalUsersEl = document.getElementById("totalUsers");
     if (totalUsersEl)
@@ -373,10 +379,10 @@ function renderRecentOrders(ordersData: Order[]) {
       <div class="recent-item">
         <div class="recent-item-header">
           <span class="recent-item-id">Pedido #${order.id.substring(0, 8)}</span>
-          <span class="recent-item-status">${order.status}</span>
+          <span class="recent-item-status">${translateStatus(order.status)}</span>
         </div>
         <div class="recent-item-info">
-          Mesa: ${order.table_id} | Total: ${formatCurrency(order.total || 0)}
+          ${getTableNumber(order.table_id)} | Total: ${formatCurrency(order.total || 0)}
         </div>
       </div>
     `,
@@ -792,7 +798,7 @@ function showProductForm(productId: string | null = null) {
     <form id="productForm" onsubmit="submitProductForm(event, ${isEdit ? `'${productId}'` : "null"})">
       <div class="form-group">
         <label class="form-label">Nome</label>
-        <input type="text" class="form-input" name="name" value="${product?.name || ""}" required>
+        <input type="text" class="form-input" name="name" value="${product?.name || ""}" required maxlength="50">
       </div>
       <div class="form-group">
         <label class="form-label">Categoria</label>
@@ -811,11 +817,11 @@ function showProductForm(productId: string | null = null) {
       </div>
       <div class="form-group">
         <label class="form-label">Descrição</label>
-        <textarea class="form-textarea" name="description">${product?.description || ""}</textarea>
+        <textarea class="form-textarea" name="description" maxlength="200" rows="3">${product?.description || ""}</textarea>
       </div>
       <div class="form-group">
         <label class="form-label">Preço (R$)</label>
-        <input type="number" step="0.01" class="form-input" name="price" value="${product ? centsToReais(product.price) : ""}" required>
+        <input type="number" step="0.01" min="0" class="form-input" name="price" value="${product ? centsToReais(product.price) : ""}" required>
       </div>
       <div class="form-group">
         <label class="form-label">Status</label>
@@ -927,8 +933,20 @@ function translateStatus(status: string) {
     OPEN: "Aberto",
     CLOSED: "Fechado",
     CANCELLED: "Cancelado",
+    COMPLETED: "Concluído"
   };
   return translations[status] || status;
+}
+
+function getTableNumber(tableId: string | number): string {
+  if (!tableId) return "-";
+  // The order might have table_id as number or string. Global tables has 'id' as string (UUID) and 'number' as number.
+  // We need to match order.table_id (which might be the ID) to table.id
+  // Or sometimes the backend might actually send the table NUMBER if it was joined?
+  // Let's assume it sends ID based on user complaint "aparecendo o ID".
+
+  const table = tables.find((t) => t.id == tableId); // loose equality handles string/number mismatch
+  return table ? `Mesa ${table.number}` : (typeof tableId === 'number' ? `Mesa ${tableId}` : "-");
 }
 
 function showTableForm(tableId: string | null = null) {
@@ -941,7 +959,7 @@ function showTableForm(tableId: string | null = null) {
     <form id="tableForm" onsubmit="submitTableForm(event, ${isEdit ? `'${tableId}'` : "null"})">
       <div class="form-group">
         <label class="form-label">Número da Mesa</label>
-        <input type="number" class="form-input" name="number" value="${table?.number || ""}" required min="1">
+        <input type="number" class="form-input" name="number" value="${table?.number || ""}" required min="1" max="999" step="1">
       </div>
       <div class="form-group">
         <label class="form-label">Status</label>
@@ -1031,8 +1049,8 @@ function renderOrders(ordersData: Order[]) {
       (order) => `
       <tr>
         <td>#${order.id.substring(0, 8)}</td>
-        <td>Mesa ${order.table_id}</td>
-        <td><span class="status-pill ${order.status.toLowerCase()}">${order.status}</span></td>
+        <td>${getTableNumber(order.table_id)}</td>
+        <td><span class="status-pill ${order.status.toLowerCase()}">${translateStatus(order.status)}</span></td>
         <td>${formatCurrency(order.total || 0)}</td>
         <td>${order.opened_at ? new Date(order.opened_at).toLocaleDateString("pt-BR") : "-"}</td>
         <td>
@@ -1088,8 +1106,8 @@ async function viewOrder(orderId: string) {
 
       modalBody.innerHTML = `
       <div style="margin-bottom: 20px;">
-        <p><strong>Mesa:</strong> ${order.table_id}</p>
-        <p><strong>Status:</strong> <span class="status-pill ${order.status.toLowerCase()}">${order.status}</span></p>
+        <p><strong>Mesa:</strong> ${getTableNumber(order.table_id)}</p>
+        <p><strong>Status:</strong> <span class="status-pill ${order.status.toLowerCase()}">${translateStatus(order.status)}</span></p>
         <p><strong>Data:</strong> ${order.opened_at ? new Date(order.opened_at).toLocaleString("pt-BR") : "-"}</p>
         <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
         <h4 style="margin-bottom: 10px;">Itens do Pedido</h4>
@@ -1172,11 +1190,11 @@ function showCategoryForm(categoryId: string | null = null) {
     <form id="categoryForm" onsubmit="submitCategoryForm(event, ${isEdit ? `'${categoryId}'` : "null"})">
       <div class="form-group">
         <label class="form-label">Nome</label>
-        <input type="text" class="form-input" name="name" value="${category?.name || ""}" required>
+        <input type="text" class="form-input" name="name" value="${category?.name || ""}" required maxlength="30">
       </div>
       <div class="form-group">
         <label class="form-label">Slug</label>
-        <input type="text" class="form-input" name="slug" value="${category?.slug || ""}" required>
+        <input type="text" class="form-input" name="slug" value="${category?.slug || ""}" required maxlength="30" pattern="[a-z0-9-]+" title="Apenas letras minúsculas, números e hifens.">
       </div>
       <div class="form-actions">
         <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>

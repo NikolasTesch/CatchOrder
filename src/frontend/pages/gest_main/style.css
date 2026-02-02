@@ -73,35 +73,7 @@ body.dark-mode .logo-image {
   color: var(--text-primary);
 }
 
-.icon-btn {
-  width: 40px;
-  height: 40px;
-  border: none;
-  background: transparent;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: var(--transition-base);
-  color: var(--text-secondary);
-  min-width: 40px;
-  min-height: 40px;
-}
 
-.icon-btn:hover {
-  background: var(--bg-secondary);
-  color: var(--color-primary);
-  transform: scale(1.05);
-}
-
-.icon-btn:active {
-  transform: scale(0.95);
-}
-
-.icon-btn .material-symbols-outlined {
-  font-size: 24px;
-}
 
 /* ========================================
    SIDEBAR

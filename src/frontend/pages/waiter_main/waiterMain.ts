@@ -45,6 +45,14 @@ async function init() {
   loadTables();
   loadSummary();
 
+  // Check for auto-open modal
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('action') === 'new_order') {
+    openTableSelectionModal();
+    // Clean URL
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+
   // Auto-refresh every 30 seconds
   setInterval(() => {
     loadTables();
@@ -108,7 +116,7 @@ async function loadCurrentUser(): Promise<User | null> {
     return currentUser;
   } catch (error) {
     console.error('Failed to load user:', error);
-    window.location.href = '/pages/landingPage.html';
+    window.location.href = 'landingPage.html';
     return null;
   }
 }

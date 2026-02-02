@@ -306,7 +306,7 @@ function setupHeaderListeners() {
         console.error('Logout error', e);
       } finally {
         localStorage.removeItem('user');
-        window.location.href = '/pages/landingPage.html';
+        window.location.href = 'landingPage.html';
       }
     });
   }
@@ -339,7 +339,7 @@ function setupEventListeners() {
 
   if (newOrderButton) {
     newOrderButton.addEventListener('click', () => {
-      window.location.href = '/pages/waiterMain.html';
+      window.location.href = 'waiterMain.html?action=new_order';
     });
   }
 }

@@ -405,6 +405,51 @@ body.dark-mode {
   min-height: 52px;
 }
 
+/* Icon Buttons (Standardized) */
+.icon-btn,
+.icon-btn-small {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  transition: all var(--transition-base);
+  border-radius: var(--radius-md);
+}
+
+.icon-btn {
+  min-height: 48px;
+  min-width: 48px;
+  padding: var(--space-xs);
+}
+
+.icon-btn-small {
+  min-height: 40px;
+  min-width: 40px;
+  padding: var(--space-xs);
+}
+
+.icon-btn:hover,
+.icon-btn-small:hover {
+  background-color: rgba(var(--color-primary-rgb), 0.1);
+  transform: scale(1.05);
+}
+
+.icon-btn:active,
+.icon-btn-small:active {
+  transform: scale(0.95);
+}
+
+.icon-btn .material-symbols-outlined {
+  font-size: 28px;
+}
+
+.icon-btn-small .material-symbols-outlined {
+  font-size: 24px;
+}
+
 .btn-full {
   width: 100%;
 }

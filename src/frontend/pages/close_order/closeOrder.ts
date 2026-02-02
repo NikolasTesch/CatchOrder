@@ -239,7 +239,7 @@ function setupHeaderListeners() {
         console.error('Logout error', e);
       } finally {
         localStorage.removeItem('user');
-        window.location.href = '/pages/landingPage.html';
+        window.location.href = 'landingPage.html';
       }
     });
   }

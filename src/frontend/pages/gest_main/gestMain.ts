@@ -270,6 +270,12 @@ async function loadDashboard() {
       ],
     );
 
+    // Update global variables so helpers can use them
+    tables = tablesData.data || [];
+    users = usersData.data || [];
+    products = productsData.data || [];
+    orders = ordersData.data || [];
+
     // Update metrics
     const totalUsersEl = document.getElementById("totalUsers");
     if (totalUsersEl)
@@ -373,10 +379,10 @@ function renderRecentOrders(ordersData: Order[]) {
       <div class="recent-item">
         <div class="recent-item-header">
           <span class="recent-item-id">Pedido #${order.id.substring(0, 8)}</span>
-          <span class="recent-item-status">${order.status}</span>
+          <span class="recent-item-status">${translateStatus(order.status)}</span>
         </div>
         <div class="recent-item-info">
-          Mesa: ${order.table_id} | Total: ${formatCurrency(order.total || 0)}
+          ${getTableNumber(order.table_id)} | Total: ${formatCurrency(order.total || 0)}
         </div>
       </div>
     `,
@@ -638,15 +644,14 @@ function showUserForm(userId: string | null = null) {
         <label class="form-label">Username</label>
         <input type="text" class="form-input" name="username" value="${user?.username || ""}" required>
       </div>
-      ${
-        !isEdit
-          ? `
+      ${!isEdit
+        ? `
       <div class="form-group">
         <label class="form-label">Senha</label>
         <input type="password" class="form-input" name="password" required>
       </div>
       `
-          : ""
+        : ""
       }
       <div class="form-group">
         <label class="form-label">Função</label>
@@ -800,14 +805,14 @@ function showProductForm(productId: string | null = null) {
         <select class="form-select" name="category_id" required>
           <option value="">Selecione...</option>
           ${categories
-            .map(
-              (cat) => `
+        .map(
+          (cat) => `
             <option value="${cat.id}" ${product?.category_id === cat.id ? "selected" : ""}>
               ${cat.name}
             </option>
           `,
-            )
-            .join("")}
+        )
+        .join("")}
         </select>
       </div>
       <div class="form-group">
@@ -928,8 +933,20 @@ function translateStatus(status: string) {
     OPEN: "Aberto",
     CLOSED: "Fechado",
     CANCELLED: "Cancelado",
+    COMPLETED: "Concluído"
   };
   return translations[status] || status;
+}
+
+function getTableNumber(tableId: string | number): string {
+  if (!tableId) return "-";
+  // The order might have table_id as number or string. Global tables has 'id' as string (UUID) and 'number' as number.
+  // We need to match order.table_id (which might be the ID) to table.id
+  // Or sometimes the backend might actually send the table NUMBER if it was joined?
+  // Let's assume it sends ID based on user complaint "aparecendo o ID".
+
+  const table = tables.find((t) => t.id == tableId); // loose equality handles string/number mismatch
+  return table ? `Mesa ${table.number}` : (typeof tableId === 'number' ? `Mesa ${tableId}` : "-");
 }
 
 function showTableForm(tableId: string | null = null) {
@@ -1032,8 +1049,8 @@ function renderOrders(ordersData: Order[]) {
       (order) => `
       <tr>
         <td>#${order.id.substring(0, 8)}</td>
-        <td>Mesa ${order.table_id}</td>
-        <td><span class="status-pill ${order.status.toLowerCase()}">${order.status}</span></td>
+        <td>${getTableNumber(order.table_id)}</td>
+        <td><span class="status-pill ${order.status.toLowerCase()}">${translateStatus(order.status)}</span></td>
         <td>${formatCurrency(order.total || 0)}</td>
         <td>${order.opened_at ? new Date(order.opened_at).toLocaleDateString("pt-BR") : "-"}</td>
         <td>
@@ -1071,8 +1088,8 @@ async function viewOrder(orderId: string) {
             </thead>
             <tbody>
               ${order.items
-                .map(
-                  (item: any) => `
+            .map(
+              (item: any) => `
                 <tr>
                   <td>${item.product_name || "Produto Removido"}</td>
                   <td>${item.quantity}</td>
@@ -1080,8 +1097,8 @@ async function viewOrder(orderId: string) {
                   <td>${formatCurrency(item.total_item || item.quantity * item.unit_price)}</td>
                 </tr>
               `,
-                )
-                .join("")}
+            )
+            .join("")}
             </tbody>
           </table>
         `
@@ -1089,8 +1106,8 @@ async function viewOrder(orderId: string) {
 
       modalBody.innerHTML = `
       <div style="margin-bottom: 20px;">
-        <p><strong>Mesa:</strong> ${order.table_id}</p>
-        <p><strong>Status:</strong> <span class="status-pill ${order.status.toLowerCase()}">${order.status}</span></p>
+        <p><strong>Mesa:</strong> ${getTableNumber(order.table_id)}</p>
+        <p><strong>Status:</strong> <span class="status-pill ${order.status.toLowerCase()}">${translateStatus(order.status)}</span></p>
         <p><strong>Data:</strong> ${order.opened_at ? new Date(order.opened_at).toLocaleString("pt-BR") : "-"}</p>
         <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
         <h4 style="margin-bottom: 10px;">Itens do Pedido</h4>

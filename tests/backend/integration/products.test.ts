@@ -1,7 +1,7 @@
 import request from 'supertest';
-import { app } from '../../src/backend/app';
-import { getDb } from '../../src/backend/config/database';
-import { runMigrations } from '../../src/backend/database/migrations/migrations';
+import { app } from '../../../src/backend/app';
+import { getDb } from '../../../src/backend/config/database';
+import { runMigrations } from '../../../src/backend/database/migrations/migrations';
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
 

@@ -1,10 +1,11 @@
 // Make this file a module to avoid global scope contamination
-export {};
+export { };
 
-require("./style.css");
+import { ApiService } from '../../services/apiService';
+import "./style.css";
 
 // API Configuration
-const API_BASE = "http://localhost:3000/api";
+// Using ApiService.getBaseUrl()
 
 interface Product {
   id: string;
@@ -21,7 +22,7 @@ interface Product {
 function checkAuth(): boolean {
   const token = localStorage.getItem("token");
   if (!token) {
-    window.location.href = "../landing_page/landingPage.html";
+    window.location.href = "landingPage.html";
     return false;
   }
   return true;
@@ -102,11 +103,23 @@ function closeUserModal(): void {
 /**
  * Handle user logout
  */
-function handleLogout(): void {
-  if (confirm("Tem certeza que deseja sair?")) {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    window.location.href = "../landing_page/landingPage.html";
+/**
+ * Handle user logout
+ */
+async function handleLogout(): Promise<void> {
+  if (confirm('Tem certeza que deseja sair?')) {
+    try {
+      const response = await fetch(`${ApiService.getBaseUrl()}/auth/logout`, {
+        method: 'POST',
+        headers: getAuthHeaders()
+      });
+    } catch (e) {
+      console.error("Logout API call failed", e);
+    } finally {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = 'landingPage.html';
+    }
   }
 }
 
@@ -258,18 +271,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const logoImage = document.getElementById("logoImage");
     if (logoImage) {
       logoImage.addEventListener("click", () => {
-        window.location.href = "../landing_page/landingPage.html";
+        window.location.href = "landingPage.html";
       });
     }
   }
 
   function navigateToCreate(): void {
-    window.location.href = "../create_products/createProducts.html";
+    window.location.href = "createProducts.html";
   }
 
   async function fetchProducts(): Promise<void> {
     try {
-      const response = await fetch(`${API_BASE}/products`, {
+      const response = await fetch(`${ApiService.getBaseUrl()}/products`, {
         method: "GET",
         headers: getAuthHeaders(),
       });
@@ -284,7 +297,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (response.status === 401) {
           localStorage.removeItem("token");
           localStorage.removeItem("user");
-          window.location.href = "../landing_page/landingPage.html";
+          window.location.href = "landingPage.html";
           return;
         }
         console.error("Failed to fetch products:", data.message);

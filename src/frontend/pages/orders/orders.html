@@ -17,15 +17,19 @@
 
 <body>
   <header class="main-header">
-    <!-- Esquerda: Menu/Navegação -->
-    <button class="icon-btn" id="menuBtn" aria-label="Menu de navegação">
-      <span class="material-symbols-outlined">menu</span>
+    <div class="header-left">
+      <button class="icon-btn" onclick="history.back()" aria-label="Voltar">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </button>
+      <button class="icon-btn" id="menuBtn" aria-label="Menu de navegação">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
       <span class="header-title">Pedidos</span>
-    </button>
+    </div>
 
     <!-- Centro: Logo -->
     <div class="header-center">
-      <img src="/img/logoName.svg" alt="CatchOrder Logo" class="logo-image">
+      <img src="../img/logoName.svg" alt="CatchOrder Logo" class="logo-image">
     </div>
 
     <!-- Direita: Ações -->
@@ -36,8 +40,25 @@
       <button class="icon-btn-small" id="userBtn" aria-label="Perfil do usuário">
         <span class="material-symbols-outlined">account_circle</span>
       </button>
+      <button class="icon-btn-small" id="logoutBtn" aria-label="Sair">
+        <span class="material-symbols-outlined">logout</span>
+      </button>
     </nav>
   </header>
+
+  <!-- Sidebar de Navegação -->
+  <aside class="sidebar" id="sidebar">
+    <nav class="sidebar-nav">
+      <button class="nav-item" data-href="waiterMain.html">
+        <span class="material-symbols-outlined">dashboard</span>
+        <span class="nav-text">Dashboard</span>
+      </button>
+      <button class="nav-item active" data-href="orders.html">
+        <span class="material-symbols-outlined">receipt_long</span>
+        <span class="nav-text">Pedidos</span>
+      </button>
+    </nav>
+  </aside>
 
   <main class="page-wrapper">
     <!-- Barra de Busca -->

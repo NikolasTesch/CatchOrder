@@ -8,6 +8,7 @@ export interface OrderDTO {
   opened_at: string;
   closed_at?: string;
   items?: OrderItemDTO[];
+  observations?: string;
 }
 
 export interface CreateOrderDTO {
@@ -20,6 +21,7 @@ export interface UpdateOrderDTO {
   total?: number;
   tip?: number;
   closed_at?: string;
+  observations?: string;
 }
 
 export interface OrderItemDTO {

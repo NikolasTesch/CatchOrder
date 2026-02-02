@@ -18,12 +18,14 @@
 <body>
   <!-- Cabeçalho Principal -->
   <header class="main-header">
-    <button class="icon-btn" aria-label="Menu" id="menuBtn">
-      <span class="material-symbols-outlined">menu</span>
-    </button>
+    <div class="header-left">
+      <button class="icon-btn" aria-label="Menu" id="menuBtn">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+    </div>
 
     <div class="header-center">
-      <img src="/img/logoName.svg" alt="CatchOrder Logo" class="logo-image" id="logoImage">
+      <img src="../img/logoName.svg" alt="CatchOrder Logo" class="logo-image" id="logoImage">
     </div>
 
     <nav class="header-actions" aria-label="Ações do cabeçalho">
@@ -33,8 +35,30 @@
       <button class="icon-btn-small" aria-label="Acessar perfil do usuário" id="userBtn">
         <span class="material-symbols-outlined">account_circle</span>
       </button>
+      <button class="icon-btn-small" aria-label="Sair" id="logoutBtn">
+        <span class="material-symbols-outlined">logout</span>
+      </button>
     </nav>
   </header>
+
+  <!-- Sidebar de Navegação -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header" style="display: flex; justify-content: flex-end; padding: 1rem;">
+      <button class="icon-btn-small" id="closeSidebarBtn" aria-label="Fechar menu">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-href="waiterMain.html">
+        <span class="material-symbols-outlined">dashboard</span>
+        <span class="nav-text">Dashboard</span>
+      </button>
+      <button class="nav-item" data-href="orders.html">
+        <span class="material-symbols-outlined">receipt_long</span>
+        <span class="nav-text">Pedidos</span>
+      </button>
+    </nav>
+  </aside>
 
   <!-- Main Content -->
   <main class="page-wrapper">
@@ -42,7 +66,7 @@
     <section class="summary-card" aria-label="Resumo do dia">
       <p class="summary-title">HOJE</p>
       <h2 class="summary-value">R$00,00</h2>
-      <p class="summary-subtitle">x mesas atendidas hoje</p>
+      <p class="summary-subtitle">0 mesas atendidas hoje</p>
       <button class="btn btn-primary btn-full" id="newOrderBtn">Novo Pedido</button>
     </section>
 
@@ -55,14 +79,32 @@
       </div>
     </section>
 
-    <!-- Seção: Todas as Mesas -->
-    <section class="tables-section" aria-label="Todas as mesas">
-      <h3 class="section-title">Mesas <span class="material-symbols-outlined icon-arrow">arrow_forward</span></h3>
-      <div class="tables-grid">
-        <!-- Tables injected by script -->
+    <!-- Seção: Mesas Disponíveis -->
+    <section class="tables-section" aria-label="Mesas disponíveis">
+      <h3 class="section-title">Mesas Disponíveis <span
+          class="material-symbols-outlined icon-arrow">arrow_forward</span></h3>
+      <div class="available-tables-grid">
+        <!-- Available tables injected by script -->
       </div>
     </section>
   </main>
+
+  <!-- Table Selection Modal -->
+  <div class="modal-overlay" id="tableModalOverlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Selecione uma Mesa</h3>
+        <button class="icon-btn-small" id="closeTableModal">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="availableTablesGrid" class="tables-grid">
+          <!-- Tables injected by script -->
+        </div>
+      </div>
+    </div>
+  </div>
 
 </body>
 

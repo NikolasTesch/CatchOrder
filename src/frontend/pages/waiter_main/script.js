@@ -1,6 +1,6 @@
 require('./style.css');
 // API Configuration
-const API_BASE = 'http://localhost:3000/api';
+const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : (window.location.pathname.includes('/server09/') ? '/server09/api' : '/api');
 
 /**
  * Check if user is authenticated
@@ -8,7 +8,7 @@ const API_BASE = 'http://localhost:3000/api';
 function checkAuth() {
   const token = localStorage.getItem('token');
   if (!token) {
-    window.location.href = '/pages/landingPage.html';
+    window.location.href = 'landingPage.html';
     return false;
   }
   return true;
@@ -30,14 +30,14 @@ function getAuthHeaders() {
  */
 function handleApiError(error, response) {
   console.error('API Error:', error);
-  
+
   if (response && response.status === 401) {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    window.location.href = '/pages/landingPage.html';
+    window.location.href = 'landingPage.html';
     return;
   }
-  
+
   // Show error message to user
   showNotification('Erro ao carregar dados. Tente novamente.', 'error');
 }
@@ -53,7 +53,7 @@ function showNotification(message, type = 'info') {
 function initDarkMode() {
   const savedTheme = localStorage.getItem('theme');
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  
+
   if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
     document.body.classList.add('dark-mode');
     updateDarkModeIcon(true);
@@ -120,10 +120,10 @@ function setupEventListeners() {
   const newOrderBtn = document.getElementById('newOrderBtn');
   if (newOrderBtn) {
     newOrderBtn.addEventListener('click', () => {
-      window.location.href = '/pages/create_order/createOrder.html';
+      window.location.href = 'createOrder.html';
     });
   }
-  
+
   // Logout functionality
   const logoutBtn = document.getElementById('logoutBtn');
   if (logoutBtn) {
@@ -137,7 +137,7 @@ function setupEventListeners() {
 function handleLogout() {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
-  window.location.href = '/pages/landingPage.html';
+  window.location.href = 'landingPage.html';
 }
 
 // Load tables from backend
@@ -148,21 +148,21 @@ async function loadTables() {
       headers: getAuthHeaders(),
       credentials: 'include'
     });
-    
+
     if (!response.ok) {
       handleApiError(new Error('Failed to load tables'), response);
       return;
     }
-    
+
     const data = await response.json();
     const tables = data.data || [];
-    
+
     // Render occupied tables
     renderOccupiedTables(tables.filter(t => t.status === 'OCCUPIED'));
-    
+
     // Render all tables
     renderAllTables(tables);
-    
+
   } catch (error) {
     handleApiError(error, null);
   }
@@ -171,7 +171,7 @@ async function loadTables() {
 function renderOccupiedTables(tables) {
   const container = document.querySelector('.occupied-scroll');
   if (!container) return;
-  
+
   container.innerHTML = tables.length > 0
     ? tables.map(table => `
         <button class="table-card occupied" data-table-id="${table.id}" aria-label="Mesa ${table.number}">
@@ -179,7 +179,7 @@ function renderOccupiedTables(tables) {
         </button>
       `).join('')
     : '<p class="empty-message">Nenhuma mesa ocupada</p>';
-  
+
   container.querySelectorAll('.table-card').forEach(card => {
     card.addEventListener('click', () => handleTableClick(card.dataset.tableId));
   });
@@ -188,13 +188,13 @@ function renderOccupiedTables(tables) {
 function renderAllTables(tables) {
   const container = document.querySelector('.tables-grid');
   if (!container) return;
-  
+
   container.innerHTML = tables.map(table => `
     <button class="table-card ${table.status.toLowerCase()}" data-table-id="${table.id}" aria-label="Mesa ${table.number}">
       <span class="table-number">${table.number}</span>
     </button>
   `).join('');
-  
+
   // Add click listeners
   container.querySelectorAll('.table-card').forEach(card => {
     card.addEventListener('click', () => handleTableClick(card.dataset.tableId));
@@ -204,7 +204,7 @@ function renderAllTables(tables) {
 function handleTableClick(tableId) {
   console.log('Table clicked:', tableId);
   // Navigate to table details/orders page
-  window.location.href = `/pages/orders/orders.html?tableId=${tableId}`;
+  window.location.href = `orders.html?tableId=${tableId}`;
 }
 
 // Load summary data
@@ -215,31 +215,31 @@ async function loadSummary() {
       headers: getAuthHeaders(),
       credentials: 'include'
     });
-    
+
     if (!response.ok) {
       handleApiError(new Error('Failed to load summary'), response);
       return;
     }
-    
+
     const data = await response.json();
     const orders = data.data || [];
-    
+
     // Calculate today's total
     const today = new Date().toDateString();
     const todayOrders = orders.filter(o => {
       const orderDate = new Date(o.created_at).toDateString();
       return orderDate === today && o.status === 'CLOSED';
     });
-    
+
     const total = todayOrders.reduce((sum, order) => sum + (order.total || 0), 0);
-    
+
     // Update UI
     const valueEl = document.querySelector('.summary-value');
     const subtitleEl = document.querySelector('.summary-subtitle');
-    
+
     if (valueEl) valueEl.textContent = `R$ ${total.toFixed(2)}`;
     if (subtitleEl) subtitleEl.textContent = `${todayOrders.length} mesa${todayOrders.length !== 1 ? 's' : ''} atendida${todayOrders.length !== 1 ? 's' : ''} hoje`;
-    
+
   } catch (error) {
     handleApiError(error, null);
   }
@@ -266,19 +266,19 @@ function init() {
   if (!checkAuth()) {
     return;
   }
-  
+
   displayUserInfo();
   initDarkMode();
   setupEventListeners();
   loadTables();
   loadSummary();
-  
+
   // Auto-refresh every 30 seconds
   setInterval(() => {
     loadTables();
     loadSummary();
   }, 30000);
-  
+
   console.log('WaiterMain page initialized');
 }
 

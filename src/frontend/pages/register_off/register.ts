@@ -76,7 +76,8 @@ document.addEventListener('DOMContentLoaded', () => {
         setLoadingState(true);
 
         try {
-            const response = await fetch('http://localhost:3000/users', {
+            const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : (window.location.pathname.includes('/server09/') ? '/server09/api' : '/api');
+            const response = await fetch(`${API_BASE}/users`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -90,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('Registration successful');
                 alert('Conta criada com sucesso! Redirecionando para o login...');
                 // Redirect to login page
-                window.location.href = '../landing_page/landingPage.html';
+                window.location.href = 'landingPage.html';
             } else {
                 showError(data.message || 'Falha ao criar conta. Tente novamente.');
             }

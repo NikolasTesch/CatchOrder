@@ -31,7 +31,7 @@ export const authenticatePage = (req: Request, res: Response, next: NextFunction
   const token = req.cookies.token;
 
   if (!token) {
-    res.redirect('/pages/landingPage.html');
+    res.redirect('landingPage.html');
     return;
   }
 
@@ -46,7 +46,7 @@ export const authenticatePage = (req: Request, res: Response, next: NextFunction
     jwt.verify(token, secret);
     next();
   } catch (error) {
-    res.redirect('/pages/landingPage.html');
+    res.redirect('landingPage.html');
     return;
   }
 };

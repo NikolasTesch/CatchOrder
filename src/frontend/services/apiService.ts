@@ -1,80 +1,93 @@
 export class ApiService {
-    private static baseUrl = 'http://localhost:3000/api';
+  static getBaseUrl(): string {
+    if (window.location.hostname === 'lab.alphaedtech.org.br') {
+      return '/server09/api';
+    }
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      return 'http://localhost:3000/api';
+    }
+    return '/api';
+  }
+
 
   static async post<T>(endpoint: string, data: any): Promise<T> {
-    const response = await fetch(`${this.baseUrl}${endpoint}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-            credentials: 'include', // Ensure cookies are sent
-        });
+    const response = await fetch(`${this.getBaseUrl()}${endpoint}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+      credentials: 'include', // Ensure cookies are sent
+    });
 
     return this.handleResponse<T>(response);
   }
 
   static async get<T>(endpoint: string): Promise<T> {
-    const response = await fetch(`${this.baseUrl}${endpoint}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: 'include', // Ensure cookies are sent
-        });
+    const response = await fetch(`${this.getBaseUrl()}${endpoint}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include', // Ensure cookies are sent
+    });
 
     return this.handleResponse<T>(response);
   }
 
-    static async put<T>(endpoint: string, data: any): Promise<T> {
-        const response = await fetch(`${this.baseUrl}${endpoint}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        });
+  static async put<T>(endpoint: string, data: any): Promise<T> {
+    const response = await fetch(`${this.getBaseUrl()}${endpoint}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+      credentials: 'include', // Ensure cookies are sent
+    });
 
-        return this.handleResponse<T>(response);
-    }
+    return this.handleResponse<T>(response);
+  }
 
-    static async patch<T>(endpoint: string, data: any): Promise<T> {
-        const response = await fetch(`${this.baseUrl}${endpoint}`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        });
+  static async patch<T>(endpoint: string, data: any): Promise<T> {
+    const response = await fetch(`${this.getBaseUrl()}${endpoint}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+      credentials: 'include', // Ensure cookies are sent
+    });
 
-        return this.handleResponse<T>(response);
-    }
+    return this.handleResponse<T>(response);
+  }
 
-    static async delete<T>(endpoint: string): Promise<T> {
-        const response = await fetch(`${this.baseUrl}${endpoint}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
+  static async delete<T>(endpoint: string): Promise<T> {
+    const response = await fetch(`${this.getBaseUrl()}${endpoint}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include', // Ensure cookies are sent
+    });
 
-        return this.handleResponse<T>(response);
-    }
+    return this.handleResponse<T>(response);
+  }
 
-    private static async handleResponse<T>(response: Response): Promise<T> {
-        const contentType = response.headers.get('content-type');
+  private static async handleResponse<T>(response: Response): Promise<T> {
+    const contentType = response.headers.get('content-type');
     let data: any;
 
-        if (contentType && contentType.includes('application/json')) {
+    if (contentType && contentType.includes('application/json')) {
       data = await response.json();
     } else {
       data = await response.text();
     }
 
     if (!response.ok) {
-            const errorMessage = data.errors && Array.isArray(data.errors)
-                ? `${data.message}: ${data.errors.join(', ')}`
-                : (data.message || 'Erro na requisição');
+      const errorMessage =
+        data.errors && Array.isArray(data.errors)
+          ? `${data.message}: ${data.errors.join(', ')}`
+          : data.message || 'Erro na requisição';
       throw new Error(errorMessage);
     }
 

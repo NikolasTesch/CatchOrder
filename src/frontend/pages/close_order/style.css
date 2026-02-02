@@ -295,3 +295,53 @@
   /* Add padding so content doesn't hit the overlap */
   background-color: transparent;
 }
+
+/* ========================================
+   DARK MODE OVERRIDES
+   ======================================== */
+body.dark-mode .page-wrapper {
+  background: var(--bg-primary);
+}
+
+body.dark-mode .bill-header {
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-dark);
+}
+
+body.dark-mode .bill-title {
+  color: var(--text-primary);
+}
+
+body.dark-mode .bill-body {
+  background-color: var(--bg-card);
+}
+
+body.dark-mode .bill-item-name,
+body.dark-mode .bill-item-price,
+body.dark-mode .total-label-sm,
+body.dark-mode .total-value-sm {
+  color: var(--text-primary);
+}
+
+body.dark-mode .bill-divider {
+  background-color: var(--border-dark);
+}
+
+body.dark-mode .bill-footer {
+  background-color: var(--bg-secondary);
+  border-top: 1px solid var(--border-dark);
+}
+
+body.dark-mode .total-label-lg,
+body.dark-mode .total-value-lg {
+  color: var(--color-primary-light);
+}
+
+body.dark-mode .checkbox-label {
+  color: var(--text-primary);
+}
+
+body.dark-mode .btn-dark-grey {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+}

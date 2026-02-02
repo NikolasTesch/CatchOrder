@@ -307,11 +307,11 @@ function showConfirmModal(
 ) {
   // Create modal overlay
   const overlay = document.createElement('div');
-  overlay.className = 'modal-overlay';
+  overlay.className = 'modal-backdrop active'; // Use global class and ensure it's active
 
   // Create modal container
   const modal = document.createElement('div');
-  modal.className = 'modal-container';
+  modal.className = 'modal'; // Use global class
 
   modal.innerHTML = `
     <div class="modal-header">
@@ -321,8 +321,8 @@ function showConfirmModal(
       <p class="modal-message">${message}</p>
     </div>
     <div class="modal-footer">
-      <button class="btn-modal btn-cancel" id="modal-cancel">Cancelar</button>
-      <button class="btn-modal btn-confirm" id="modal-confirm">Confirmar</button>
+      <button class="btn btn-secondary" id="modal-cancel">Cancelar</button>
+      <button class="btn btn-primary" id="modal-confirm">Confirmar</button>
     </div>
   `;
 

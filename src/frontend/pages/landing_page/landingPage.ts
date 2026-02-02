@@ -1,4 +1,4 @@
-// --- Logic for Login Form ---
+// --- Definição dos Elementos (Com proteção de tipo) ---
 const loginForm = document.getElementById('loginForm') as HTMLFormElement;
 const usernameInput = document.getElementById('username') as HTMLInputElement;
 const passwordInput = document.getElementById('password') as HTMLInputElement;
@@ -9,7 +9,9 @@ const togglePasswordBtn = document.getElementById(
   'togglePasswordBtn',
 ) as HTMLButtonElement;
 
-// Toggle Password Visibility
+// --- Lógica do Login ---
+
+// Mostrar/Ocultar Senha
 if (togglePasswordBtn && passwordInput) {
   togglePasswordBtn.addEventListener('click', () => {
     const type =
@@ -23,80 +25,83 @@ if (togglePasswordBtn && passwordInput) {
   });
 }
 
-// Manual Validation & Submission
+// Validação e Envio
 if (loginForm) {
   loginForm.addEventListener('submit', (e: Event) => {
     e.preventDefault();
 
-    // Clear previous states
-    errorMessage.classList.remove('visible');
-    usernameInput.classList.remove('input-error');
-    passwordInput.classList.remove('input-error');
+    // Limpar estados anteriores
+    if (errorMessage) errorMessage.classList.remove('visible');
+    if (usernameInput) usernameInput.classList.remove('input-error');
+    if (passwordInput) passwordInput.classList.remove('input-error');
 
-    const usernameVal = usernameInput.value.trim();
-    const passwordVal = passwordInput.value;
+    const usernameVal = usernameInput ? usernameInput.value.trim() : '';
+    const passwordVal = passwordInput ? passwordInput.value : '';
 
     let isValid = true;
     let errors: string[] = [];
 
-    // Validate Username (Non-empty)
+    // Validação Simples
     if (!usernameVal) {
-      usernameInput.classList.add('input-error');
+      if (usernameInput) usernameInput.classList.add('input-error');
       errors.push('O usuário é obrigatório.');
       isValid = false;
     }
 
-    // Validate Password (Min 6 chars)
     if (passwordVal.length < 6) {
-      passwordInput.classList.add('input-error');
+      if (passwordInput) passwordInput.classList.add('input-error');
       errors.push('A senha deve ter no mínimo 6 caracteres.');
       isValid = false;
     }
 
     if (!isValid) {
-      errorText.textContent = errors[0]; // Show first error
-      errorMessage.classList.add('visible');
+      if (errorText) errorText.textContent = errors[0];
+      if (errorMessage) errorMessage.classList.add('visible');
       return;
     }
 
-    // Simulate Server Request
-    submitBtn.classList.add('loading');
-    submitBtn.disabled = true;
+    // Simulação de Carregamento
+    if (submitBtn) {
+      submitBtn.classList.add('loading');
+      submitBtn.disabled = true;
+    }
 
     setTimeout(() => {
-      // Simulate success for demo
-      const randomSuccess = true; // FORCEI SUCESSO PARA TESTE
+      // SUCESSO FORÇADO PARA TESTE
+      const randomSuccess = true;
 
-      submitBtn.classList.remove('loading');
-      submitBtn.disabled = false;
+      if (submitBtn) {
+        submitBtn.classList.remove('loading');
+        submitBtn.disabled = false;
+      }
 
       if (randomSuccess) {
-        // REDIRECIONAMENTO AQUI:
-        // Vai para a pasta 'gest_main' que está uma pasta acima (..)
+        // REDIRECIONAMENTO
         window.location.href = '../gest_main/gestMain.html';
       } else {
-        errorMessage.classList.add('visible');
-        errorText.textContent = 'Credenciais inválidas. Tente novamente.';
-        usernameInput.classList.add('input-error');
-        passwordInput.classList.add('input-error');
+        if (errorMessage) errorMessage.classList.add('visible');
+        if (errorText) errorText.textContent = 'Credenciais inválidas.';
+        if (usernameInput) usernameInput.classList.add('input-error');
+        if (passwordInput) passwordInput.classList.add('input-error');
       }
     }, 1500);
   });
 }
 
-// Remove errors on input
+// Remover erros visualmente ao digitar
 [usernameInput, passwordInput].forEach((input) => {
   if (input) {
     input.addEventListener('input', () => {
       if (input.classList.contains('input-error')) {
         input.classList.remove('input-error');
-        errorMessage.classList.remove('visible');
+        if (errorMessage) errorMessage.classList.remove('visible');
       }
     });
   }
 });
 
-// --- Logic for Modals ---
+// --- Lógica dos Modais (Sem Logs e Sem Alerts) ---
+
 (window as any).openModal = function (modalId: string): void {
   const modal = document.getElementById(modalId);
   if (modal) {
@@ -113,6 +118,7 @@ if (loginForm) {
   }
 };
 
+// Fechar com ESC
 document.addEventListener('keydown', (e: KeyboardEvent) => {
   if (e.key === 'Escape') {
     const activeModals = document.querySelectorAll('.modal.active');
@@ -122,6 +128,7 @@ document.addEventListener('keydown', (e: KeyboardEvent) => {
   }
 });
 
+// Lógica do Demo (Sem Alert chato)
 (window as any).handleDemoSubmit = function (e: Event): void {
   e.preventDefault();
   const demoBtn = document.getElementById('demoSubmitBtn') as HTMLButtonElement;
@@ -132,17 +139,24 @@ document.addEventListener('keydown', (e: KeyboardEvent) => {
   if (!demoBtn) return;
 
   const originalText = demoBtn.textContent;
+  // Feedback visual no botão
   demoBtn.textContent = 'Enviando...';
   demoBtn.disabled = true;
   demoBtn.style.opacity = '0.7';
 
   setTimeout(() => {
-    alert('Solicitação enviada com sucesso! Entraremos em contato em breve.');
-    (window as any).closeModal('demoModal');
-    if (demoForm) demoForm.reset();
+    // Feedback de sucesso no botão antes de fechar
+    demoBtn.textContent = 'Enviado!';
 
-    demoBtn.textContent = originalText;
-    demoBtn.disabled = false;
-    demoBtn.style.opacity = '1';
+    setTimeout(() => {
+      // Fecha o modal suavemente sem alert
+      (window as any).closeModal('demoModal');
+      if (demoForm) demoForm.reset();
+
+      // Reseta o botão
+      demoBtn.textContent = originalText;
+      demoBtn.disabled = false;
+      demoBtn.style.opacity = '1';
+    }, 500); // Espera meio segundo para o usuário ler "Enviado!"
   }, 1500);
 };

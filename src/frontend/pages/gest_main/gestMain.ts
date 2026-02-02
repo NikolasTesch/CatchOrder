@@ -421,7 +421,7 @@ function renderTopProducts(ordersData: Order[]) {
         <div class="recent-item">
             <div class="recent-item-header">
                 <span class="recent-item-id">${name}</span>
-                <span class="recent-item-status" style="background: #e3f2fd; color: #1976d2;">${qty} item(s)</span>
+                <span class="recent-item-status">${qty} item(s)</span>
             </div>
         </div>
     `,
@@ -448,7 +448,7 @@ function renderBiggestSales(ordersData: Order[]) {
         <div class="recent-item">
             <div class="recent-item-header">
                 <span class="recent-item-id">Pedido #${order.id.substring(0, 8)}</span>
-                <span class="recent-item-status" style="background: #e8f5e9; color: #2e7d32;">${formatCurrency(order.total || 0)}</span>
+                <span class="recent-item-status">${formatCurrency(order.total || 0)}</span>
             </div>
              <div class="recent-item-info">
                 ${order.opened_at ? new Date(order.opened_at).toLocaleDateString("pt-BR") : "-"}

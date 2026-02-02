@@ -657,13 +657,13 @@ body.dark-mode {
   /* Textos (Light) */
   --text-light: #1e293b;        /* Slate 800 */
   --text-main: #334155;         /* Slate 700 */
-  --text-muted: #64748b;        /* Slate 500 */
-  --text-dim: #94a3b8;          /* Slate 400 */
+  --text-muted: #475569;        /* Slate 600 (Darker for contrast) */
+  --text-dim: #64748b;          /* Slate 500 (Darker for contrast) */
   
   /* Legacy Text (Light) */
   --text-primary: #1e293b;
-  --text-secondary: #64748b;
-  --text-tertiary: #94a3b8;
+  --text-secondary: #475569;
+  --text-tertiary: #64748b;
   --text-white: #ffffff;
 
   /* Status Colors */
@@ -673,7 +673,7 @@ body.dark-mode {
   --blue: #3b82f6;
 
   /* Bordas e Efeitos */
-  --border-glass: rgba(0, 0, 0, 0.05); /* Escuro para light mode */
+  --border-glass: rgba(0, 0, 0, 0.1); /* Darker border for light mode visibility */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
@@ -782,6 +782,11 @@ body {
   overflow: hidden;
   pointer-events: none;
   background: radial-gradient(circle at 50% 50%, #0f172a, var(--background-dark));
+  display: none; /* Hidden mainly in Light Mode */
+}
+
+body.dark-mode .bg-ambient-container {
+  display: block; /* Visible ONLY in Dark Mode */
 }
 
 .neon-blob {

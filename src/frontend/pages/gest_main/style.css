@@ -33,6 +33,13 @@
   color: transparent;
 }
 
+.logo-image {
+  height: 48px;
+  width: auto;
+  cursor: pointer;
+  transition: transform var(--transition-base);
+  filter: brightness(0) saturate(100%) invert(25%) sepia(12%) saturate(2476%)
+    hue-rotate(147deg) brightness(95%) contrast(93%);
 .page-title {
   font-size: 1rem;
   color: var(--text-muted);
@@ -50,6 +57,10 @@
     transition: background 0.2s;
     cursor: pointer;
 }
+
+body.dark-mode .logo-image {
+  filter: brightness(0) saturate(100%) invert(59%) sepia(53%) saturate(434%)
+    hue-rotate(147deg) brightness(93%) contrast(88%);
 .icon-btn:hover {
     background: var(--background-glass-hover);
     color: var(--text-light);
@@ -60,6 +71,9 @@
     #menuBtn { display: none !important; }
 }
 
+/* ========================================
+   SIDEBAR
+   ======================================== */
 /* Logo Styles */
 #headerLogo {
     height: 32px;
@@ -118,6 +132,18 @@ body.dark-mode #headerLogo {
 }
 
 .nav-item.active {
+  background: linear-gradient(
+    90deg,
+    rgba(var(--color-primary-rgb), 0.1) 0%,
+    transparent 100%
+  );
+  color: var(--color-primary);
+  border-left-color: var(--color-primary);
+  font-weight: var(--font-semibold);
+}
+
+.nav-item .material-symbols-outlined {
+  font-size: 22px;
   background: linear-gradient(90deg, rgba(99, 102, 241, 0.15) 0%, transparent 100%);
   border-left: 3px solid var(--primary);
   color: var(--text-light);
@@ -475,6 +501,171 @@ body.dark-mode #headerLogo {
   padding: 1rem 1.5rem; border-radius: 12px;
   display: none; align-items: center; gap: 1rem;
   z-index: 2000; border-left: 4px solid var(--primary);
+}
+
+.toast-message {
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
+  font-weight: var(--font-medium);
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.loading-text {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-secondary);
+  font-size: clamp(0.875rem, 2vw, 0.9375rem);
+}
+
+/* ========================================
+   DARK MODE SUPPORT
+   ======================================== */
+body.dark-mode {
+  background-color: var(--bg-dark);
+}
+
+body.dark-mode .main-header,
+body.dark-mode .sidebar,
+body.dark-mode .dashboard-card,
+body.dark-mode .metric-card,
+body.dark-mode .table-container,
+body.dark-mode .product-card,
+body.dark-mode .table-card-grid,
+body.dark-mode .category-card,
+body.dark-mode .modal-content,
+body.dark-mode .toast,
+body.dark-mode .search-bar {
+  background-color: var(--bg-card-dark);
+  border-color: var(--border-dark);
+}
+
+body.dark-mode .data-table thead,
+body.dark-mode .status-item,
+body.dark-mode .recent-item,
+body.dark-mode .btn-secondary,
+body.dark-mode .filter-select {
+  background-color: var(--bg-secondary-dark);
+}
+
+body.dark-mode .form-input,
+body.dark-mode .form-select,
+body.dark-mode .form-textarea {
+  background-color: var(--bg-card-dark);
+  color: var(--text-dark);
+  border-color: var(--border-dark);
+}
+
+body.dark-mode .metric-label,
+body.dark-mode .product-category,
+body.dark-mode .product-description,
+body.dark-mode .recent-item-info,
+body.dark-mode .loading-text {
+  color: var(--text-dark-secondary);
+}
+
+body.dark-mode .data-table tbody tr:hover {
+  background-color: var(--bg-secondary-dark);
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 1024px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.active {
+    transform: translateX(0);
+  }
+
+  .main-content {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-header {
+    padding: 0 var(--space-md);
+  }
+
+  .header-center {
+    display: none;
+  }
+
+  .main-content {
+    padding: var(--space-md);
+  }
+
+  .section-title {
+    font-size: clamp(1.25rem, 4vw, 1.375rem);
+  }
+
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .products-grid,
+  .tables-grid,
+  .categories-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filters-bar {
+    flex-direction: column;
+  }
+
+  .search-bar {
+    max-width: 100%;
+  }
+
+  .modal-content {
+    width: 95%;
+    max-height: 85vh;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* ========================================
+   FORM VALIDATION STYLES
+   ======================================== */
+.form-input:not(:placeholder-shown):valid {
+  border-color: #66bb6a; /* Green 400 */
+  box-shadow: 0 0 0 3px rgba(102, 187, 106, 0.2);
+}
+
+.form-input:not(:placeholder-shown):invalid {
+  border-color: #ef5350; /* Red 400 */
+  box-shadow: 0 0 0 3px rgba(239, 83, 80, 0.2);
+  animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes shake {
+  10%,
+  90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+  20%,
+  80% {
+    transform: translate3d(2px, 0, 0);
+  }
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+  40%,
+  60% {
+    transform: translate3d(4px, 0, 0);
+  }
 }
 .toast.active { display: flex; animation: slideIn 0.3s ease; }
 @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }

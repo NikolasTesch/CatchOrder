@@ -1,182 +1,148 @@
-import '../../styles/global.css';
-import './style.css';
-import { ApiService } from '../../services/apiService';
+// --- Logic for Login Form ---
+const loginForm = document.getElementById('loginForm') as HTMLFormElement;
+const usernameInput = document.getElementById('username') as HTMLInputElement;
+const passwordInput = document.getElementById('password') as HTMLInputElement;
+const errorMessage = document.getElementById('errorMessage') as HTMLElement;
+const errorText = document.getElementById('errorText') as HTMLElement;
+const submitBtn = document.getElementById('submitBtn') as HTMLButtonElement;
+const togglePasswordBtn = document.getElementById(
+  'togglePasswordBtn',
+) as HTMLButtonElement;
 
-console.log('Landing Page Script Loaded'); // Debug 1
+// Toggle Password Visibility
+if (togglePasswordBtn && passwordInput) {
+  togglePasswordBtn.addEventListener('click', () => {
+    const type =
+      passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+    passwordInput.setAttribute('type', type);
+    const iconSpan = togglePasswordBtn.querySelector('span');
+    if (iconSpan) {
+      iconSpan.textContent =
+        type === 'password' ? 'visibility_off' : 'visibility';
+    }
+  });
+}
 
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM Content Loaded'); // Debug 2
+// Manual Validation & Submission
+if (loginForm) {
+  loginForm.addEventListener('submit', (e: Event) => {
+    e.preventDefault();
 
-    const usernameInput = document.getElementById('username') as HTMLInputElement | null;
-    const passwordInput = document.getElementById('password') as HTMLInputElement | null;
-    const togglePasswordBtn = document.querySelector('.password-toggle') as HTMLElement | null;
-    const loginButton = document.querySelector('.btn-primary') as HTMLElement | null;
-    const errorContainer = document.getElementById('login-error') as HTMLElement | null;
-    const darkModeToggle = document.getElementById('darkModeToggle');
+    // Clear previous states
+    errorMessage.classList.remove('visible');
+    usernameInput.classList.remove('input-error');
+    passwordInput.classList.remove('input-error');
 
-    init();
+    const usernameVal = usernameInput.value.trim();
+    const passwordVal = passwordInput.value;
 
-    function init(): void {
-        initDarkMode();
-        setupEventListeners();
+    let isValid = true;
+    let errors: string[] = [];
+
+    // Validate Username (Non-empty)
+    if (!usernameVal) {
+      usernameInput.classList.add('input-error');
+      errors.push('O usuário é obrigatório.');
+      isValid = false;
     }
 
-    function initDarkMode() {
-        const savedTheme = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-        if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-            document.body.classList.add('dark-mode');
-            updateDarkModeIcon(true);
-        } else {
-            updateDarkModeIcon(false);
-        }
+    // Validate Password (Min 6 chars)
+    if (passwordVal.length < 6) {
+      passwordInput.classList.add('input-error');
+      errors.push('A senha deve ter no mínimo 6 caracteres.');
+      isValid = false;
     }
 
-    function toggleDarkMode() {
-        const isDark = document.body.classList.toggle('dark-mode');
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        updateDarkModeIcon(isDark);
+    if (!isValid) {
+      errorText.textContent = errors[0]; // Show first error
+      errorMessage.classList.add('visible');
+      return;
     }
 
-    function updateDarkModeIcon(isDark: boolean) {
-        if (darkModeToggle) {
-            const icon = darkModeToggle.querySelector('.material-symbols-outlined');
-            if (icon) icon.textContent = isDark ? 'dark_mode' : 'light_mode';
-        }
-    }
+    // Simulate Server Request
+    submitBtn.classList.add('loading');
+    submitBtn.disabled = true;
 
-    function setupEventListeners(): void {
-        if (darkModeToggle) {
-            darkModeToggle.addEventListener('click', toggleDarkMode);
-        }
+    setTimeout(() => {
+      // Simulate success for demo
+      const randomSuccess = true; // FORCEI SUCESSO PARA TESTE
 
-        if (togglePasswordBtn && passwordInput) {
-            togglePasswordBtn.addEventListener('click', handlePasswordToggle);
-            togglePasswordBtn.style.cursor = 'pointer';
-        }
+      submitBtn.classList.remove('loading');
+      submitBtn.disabled = false;
 
-        if (loginButton) {
-            console.log('Attaching click listener to login button'); // Debug 4
-            loginButton.addEventListener('click', handleLogin);
-        } else {
-            console.error('Login button NOT found'); // Debug Error
-        }
+      if (randomSuccess) {
+        // REDIRECIONAMENTO AQUI:
+        // Vai para a pasta 'gest_main' que está uma pasta acima (..)
+        window.location.href = '../gest_main/gestMain.html';
+      } else {
+        errorMessage.classList.add('visible');
+        errorText.textContent = 'Credenciais inválidas. Tente novamente.';
+        usernameInput.classList.add('input-error');
+        passwordInput.classList.add('input-error');
+      }
+    }, 1500);
+  });
+}
 
-        // Clear error on input
-        if (usernameInput) usernameInput.addEventListener('input', clearError);
-        if (passwordInput) passwordInput.addEventListener('input', clearError);
-    }
-
-    function handlePasswordToggle(): void {
-        if (!passwordInput || !togglePasswordBtn) return;
-
-        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordInput.setAttribute('type', type);
-
-        // Update icon
-        const icon = togglePasswordBtn.querySelector('.material-symbols-outlined');
-        if (icon) {
-            icon.textContent = type === 'password' ? 'visibility' : 'visibility_off';
-        }
-    }
-
-    async function handleLogin(e: Event): Promise<void> {
-        console.log('Login button clicked'); // Debug 5
-        if (e) e.preventDefault();
-
-        if (!usernameInput || !passwordInput) return;
-
-        const username = usernameInput.value.trim();
-        const password = passwordInput.value.trim();
-
-        console.log('Values:', { username, password }); // Debug 6
-
-        // Reset error
-        clearError();
-
-        // Validation - Backend Match: Both required
-        if (!username) {
-            showError('Por favor, insira seu usuário.');
-            return;
-        }
-
-        if (!password) {
-            showError('Por favor, insira sua senha.');
-            return;
-        }
-
-        // Success - Loading State
-        setLoadingState(true);
-
-        try {
-            console.log('Sending request to /auth/login...'); // Debug 7
-            // Using ApiService for consistent request handling
-            const response = await ApiService.post<{ user: { role: string; id: string; name: string; username: string }, token: string }>('/auth/login', { username, password });
-
-            console.log('Login successful', response);
-
-            // Save user and token to localStorage
-            if (response.user) {
-                localStorage.setItem('user', JSON.stringify(response.user));
-            }
-            if (response.token) {
-                localStorage.setItem('token', response.token);
-            }
-
-            // Redirect based on role
-            if (response.user.role === 'waiter') {
-                window.location.href = 'waiterMain.html';
-            } else {
-                // Default for admin, manager, kitchen, etc.
-                window.location.href = 'gestMain.html';
-            }
-
-        } catch (error: any) {
-            console.error('Login error:', error);
-            showError(error.message || 'Falha no login. Verifique suas credenciais.');
-        } finally {
-            setLoadingState(false);
-        }
-    }
-
-    function showError(message: string): void {
-        if (errorContainer) {
-            errorContainer.textContent = message;
-            errorContainer.style.display = 'block';
-        }
-    }
-
-    function clearError(): void {
-        if (errorContainer) {
-            errorContainer.textContent = '';
-            errorContainer.style.display = 'none';
-        }
-    }
-
-    function setLoadingState(isLoading: boolean): void {
-        if (!loginButton) return;
-
-        if (isLoading) {
-            loginButton.classList.add('btn-loading');
-
-            // Create and append spinner if it doesn't exist
-            if (!loginButton.querySelector('.btn-label')) {
-                // Backup original text if necessary, for now assuming it's replaced
-            }
-
-            // Create and append spinner if it doesn't exist
-            if (!loginButton.querySelector('.spinner')) {
-                const spinner = document.createElement('div');
-                spinner.className = 'spinner';
-                loginButton.appendChild(spinner);
-            }
-        } else {
-            loginButton.classList.remove('btn-loading');
-            const spinner = loginButton.querySelector('.spinner');
-            if (spinner) {
-                spinner.remove();
-            }
-        }
-    }
+// Remove errors on input
+[usernameInput, passwordInput].forEach((input) => {
+  if (input) {
+    input.addEventListener('input', () => {
+      if (input.classList.contains('input-error')) {
+        input.classList.remove('input-error');
+        errorMessage.classList.remove('visible');
+      }
+    });
+  }
 });
+
+// --- Logic for Modals ---
+(window as any).openModal = function (modalId: string): void {
+  const modal = document.getElementById(modalId);
+  if (modal) {
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+};
+
+(window as any).closeModal = function (modalId: string): void {
+  const modal = document.getElementById(modalId);
+  if (modal) {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+};
+
+document.addEventListener('keydown', (e: KeyboardEvent) => {
+  if (e.key === 'Escape') {
+    const activeModals = document.querySelectorAll('.modal.active');
+    activeModals.forEach((modal) => {
+      (window as any).closeModal(modal.id);
+    });
+  }
+});
+
+(window as any).handleDemoSubmit = function (e: Event): void {
+  e.preventDefault();
+  const demoBtn = document.getElementById('demoSubmitBtn') as HTMLButtonElement;
+  const demoForm = document.getElementById(
+    'demoRequestForm',
+  ) as HTMLFormElement;
+
+  if (!demoBtn) return;
+
+  const originalText = demoBtn.textContent;
+  demoBtn.textContent = 'Enviando...';
+  demoBtn.disabled = true;
+  demoBtn.style.opacity = '0.7';
+
+  setTimeout(() => {
+    alert('Solicitação enviada com sucesso! Entraremos em contato em breve.');
+    (window as any).closeModal('demoModal');
+    if (demoForm) demoForm.reset();
+
+    demoBtn.textContent = originalText;
+    demoBtn.disabled = false;
+    demoBtn.style.opacity = '1';
+  }, 1500);
+};

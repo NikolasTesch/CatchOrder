@@ -43,16 +43,34 @@
 
 /* Botões de Ícone */
 .icon-btn {
-  width: 40px; height: 40px;
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  color: var(--text-muted);
-  transition: background 0.2s;
-  cursor: pointer;
+    width: 40px; height: 40px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-muted);
+    transition: background 0.2s;
+    cursor: pointer;
 }
 .icon-btn:hover {
-  background: var(--background-glass-hover);
-  color: var(--text-light);
+    background: var(--background-glass-hover);
+    color: var(--text-light);
+}
+
+/* Hide Menu Button on Desktop */
+@media(min-width: 1024px) {
+    #menuBtn { display: none !important; }
+}
+
+/* Logo Styles */
+#headerLogo {
+    height: 32px;
+    width: auto;
+    transition: filter 0.2s;
+}
+
+/* Invert Logo for Dark Mode (assuming logo is dark by default) */
+/* If logo is colored/dark, this makes it white-ish */
+body.dark-mode #headerLogo {
+    filter: brightness(0) invert(1);
 }
 
 /* --- Sidebar --- */

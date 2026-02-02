@@ -627,25 +627,45 @@ body.dark-mode {
 }
 
 :root {
-  /* === PALETA DE CORES (Glassmorphism Identity) === */
+  /* === PALETA DE CORES (Light Mode - Default) === */
   
   /* Cores Principais */
   --primary: #6366f1;           /* Indigo 500 */
   --primary-hover: #4f46e5;     /* Indigo 600 */
-  --primary-soft: rgba(99, 102, 241, 0.15);
+  --primary-soft: rgba(99, 102, 241, 0.1);
   
-  /* Backgrounds */
-  --background-dark: #0b1120;
-  --background-glass: rgba(255, 255, 255, 0.03);
-  --background-glass-hover: rgba(255, 255, 255, 0.08);
-  --background-card: rgba(30, 41, 59, 0.4); /* Fallback/Card base */
+  /* Legacy Mapping (Light) */
+  --color-primary: var(--primary);
+  --color-primary-rgb: 99, 102, 241;
+  --color-secondary: #0f172a;   /* Slate 900 */
+  --color-info: #3b82f6;        /* Blue 500 */
+  --color-success: #10b981;     /* Emerald 500 */
+  --color-warning: #f59e0b;     /* Amber 500 */
+  --color-danger: #ef4444;      /* Red 500 */
   
-  /* Textos */
-  --text-light: #f8fafc;        /* Slate 50 */
-  --text-main: #e2e8f0;         /* Slate 200 */
-  --text-muted: #94a3b8;        /* Slate 400 */
-  --text-dim: #64748b;          /* Slate 500 */
+  /* Backgrounds (Light) */
+  --background-dark: #f8fafc;   /* Slate 50 */
+  --background-glass: rgba(255, 255, 255, 0.7);
+  --background-glass-hover: rgba(255, 255, 255, 0.9);
+  --background-card: #ffffff;
   
+  /* Legacy Backgrounds (Light) */
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #e2e8f0;
+  
+  /* Textos (Light) */
+  --text-light: #1e293b;        /* Slate 800 */
+  --text-main: #334155;         /* Slate 700 */
+  --text-muted: #64748b;        /* Slate 500 */
+  --text-dim: #94a3b8;          /* Slate 400 */
+  
+  /* Legacy Text (Light) */
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-tertiary: #94a3b8;
+  --text-white: #ffffff;
+
   /* Status Colors */
   --emerald: #10b981;
   --red: #ef4444;
@@ -653,7 +673,12 @@ body.dark-mode {
   --blue: #3b82f6;
 
   /* Bordas e Efeitos */
-  --border-glass: rgba(255, 255, 255, 0.06);
+  --border-glass: rgba(0, 0, 0, 0.05); /* Escuro para light mode */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+  
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
@@ -666,6 +691,49 @@ body.dark-mode {
   
   /* Transitions */
   --transition-base: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: 150ms ease-in-out;
+  
+  /* Z-Index */
+  --z-negative: -1;
+  --z-normal: 1;
+  --z-fixed: 1030;
+  --z-modal: 1050;
+  --z-toast: 1080;
+}
+
+/* === DARK MODE (Glassmorphism Identity - Requested) === */
+body.dark-mode {
+  /* Cores Principais */
+  --primary: #6366f1;           /* Indigo 500 */
+  --primary-hover: #4f46e5;     /* Indigo 600 */
+  --primary-soft: rgba(99, 102, 241, 0.15);
+  
+  /* Legacy Mapping (Dark) */
+  --color-primary: var(--primary);
+  
+  /* Backgrounds (Dark) */
+  --background-dark: #0b1120;
+  --background-glass: rgba(255, 255, 255, 0.03);
+  --background-glass-hover: rgba(255, 255, 255, 0.08);
+  --background-card: rgba(30, 41, 59, 0.4);
+  
+  /* Legacy Backgrounds (Dark) */
+  --bg-primary: #0b1120;
+  --bg-secondary: rgba(30, 41, 59, 0.4);
+  --bg-tertiary: rgba(255, 255, 255, 0.05);
+  
+  /* Textos (Dark) */
+  --text-light: #f8fafc;
+  --text-main: #e2e8f0;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  
+  /* Legacy Text (Dark) */
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  
+  /* Bordas */
+  --border-glass: rgba(255, 255, 255, 0.06);
 }
 
 /* --- Reset & Base --- */
@@ -678,11 +746,12 @@ body.dark-mode {
 
 body {
   font-family: 'Inter', 'Noto Sans JP', sans-serif;
-  background-color: var(--background-dark);
-  color: var(--text-main);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   line-height: 1.5;
   overflow-x: hidden;
   min-height: 100vh;
+  transition: background-color var(--transition-base), color var(--transition-base);
 }
 
 /* Scrollbar Customizada */

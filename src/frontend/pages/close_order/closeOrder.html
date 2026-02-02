@@ -38,62 +38,67 @@
   </header>
 
   <!-- Main Content -->
-  <main class="page-wrapper">
-    <!-- Summary Section -->
-    <section class="summary-section card" aria-label="Resumo da comanda">
-      <h1 class="page-title">Comanda da Mesa <span id="table-number">?</span></h1>
+  <main class="page-wrapper center-content">
 
-      <!-- Large Red X Box -->
-      <div class="close-icon-container">
-        <div class="close-box">
-          <span class="close-symbol" id="display-table-number">?</span>
+    <!-- Table Badge -->
+    <div class="table-badge-container">
+      <div class="table-badge">
+        Mesa <span id="display-table-number">--</span>
+      </div>
+    </div>
+
+    <!-- Bill Card -->
+    <div class="bill-card" aria-label="Detalhes da conta">
+      <!-- Card Header -->
+      <div class="bill-header">
+        <h2 class="bill-title">Itens consumidos</h2>
+      </div>
+
+      <!-- Card Body (List) -->
+      <div class="bill-body" id="consumed-list">
+        <!-- Items will be inserted dynamically here -->
+        <!-- Example Structure for TS generation:
+        <div class="bill-row">
+          <span class="bill-item-name">1x Beer</span>
+          <span class="bill-item-price">R$ 9,00</span>
+        </div>
+        <div class="bill-divider"></div>
+        -->
+      </div>
+
+      <!-- Card Footer (Totals) -->
+      <div class="bill-footer">
+        <div class="bill-total-row">
+          <span class="total-label-sm">Subtotal:</span>
+          <span class="total-value-sm" id="subtotal">R$ 0,00</span>
+        </div>
+
+        <div class="bill-total-row">
+          <label class="total-label-sm checkbox-label">
+            <input type="checkbox" id="tip-toggle" checked>
+            Taxa de serviço (10%):
+          </label>
+          <span class="total-value-sm" id="tip-value">R$ 0,00</span>
+        </div>
+
+        <div class="bill-total-row final-total">
+          <span class="total-label-lg">Total:</span>
+          <span class="total-value-lg" id="total-final">R$ 0,00</span>
         </div>
       </div>
-    </section>
+    </div>
 
-    <!-- Consumido Section -->
-    <section class="consumed-section" aria-label="Itens consumidos">
-      <div class="section-header">
-        <h2 class="section-title">Consumido <span class="material-symbols-outlined arrow-icon">arrow_forward</span></h2>
-      </div>
-
-      <div class="consumed-list" id="consumed-list">
-        <!-- Items will be inserted dynamically -->
-      </div>
-    </section>
-
-    <!-- Observations Section (Hidden by default, shown if exists) -->
-    <section class="observations-section card" id="observations-section" style="display: none;" aria-label="Observações do pedido">
-      <h3 class="section-title-small">Observações</h3>
+    <!-- Details/Observations (Hidden by default) -->
+    <section id="observations-section" style="display: none; margin-top: 1rem; padding: 0 1rem;">
       <p class="observations-text" id="observations-text"></p>
     </section>
 
-    <!-- Totals Section -->
-    <section class="totals-section card" aria-label="Resumo de valores">
-      <div class="total-row">
-        <span class="total-label">Subtotal:</span>
-        <span class="total-value" id="subtotal">R$ 0,00</span>
-      </div>
-      <div class="total-row">
-        <label class="total-label checkbox-label">
-          <input type="checkbox" id="tip-toggle" checked>
-          Taxa de Serviço (10%):
-        </label>
-        <span class="total-value" id="tip-value">R$ 0,00</span>
-      </div>
-      <div class="total-row total-final">
-        <span class="total-label">Total:</span>
-        <span class="total-value" id="total-final">R$ 0,00</span>
-      </div>
-    </section>
+    <!-- Actions -->
+    <div class="bill-actions">
+      <button class="btn btn-dark-grey" id="btn-back">Voltar</button>
+      <button class="btn btn-teal" id="btn-close-order">Fechar conta</button>
+    </div>
 
-    <!-- Action Buttons -->
-    <section class="actions-section" aria-label="Ações">
-      <div class="actions-container">
-        <button class="btn btn-secondary" id="btn-back">Voltar</button>
-        <button class="btn btn-primary" id="btn-close-order">Fechar Comanda</button>
-      </div>
-    </section>
   </main>
   <style>
     .checkbox-label {
@@ -102,6 +107,7 @@
       gap: 8px;
       cursor: pointer;
     }
+
     .checkbox-label input {
       width: 16px;
       height: 16px;

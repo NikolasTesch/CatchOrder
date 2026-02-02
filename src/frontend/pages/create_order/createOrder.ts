@@ -57,6 +57,7 @@ let currentTableNumber: string | null = null;
 let currentOrderId: string | null = null;
 let currentOrderStatus: string | null = null;
 let existingOrderItems: OrderItem[] = [];
+let existingObservation: string = '';
 
 // DOM Elements
 const infoBar = document.querySelector('.info-bar') as HTMLElement;
@@ -233,12 +234,16 @@ async function loadOrderDetails(orderId: string) {
     if (response.data) {
       existingOrderItems = response.data.items || [];
       currentOrderStatus = response.data.status;
+      existingObservation = response.data.observations || '';
 
       renderExistingItems();
 
+      if (response.data.observations && observationsTextarea) {
+        observationsTextarea.value = response.data.observations;
+      }
+
       if (response.data.status === 'CLOSED') {
         if (observationsTextarea) {
-          observationsTextarea.value = response.data.observations || '';
           observationsTextarea.disabled = true;
         }
       }
@@ -319,7 +324,11 @@ function renderProductsByCategory() {
       grid.appendChild(card);
     });
 
-    if (categoryContainer && obsSection) {
+    const productsContainer = document.getElementById('products-container');
+    if (productsContainer) {
+      productsContainer.appendChild(section);
+    } else if (categoryContainer && obsSection) {
+      // Fallback
       categoryContainer.insertBefore(section, obsSection);
     }
   });
@@ -460,6 +469,12 @@ function renderExistingItems() {
       )
       .join('')}
         </ul>
+        ${existingObservation ? `
+            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed var(--border-light);">
+                <strong style="color: var(--text-primary); display: block; margin-bottom: 0.25rem;">Observações:</strong>
+                <p style="color: var(--text-secondary); font-style: italic;">${existingObservation}</p>
+            </div>
+            ` : ''}
     `;
 
   existingSection.querySelectorAll('.btn-remove-item').forEach((btn) => {
@@ -743,6 +758,13 @@ function setupEventListeners() {
   ) as HTMLButtonElement | null;
   if (sendBtn) sendBtn.onclick = saveItems;
 
+  const headerBackBtn = document.getElementById('headerBackBtn');
+  if (headerBackBtn) {
+    headerBackBtn.addEventListener('click', () => {
+      window.location.href = 'waiterMain.html';
+    });
+  }
+
   const finalizeBtn = document.querySelector(
     '.btn-finalize',
   ) as HTMLButtonElement | null;
@@ -758,6 +780,16 @@ function setupEventListeners() {
   const sidebar = document.getElementById('sidebar');
   if (menuBtn && sidebar) {
     menuBtn.addEventListener('click', toggleSidebar);
+  }
+
+  const closeSidebarBtn = document.getElementById('closeSidebar');
+  if (closeSidebarBtn) {
+    closeSidebarBtn.addEventListener('click', closeSidebar);
+  }
+
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
+  if (sidebarOverlay) {
+    sidebarOverlay.addEventListener('click', closeSidebar);
   }
 
   const logoutBtn = document.getElementById('logoutBtn');

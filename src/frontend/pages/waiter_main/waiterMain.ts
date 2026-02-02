@@ -43,9 +43,10 @@ async function init() {
   setupEventListeners();
   updateDateDisplay();
   loadTables();
+  loadTables();
   loadSummary();
 
-  // Check for auto-open modal
+  // Check for action param
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.get('action') === 'new_order') {
     openTableSelectionModal();
@@ -156,9 +157,29 @@ function setupEventListeners() {
 
   // Sidebar Toggle
   if (menuBtn && sidebar) {
-    menuBtn.addEventListener("click", () => {
-      sidebar.classList.toggle("active");
+    menuBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      sidebar.classList.toggle('active');
     });
+
+    // Close sidebar when clicking outside
+    document.addEventListener('click', (e) => {
+      if (
+        sidebar.classList.contains('active') &&
+        !sidebar.contains(e.target as Node) &&
+        !menuBtn.contains(e.target as Node)
+      ) {
+        sidebar.classList.remove('active');
+      }
+    });
+
+    // Close button inside sidebar
+    const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+    if (closeSidebarBtn) {
+      closeSidebarBtn.addEventListener('click', () => {
+        sidebar.classList.remove('active');
+      });
+    }
   }
 
   // New Order Button - opens modal if it exists, otherwise redirects

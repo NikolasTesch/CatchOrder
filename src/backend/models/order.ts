@@ -116,11 +116,16 @@ export class OrderModel {
 
     if (!current) return undefined;
 
-    const updated = { ...current, ...data };
+    const updated = { ...current };
+    if (data.status !== undefined) updated.status = data.status;
+    if (data.total !== undefined) updated.total = data.total;
+    if (data.tip !== undefined) updated.tip = data.tip;
+    if (data.closed_at !== undefined) updated.closed_at = data.closed_at;
+    if (data.observations !== undefined) updated.observations = data.observations;
 
     await db.run(
-      `UPDATE orders SET status = ?, total = ?, tip = ?, closed_at = ? WHERE id = ?`,
-      [updated.status, updated.total, updated.tip, updated.closed_at, id],
+      `UPDATE orders SET status = ?, total = ?, tip = ?, closed_at = ?, observations = ? WHERE id = ?`,
+      [updated.status, updated.total, updated.tip, updated.closed_at, updated.observations, id],
     );
 
     return OrderModel.findById(id);

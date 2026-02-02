@@ -7,10 +7,12 @@
   <title>CatchOrder - Garçom</title>
 
   <!-- Noto Sans JP Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
 
   <!-- Material Icons -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 
 <body>
@@ -41,6 +43,11 @@
 
   <!-- Sidebar de Navegação -->
   <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header" style="display: flex; justify-content: flex-end; padding: 1rem;">
+      <button class="icon-btn-small" id="closeSidebarBtn" aria-label="Fechar menu">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
     <nav class="sidebar-nav">
       <button class="nav-item active" data-href="waiterMain.html">
         <span class="material-symbols-outlined">dashboard</span>
@@ -74,7 +81,8 @@
 
     <!-- Seção: Mesas Disponíveis -->
     <section class="tables-section" aria-label="Mesas disponíveis">
-      <h3 class="section-title">Mesas Disponíveis <span class="material-symbols-outlined icon-arrow">arrow_forward</span></h3>
+      <h3 class="section-title">Mesas Disponíveis <span
+          class="material-symbols-outlined icon-arrow">arrow_forward</span></h3>
       <div class="available-tables-grid">
         <!-- Available tables injected by script -->
       </div>

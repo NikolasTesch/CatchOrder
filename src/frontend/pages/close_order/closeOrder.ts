@@ -41,6 +41,9 @@ const btnBack = document.getElementById('btn-back') as HTMLButtonElement;
 const btnCloseOrder = document.getElementById(
   'btn-close-order',
 ) as HTMLButtonElement;
+const displayTableNumberEl = document.getElementById(
+  'display-table-number',
+) as HTMLElement;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', init);
@@ -91,10 +94,14 @@ async function loadTable() {
     if (tableNumberEl) {
       tableNumberEl.textContent = tableNumber;
     }
+    if (displayTableNumberEl) {
+      displayTableNumberEl.textContent = tableNumber;
+    }
   } catch (error) {
     console.error('Erro ao carregar mesa:', error);
   }
 }
+
 
 function renderOrderDetails() {
   if (!currentOrder) return;

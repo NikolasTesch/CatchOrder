@@ -305,10 +305,11 @@ body.dark-mode .sidebar {
     height: calc(100vh - 64px);
   }
 
-  /* Hide only hamburger menu on desktop, keep other icon buttons */
-  .header-left .icon-btn {
-    display: none;
+  .sidebar-header {
+    display: none !important;
   }
+
+
 
   /* Adjust header for desktop */
   .main-header {

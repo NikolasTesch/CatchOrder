@@ -1567,20 +1567,76 @@ function renderCommissionWaiters() {
     return;
   }
 
+  const now = new Date();
+  const todayStr = now.toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+
   grid.innerHTML = waiters
-    .map(
-      (waiter) => `
+    .map((waiter) => {
+      // Calculate Stats for this waiter
+      const waiterOrders = orders.filter(
+        (o) =>
+          o.user_id &&
+          o.user_id.toString() === waiter.id.toString() &&
+          o.status === "CLOSED",
+      );
+
+      const dailyTotal = waiterOrders.reduce((sum, order) => {
+        const orderDate = order.closed_at ? new Date(order.closed_at) : null;
+        if (!orderDate) return sum;
+        const dateStr = orderDate.toLocaleDateString("pt-BR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        });
+
+        if (dateStr === todayStr) {
+          return sum + (Number(order.tip) || 0);
+        }
+        return sum;
+      }, 0);
+
+      const monthlyTotal = waiterOrders.reduce((sum, order) => {
+        const orderDate = order.closed_at ? new Date(order.closed_at) : null;
+        if (!orderDate) return sum;
+
+        if (
+          orderDate.getMonth() === currentMonth &&
+          orderDate.getFullYear() === currentYear
+        ) {
+          return sum + (Number(order.tip) || 0);
+        }
+        return sum;
+      }, 0);
+
+      return `
     <div class="waiter-card" onclick="openCommissionDetails('${waiter.id}', '${waiter.name}')">
       <div class="waiter-avatar">
         <span class="material-symbols-outlined">person</span>
       </div>
-      <div class="waiter-info" style="text-align:center">
-        <h3 class="waiter-name" style="color:var(--text-light); font-weight:600">${waiter.name}</h3>
-        <span class="waiter-role" style="color:var(--text-dim); font-size:0.9rem">@${waiter.username}</span>
+      <div class="waiter-info" style="text-align:center; width: 100%;">
+        <h3 class="waiter-name" style="color:var(--text-light); font-weight:600; margin-bottom: 0.25rem;">${waiter.name}</h3>
+        <span class="waiter-role" style="color:var(--text-dim); font-size:0.9rem; display:block; margin-bottom: 1rem;">@${waiter.username}</span>
+        
+        <div class="commission-stats" style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem; color: var(--text-muted); border-top: 1px solid var(--border-glass); padding-top: 0.75rem; width: 100%;">
+             <div style="display: flex; justify-content: space-between;">
+                <span>Comissão Dia:</span>
+                <span style="color: var(--emerald); font-weight: 600;">${formatCurrency(dailyTotal)}</span>
+             </div>
+             <div style="display: flex; justify-content: space-between;">
+                <span>Comissão Mês:</span>
+                <span style="color: var(--emerald); font-weight: 600;">${formatCurrency(monthlyTotal)}</span>
+             </div>
+        </div>
       </div>
     </div>
-  `,
-    )
+  `;
+    })
     .join("");
 }
 
@@ -1609,17 +1665,45 @@ function renderCommissionWaiters() {
     return db - da;
   });
 
-  // Calculate Total Sales and Total Commissions (Real Tips)
+  // Calculate Stats for Modal Footer
+  const now = new Date();
+  const todayStr = now.toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+
+  let commissionDay = 0;
+  let commissionMonth = 0;
   const totalSales = waiterOrders.reduce(
     (sum, order) => sum + (Number(order.total) || 0),
     0,
   );
-  
-  // Sum up tips validation
-  const totalCommissions = waiterOrders.reduce((sum, order) => {
-      const tipVal = order.tip ? Number(order.tip) : 0;
-      return sum + tipVal;
-  }, 0);
+
+  waiterOrders.forEach((order) => {
+    const tipVal = order.tip ? Number(order.tip) : 0;
+    const orderDate = order.closed_at ? new Date(order.closed_at) : null;
+
+    if (orderDate) {
+      const dateStr = orderDate.toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
+
+      if (dateStr === todayStr) {
+        commissionDay += tipVal;
+      }
+      if (
+        orderDate.getMonth() === currentMonth &&
+        orderDate.getFullYear() === currentYear
+      ) {
+        commissionMonth += tipVal;
+      }
+    }
+  });
 
   if (waiterOrders.length === 0) {
     tbody.innerHTML =
@@ -1636,26 +1720,17 @@ function renderCommissionWaiters() {
               minute: "2-digit",
             })
           : "-";
-        
+
         const orderTotal = Number(order.total) || 0;
         const tipVal = order.tip ? Number(order.tip) : 0;
-        const commissionDisplay = tipVal > 0 ? formatCurrency(tipVal) : "---"; // Validation logic
+        const commissionDisplay = tipVal > 0 ? formatCurrency(tipVal) : "---";
 
         // Resolve Table Number
-        const tableObj = tables.find(t => t.id === String(order.table_id));
-        // If table_id is number directly (most likely based on interface), try finding by id or just display it if it matches the number pattern
-        // The Order interface says table_id: number. The Table interface says id: string, number: number. 
-        // We need to match order.table_id to table.id?? Or is order.table_id actually the ID?
-        // Let's assume order.table_id corresponds to table.id.
-        
+        const tableObj = tables.find((t) => t.id === String(order.table_id));
+
         let tableDisplay = "Mesa ?";
         if (tableObj) {
-            tableDisplay = `Mesa ${tableObj.number}`;
-        } else {
-             // Fallback if we can't find the table object, maybe order.table_id IS the number? 
-             // Logic in other files suggests order.table_id references table.id.
-             // If we can't find it, show ID snippet or just '?'
-             tableDisplay = `Mesa ?`;
+          tableDisplay = `Mesa ${tableObj.number}`;
         }
 
         return `
@@ -1664,16 +1739,22 @@ function renderCommissionWaiters() {
               <td>${dateStr}</td>
               <td>${tableDisplay}</td>
               <td style="color: var(--text-muted);">${formatCurrency(orderTotal)}</td>
-              <td style="color: ${tipVal > 0 ? 'var(--emerald)' : 'var(--text-dim)'}; font-weight: 600;">${commissionDisplay}</td>
+              <td style="color: ${tipVal > 0 ? "var(--emerald)" : "var(--text-dim)"}; font-weight: 600;">${commissionDisplay}</td>
           </tr>
           `;
       })
       .join("");
   }
 
+  // Update Footer with Green Stats
   totalEl.innerHTML = `
-      <span style="font-size: 0.9rem; color: var(--text-muted); font-weight: 400; margin-right: 1rem;">Vendas: ${formatCurrency(totalSales)}</span>
-      Comissão Total: <span style="color: var(--emerald);">${formatCurrency(totalCommissions)}</span>
+      <div style="display: flex; gap: 1.5rem; align-items: center;">
+          <span style="font-size: 0.9rem; color: var(--text-muted);">Vendas Total: ${formatCurrency(totalSales)}</span>
+          <div style="display: flex; flex-direction: column; align-items: flex-end;">
+              <span style="color: var(--emerald); font-weight: 600;">Dia Total: ${formatCurrency(commissionDay)}</span>
+              <span style="color: var(--emerald); font-weight: 600;">Mês Total: ${formatCurrency(commissionMonth)}</span>
+          </div>
+      </div>
     `;
   modal.classList.add("active");
 };;

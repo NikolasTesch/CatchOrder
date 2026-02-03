@@ -1,4 +1,5 @@
 import './style.css';
+import { ApiService } from '../../services/apiService';
 
 interface Category {
   id: string;
@@ -15,6 +16,11 @@ interface Product {
   active: boolean;
 }
 
+interface CartItem {
+  product: Product;
+  quantity: number;
+}
+
 const STORAGE_KEYS = {
   TABLE: 'catchorder_table_id',
   SESSION_STATUS: 'catchorder_session_active'
@@ -26,15 +32,36 @@ class MenuController {
   private tableNumberEl: HTMLElement;
   private searchInput: HTMLInputElement;
 
+  // Cart Elements
+  private floatingCartBtn: HTMLElement;
+  private cartModal: HTMLElement;
+  private closeCartBtn: HTMLElement;
+  private cartItemsListEl: HTMLElement;
+  private cartCountEl: HTMLElement;
+  private cartTotalEl: HTMLElement;
+  private modalTotalEl: HTMLElement;
+  private confirmOrderBtn: HTMLButtonElement;
+
   private products: Product[] = [];
   private categories: Category[] = [];
   private activeCategoryId: string | 'all' = 'all';
+  private cart: CartItem[] = [];
 
   constructor() {
     this.categoryListEl = document.getElementById('categoryList') as HTMLElement;
     this.productsGridEl = document.getElementById('productsGrid') as HTMLElement;
     this.tableNumberEl = document.getElementById('tableNumber') as HTMLElement;
     this.searchInput = document.getElementById('searchInput') as HTMLInputElement;
+
+    // Cart Elements Initialization
+    this.floatingCartBtn = document.getElementById('floatingCartBtn') as HTMLElement;
+    this.cartModal = document.getElementById('cartModal') as HTMLElement;
+    this.closeCartBtn = document.getElementById('closeCartBtn') as HTMLElement;
+    this.cartItemsListEl = document.getElementById('cartItemsList') as HTMLElement;
+    this.cartCountEl = document.getElementById('cartCount') as HTMLElement;
+    this.cartTotalEl = document.getElementById('cartTotal') as HTMLElement;
+    this.modalTotalEl = document.getElementById('modalTotal') as HTMLElement;
+    this.confirmOrderBtn = document.getElementById('confirmOrderBtn') as HTMLButtonElement;
 
     this.init();
   }
@@ -44,6 +71,7 @@ class MenuController {
 
     this.renderTableInfo();
     this.setupEventListeners();
+    this.updateCartUI(); // Initial hidden state
 
     try {
       await Promise.all([
@@ -62,7 +90,6 @@ class MenuController {
   private checkSession(): boolean {
     const tableId = sessionStorage.getItem(STORAGE_KEYS.TABLE);
     if (!tableId) {
-      // Redirect back to table selection if no table is selected
       window.location.href = '/pages/tablePage.html';
       return false;
     }
@@ -72,7 +99,6 @@ class MenuController {
   private renderTableInfo() {
     const tableId = sessionStorage.getItem(STORAGE_KEYS.TABLE);
     if (this.tableNumberEl && tableId) {
-      // Formats 1 -> 01
       this.tableNumberEl.textContent = parseInt(tableId) < 10 ? `0${tableId}` : tableId;
     }
   }
@@ -84,37 +110,146 @@ class MenuController {
         this.filterProducts(term);
       });
     }
+
+    // Event Delegation for Products Grid
+    if (this.productsGridEl) {
+      this.productsGridEl.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        const card = target.closest('.product-card') as HTMLElement;
+
+        if (card) {
+          const productId = card.dataset.id;
+          if (productId) {
+            const product = this.products.find(p => p.id === productId);
+            if (product) {
+              this.addToCart(product);
+
+              // Visual feedback on the button if it exists
+              const btn = card.querySelector('.btn-add') as HTMLElement;
+              if (btn) {
+                btn.classList.add('clicked');
+                setTimeout(() => btn.classList.remove('clicked'), 200);
+              }
+
+              // Optional: Feedback on card
+              card.style.transform = 'scale(0.98)';
+              setTimeout(() => card.style.transform = '', 150);
+            }
+          }
+        }
+      });
+    }
+
+    // Cart Modal Toggles
+    if (this.floatingCartBtn) {
+      this.floatingCartBtn.addEventListener('click', () => this.openCart());
+    }
+    if (this.closeCartBtn) {
+      this.closeCartBtn.addEventListener('click', () => this.closeCart());
+    }
+    if (this.cartModal) {
+      this.cartModal.addEventListener('click', (e) => {
+        if (e.target === this.cartModal) this.closeCart();
+      });
+    }
+
+    // Confirm Order (Mock)
+    // Confirm Order
+    if (this.confirmOrderBtn) {
+      this.confirmOrderBtn.addEventListener('click', () => this.submitOrder());
+    }
+  }
+
+  private async submitOrder() {
+    if (this.cart.length === 0) return;
+
+    const tableId = sessionStorage.getItem(STORAGE_KEYS.TABLE);
+    if (!tableId) {
+      this.showError('Erro: Mesa não identificada.');
+      return;
+    }
+
+    this.confirmOrderBtn.disabled = true;
+    this.confirmOrderBtn.textContent = 'Enviando...';
+
+    try {
+      // 1. Check/Create Order
+      let orderId: string;
+
+      // Try to find open order for this table
+      try {
+        const allOrders = await ApiService.get<{ data: any[] }>('/orders');
+        const openOrder = allOrders.data.find((o: any) => o.table_id === tableId && o.status === 'OPEN');
+        if (openOrder) {
+          orderId = openOrder.id;
+        } else {
+          // Create new order
+          // Use a default service user ID since menuPage is public
+          const defaultUserId = '140e6988-51f7-418b-96c2-05452d3999e5';
+          const newOrder = await ApiService.post<{ data: any }>('/orders', {
+            table_id: tableId,
+            user_id: defaultUserId
+          });
+          orderId = newOrder.data.id;
+        }
+      } catch (err) {
+        // If getting orders fails, try creating one directly?
+        // Or assume we can't search. Let's try create.
+        const defaultUserId = '140e6988-51f7-418b-96c2-05452d3999e5';
+        const newOrder = await ApiService.post<{ data: any }>('/orders', {
+          table_id: tableId,
+          user_id: defaultUserId
+        });
+        orderId = newOrder.data.id;
+      }
+
+      // 2. Add Items
+      for (const item of this.cart) {
+        await ApiService.post(`/orders/${orderId}/items`, {
+          product_id: item.product.id,
+          quantity: item.quantity
+        });
+      }
+
+      // Success
+      alert('Pedido enviado com sucesso!');
+      this.cart = [];
+      this.updateCartUI();
+      this.closeCart();
+
+    } catch (error) {
+      console.error('Error submitting order', error);
+      alert('Erro ao enviar pedido. Tente novamente.');
+    } finally {
+      this.confirmOrderBtn.disabled = false;
+      this.confirmOrderBtn.innerHTML = '<i class="fa-solid fa-check"></i> Confirmar Pedido';
+    }
+  }
+
+  private openCart() {
+    this.renderCartItems();
+    this.cartModal.classList.add('open');
+    // document.body.style.overflow = 'hidden'; // Removed for sidebar
+  }
+
+  private closeCart() {
+    this.cartModal.classList.remove('open');
+    // document.body.style.overflow = ''; // Removed for sidebar
   }
 
   private async fetchCategories() {
     try {
-      const response = await fetch('http://localhost:3000/api/categories');
-      if (!response.ok) throw new Error('Failed to fetch categories');
-
-      const json = await response.json();
-      // Backend returns { message: string, data: Category[] }
-      const data = json.data || json;
-
-      if (Array.isArray(data)) {
-        this.categories = data.map((c: any) => ({
-          id: c.id,
-          name: c.name
-        }));
-      }
+      const response = await ApiService.get<{ data: Category[] }>('/categories');
+      this.categories = response.data || [];
     } catch (error) {
       console.warn('Could not load categories', error);
-      // Proceed even if categories fail, just show "All"
     }
   }
 
   private async fetchProducts() {
     try {
-      const response = await fetch('http://localhost:3000/api/products/active');
-      if (!response.ok) throw new Error('Failed to fetch products');
-
-      const json = await response.json();
-      // Backend returns { message: string, data: ProductDTO[] }
-      const data = json.data || json;
+      const response = await ApiService.get<{ data: any[] }>('/products/active');
+      const data = response.data || [];
 
       if (Array.isArray(data)) {
         this.products = data.map((p: any) => ({
@@ -122,7 +257,6 @@ class MenuController {
           name: p.name,
           description: p.description,
           price: p.price,
-          // Extract/Map snake_case from DB to camelCase for frontend
           imageUrl: p.image_path,
           categoryId: p.category_id,
           active: p.is_active === 1 || p.is_active === true
@@ -133,10 +267,110 @@ class MenuController {
     }
   }
 
+  /* Cart Logic */
+  private addToCart(product: Product) {
+    const existingItem = this.cart.find(item => item.product.id === product.id);
+
+    if (existingItem) {
+      existingItem.quantity++;
+    } else {
+      this.cart.push({ product, quantity: 1 });
+    }
+
+    this.updateCartUI();
+  }
+
+  private updateQuantity(productId: string, change: number) {
+    const itemIndex = this.cart.findIndex(item => item.product.id === productId);
+    if (itemIndex === -1) return;
+
+    const item = this.cart[itemIndex];
+    const newQuantity = item.quantity + change;
+
+    if (newQuantity <= 0) {
+      this.cart.splice(itemIndex, 1);
+    } else {
+      item.quantity = newQuantity;
+    }
+
+    this.updateCartUI();
+    if (this.cartModal.classList.contains('open')) {
+      this.renderCartItems();
+    }
+  }
+
+  private updateCartUI() {
+    const totalCount = this.cart.reduce((sum, item) => sum + item.quantity, 0);
+    const totalPrice = this.cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+
+    // Update Floating Button
+    if (this.floatingCartBtn) {
+      // Show/Hide based on cart content
+      this.floatingCartBtn.style.display = totalCount > 0 ? 'block' : 'none';
+    }
+
+    if (this.cartCountEl) {
+      this.cartCountEl.textContent = totalCount.toString();
+    }
+
+    const formattedPrice = this.formatPrice(totalPrice);
+    if (this.cartTotalEl) this.cartTotalEl.textContent = formattedPrice;
+    if (this.modalTotalEl) this.modalTotalEl.textContent = formattedPrice;
+
+    if (this.confirmOrderBtn) {
+      this.confirmOrderBtn.disabled = totalCount === 0;
+    }
+
+    // Always render items for sidebar
+    this.renderCartItems();
+  }
+
+  private renderCartItems() {
+    if (!this.cartItemsListEl) return;
+    this.cartItemsListEl.innerHTML = '';
+
+    if (this.cart.length === 0) {
+      this.cartItemsListEl.innerHTML = `
+        <div class="empty-cart-message">
+          <i class="fa-solid fa-basket-shopping"></i>
+          <p>Seu carrinho está vazio</p>
+        </div>
+      `;
+      return;
+    }
+
+    this.cart.forEach(item => {
+      const el = document.createElement('div');
+      el.className = 'cart-item';
+
+      el.innerHTML = `
+        <div class="cart-item-info">
+          <span class="cart-item-title">${item.product.name}</span>
+          <span class="cart-item-price">${this.formatPrice(item.product.price)}</span>
+        </div>
+        <div class="cart-item-controls">
+          <button class="btn-qty btn-minus"><i class="fa-solid fa-minus"></i></button>
+          <span class="qty-display">${item.quantity}</span>
+          <button class="btn-qty btn-plus"><i class="fa-solid fa-plus"></i></button>
+        </div>
+      `;
+
+      // Event Listeners for quantity buttons
+      el.querySelector('.btn-minus')?.addEventListener('click', () => this.updateQuantity(item.product.id, -1));
+      el.querySelector('.btn-plus')?.addEventListener('click', () => this.updateQuantity(item.product.id, 1));
+
+      this.cartItemsListEl.appendChild(el);
+    });
+  }
+
+  private formatPrice(cents: number): string {
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(cents / 100);
+  }
+
+  /* Rendering Logic */
   private renderCategories() {
     if (!this.categoryListEl) return;
 
-    // Start with "All" button
     const allBtn = this.createCategoryButton('all', 'Todos', 'fa-layer-group', true);
     this.categoryListEl.innerHTML = '';
     this.categoryListEl.appendChild(allBtn);
@@ -185,12 +419,10 @@ class MenuController {
 
     let filtered = this.products;
 
-    // Filter by Category
     if (this.activeCategoryId !== 'all') {
       filtered = filtered.filter(p => p.categoryId === this.activeCategoryId);
     }
 
-    // Filter by Search
     if (searchTerm) {
       filtered = filtered.filter(p => p.name.toLowerCase().includes(searchTerm));
     }
@@ -208,14 +440,11 @@ class MenuController {
     filtered.forEach(product => {
       const card = document.createElement('div');
       card.className = 'product-card';
+      card.dataset.id = product.id;
 
       const imageUrl = product.imageUrl || 'https://placehold.co/400x300/1e1e1e/FFF?text=No+Image';
-
-      // Look up category name safely
       const categoryObj = this.categories.find(c => c.id === product.categoryId);
       const categoryName = categoryObj ? categoryObj.name : 'Geral';
-
-      const priceFormatted = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(product.price / 100);
 
       card.innerHTML = `
         <div class="card-image-wrapper">
@@ -226,22 +455,13 @@ class MenuController {
           <h3 class="product-title">${product.name}</h3>
           <p class="product-description">${product.description || 'Sem descrição.'}</p>
           <div class="card-footer">
-            <span class="product-price">${priceFormatted}</span>
-            <button class="btn-add" aria-label="Adicionar ao pedido">
+            <span class="product-price">${this.formatPrice(product.price)}</span>
+            <button class="btn-add" data-id="${product.id}" aria-label="Adicionar ao pedido">
               <i class="fa-solid fa-plus"></i>
             </button>
           </div>
         </div>
       `;
-
-      // Helper to add to cart (console log for now)
-      const addBtn = card.querySelector('.btn-add');
-      addBtn?.addEventListener('click', () => {
-        console.log('Add to cart:', product);
-        // Animation feedback
-        addBtn.classList.add('clicked');
-        setTimeout(() => addBtn.classList.remove('clicked'), 200);
-      });
 
       this.productsGridEl.appendChild(card);
     });

@@ -61,16 +61,47 @@
       </div>
     </main>
 
-    <!-- Floating Cart/Action Button (Future use) -->
-    <!-- 
-        <div class="floating-action-bar">
-            <button class="btn-view-cart">
-                <span class="cart-count">0</span>
-                <span>Ver Pedido</span>
-                <span class="cart-total">R$ 0,00</span>
-            </button>
-        </div> 
-        -->
+    <!-- Floating Action Bar -->
+    <div class="floating-action-bar">
+      <button id="floatingCartBtn" class="btn-view-cart">
+        <span class="cart-count" id="cartCount">0</span>
+        <span>Ver Pedido</span>
+        <span class="cart-total" id="cartTotal">R$ 0,00</span>
+      </button>
+    </div>
+
+    <!-- Cart Modal -->
+    <div class="cart-modal" id="cartModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Seu Pedido</h2>
+          <button id="closeCartBtn">
+            <i class="fa-solid fa-times"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div id="cartItemsList">
+            <!-- Items injected by TS -->
+            <div class="empty-cart-message">
+              <i class="fa-solid fa-basket-shopping"></i>
+              <p>Seu carrinho está vazio</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <div class="total-row">
+            <span>Total:</span>
+            <span id="modalTotal">R$ 0,00</span>
+          </div>
+          <button id="confirmOrderBtn" class="btn-confirm" disabled>
+            <i class="fa-solid fa-check"></i>
+            Confirmar Pedido
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </body>
 

@@ -23,8 +23,8 @@ export class OrderModel {
       SELECT 
         o.*, 
         u.name as user_name,
-        COALESCE(SUM(oi.quantity * oi.unit_price), 0) as total,
-        json_group_array(json_object('name', p.name, 'quantity', oi.quantity, 'unit_price', oi.unit_price)) as items_json
+        COALESCE(SUM(CASE WHEN oi.delivered_at IS NOT NULL THEN oi.quantity * oi.unit_price ELSE 0 END), 0) as total,
+        json_group_array(json_object('name', p.name, 'quantity', oi.quantity, 'unit_price', oi.unit_price, 'created_at', oi.created_at, 'delivered_at', oi.delivered_at)) as items_json
       FROM orders o
       LEFT JOIN order_items oi ON o.id = oi.order_id
       LEFT JOIN products p ON oi.product_id = p.id
@@ -57,7 +57,7 @@ export class OrderModel {
 
     if (order) {
       const items = await db.all<OrderItemDTO[]>(
-        'SELECT oi.id, oi.order_id, oi.product_id, oi.quantity, oi.unit_price, (oi.quantity * oi.unit_price) as total_item, p.name as product_name FROM order_items oi LEFT JOIN products p ON oi.product_id = p.id WHERE oi.order_id = ?',
+        'SELECT oi.id, oi.order_id, oi.product_id, oi.quantity, oi.unit_price, (oi.quantity * oi.unit_price) as total_item, p.name as product_name, oi.created_at, oi.delivered_at FROM order_items oi LEFT JOIN products p ON oi.product_id = p.id WHERE oi.order_id = ?',
         [id],
       );
       order.items = items;
@@ -84,7 +84,7 @@ export class OrderModel {
     const initialStatus = 'OPEN';
 
     await db.run(
-      `INSERT INTO orders (id, table_id, user_id, status, total, tip, opened_at) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO orders(id, table_id, user_id, status, total, tip, opened_at) VALUES(?, ?, ?, ?, ?, ?, ?)`,
       [
         id,
         data.table_id,
@@ -124,7 +124,7 @@ export class OrderModel {
     if (data.observations !== undefined) updated.observations = data.observations;
 
     await db.run(
-      `UPDATE orders SET status = ?, total = ?, tip = ?, closed_at = ?, observations = ? WHERE id = ?`,
+      `UPDATE orders SET status = ?, total = ?, tip = ?, closed_at = ?, observations = ? WHERE id = ? `,
       [updated.status, updated.total, updated.tip, updated.closed_at, updated.observations, id],
     );
 
@@ -154,16 +154,13 @@ export class OrderModel {
     const unit_price = product.price;
     const total_item = unit_price * quantity;
     const item_id = uuidv4();
+    const created_at = new Date().toISOString();
 
     await db.run(
-      `INSERT INTO order_items (id, order_id, product_id, quantity, unit_price) values (?, ?, ?, ?, ?)`,
-      [item_id, orderId, productId, quantity, unit_price],
+      `INSERT INTO order_items(id, order_id, product_id, quantity, unit_price, created_at) values(?, ?, ?, ?, ?, ?)`,
+      [item_id, orderId, productId, quantity, unit_price, created_at],
     );
 
-    await db.run(`UPDATE orders SET total = total + ? WHERE id = ?`, [
-      total_item,
-      orderId,
-    ]);
 
     return {
       id: item_id,
@@ -178,13 +175,13 @@ export class OrderModel {
   static async removeItem(orderId: string, itemId: string): Promise<boolean> {
     const db = await getDb();
 
-    // Get item to know price
-    // total_item column likely doesn't exist, calculate it
+
     const item = await db.get<{
       quantity: number;
       unit_price: number;
       order_id: string;
-    }>('SELECT quantity, unit_price, order_id FROM order_items WHERE id = ?', [
+      delivered_at?: string;
+    }>('SELECT quantity, unit_price, order_id, delivered_at FROM order_items WHERE id = ?', [
       itemId,
     ]);
 
@@ -195,11 +192,13 @@ export class OrderModel {
     // Delete item
     await db.run('DELETE FROM order_items WHERE id = ?', [itemId]);
 
-    // Update total (subtract)
-    await db.run('UPDATE orders SET total = total - ? WHERE id = ?', [
-      totalToDelete,
-      orderId,
-    ]);
+    // Update total (subtract) ONLY if it was delivered
+    if (item.delivered_at) {
+      await db.run('UPDATE orders SET total = total - ? WHERE id = ?', [
+        totalToDelete,
+        orderId,
+      ]);
+    }
 
     return true;
   }
@@ -213,11 +212,21 @@ export class OrderModel {
 
     if (!order || order.status !== 'OPEN') return undefined;
 
+    // Validation: Check if all items are delivered
+    const pendingItems = await db.get<{ count: number }>(
+      'SELECT COUNT(*) as count FROM order_items WHERE order_id = ? AND delivered_at IS NULL',
+      [id]
+    );
+
+    if (pendingItems && pendingItems.count > 0) {
+      throw new Error('Cannot close order with pending items to deliver');
+    }
+
     const closed_at = new Date().toISOString();
 
     // 1. Update Order status, closed_at and tip
     await db.run(
-      `UPDATE orders SET status = 'CLOSED', closed_at = ?, tip = ? WHERE id = ?`,
+      `UPDATE orders SET status = 'CLOSED', closed_at = ?, tip = ? WHERE id = ? `,
       [closed_at, tip, id],
     );
 
@@ -232,5 +241,30 @@ export class OrderModel {
     }
 
     return OrderModel.findById(id);
+  }
+
+  static async deliverItem(orderId: string, itemId: string): Promise<boolean> {
+    const db = await getDb();
+
+    // Get item
+    const item = await db.get<{
+      quantity: number;
+      unit_price: number;
+      order_id: string;
+      delivered_at?: string;
+    }>('SELECT quantity, unit_price, order_id, delivered_at FROM order_items WHERE id = ?', [itemId]);
+
+    if (!item || item.order_id !== orderId) return false;
+    if (item.delivered_at) return true; // Already delivered
+
+    const delivered_at = new Date().toISOString();
+    const totalToAdd = item.quantity * item.unit_price;
+
+    await db.run('UPDATE order_items SET delivered_at = ? WHERE id = ?', [delivered_at, itemId]);
+
+    // Update Order Total
+    await db.run('UPDATE orders SET total = total + ? WHERE id = ?', [totalToAdd, orderId]);
+
+    return true;
   }
 }

@@ -350,7 +350,8 @@ function closePopovers() {
 async function loadTables() {
   try {
     const response = await ApiService.get<{ data: Table[] }>("/tables");
-    const tables = response.data || [];
+    allTables = response.data || [];
+    const tables = allTables;
 
     renderOccupiedTables(tables.filter((t) => t.status === "OCCUPIED"));
     renderAvailableTables(tables.filter((t) => t.status === "AVAILABLE"));
@@ -951,30 +952,46 @@ function renderOrderGrid(
       );
 
       const tableNum = table ? table.number : "?";
-      const userName = user ? user.name : "Desconhecido";
       const total = Number(order.total) || 0;
+
+      const timeElapsed =
+        order.created_at || order.opened_at
+          ? formatTimeElapsed(order.created_at || order.opened_at)
+          : "-";
 
       const itemsDesc =
         order.items && order.items.length
           ? order.items
+              // Limit items? Dashboard limits to 3. Let's limit to 3 here too to match "mesmo formato".
+              .slice(0, 3)
               .map((i: any) => `${i.quantity}x ${i.name || i.product_name}`)
               .join(", ")
           : "Sem itens";
 
+      const moreItemsText =
+        order.items && order.items.length > 3
+          ? ` (+${order.items.length - 3})`
+          : "";
+
       return `
-         <div class="active-order-card">
+         <div class="active-order-card" data-order-id="${order.id}">
             <div class="order-card-header">
                <div class="table-indicator">
-                  <span class="label">Mesa</span>
-                  <span class="number">${tableNum}</span>
+                  <span class="number">${typeof tableNum === "number" && tableNum < 10 ? "0" + tableNum : tableNum}</span>
+                  <span class="label">MESA</span>
                </div>
                <span class="badge-status-${type === "open" ? "preparing" : "waiting"}">${translateStatus(order.status)}</span>
             </div>
             <div class="order-card-body">
                <div class="order-items-list">
-                  <p style="font-size: 0.9rem; color: var(--text-muted); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">${itemsDesc}</p>
+                  <p style="font-size: 0.9rem; color: var(--text-muted); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">${itemsDesc}${moreItemsText}</p>
                </div>
-               <p style="font-size: 0.8rem; color: var(--text-dim); margin-top: auto;">Garçom: ${userName}</p>
+               
+               <div class="time-elapsed" style="margin-top: auto; display: flex; align-items: center; gap: 0.5rem; color: var(--text-dim); font-size: 0.8rem;">
+                  <span class="material-symbols-outlined" style="font-size: 1rem;">schedule</span>
+                  <span>${timeElapsed}</span>
+                  ${user ? `<span style="margin-left:auto;">Garçom: ${user.name.split(" ")[0]}</span>` : ""}
+               </div>
             </div>
             <div class="order-card-footer">
                <span class="order-price">${formatCurrency(total)}</span>

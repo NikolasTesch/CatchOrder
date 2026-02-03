@@ -1,4 +1,4 @@
-export {};
+export { };
 import './style.css';
 import {
   centsToReais,
@@ -251,6 +251,9 @@ function loadSectionData(sectionName: string) {
       break;
     case 'categories':
       loadCategories();
+      break;
+    case 'insights':
+      loadInsights();
       break;
   }
 }
@@ -519,6 +522,7 @@ function toggleProfilePopover(btn: HTMLElement) {
     popover = document.createElement('div');
     popover.id = 'profilePopover';
     popover.className = 'popover';
+    popover.addEventListener('click', (e) => e.stopPropagation());
 
     if (currentUser) {
       const createdDate = currentUser.created_at
@@ -560,6 +564,7 @@ function toggleNotificationPopover(btn: HTMLElement) {
     popover = document.createElement('div');
     popover.id = 'notificationPopover';
     popover.className = 'popover';
+    popover.addEventListener('click', (e) => e.stopPropagation());
     popover.innerHTML = `
       <div class="popover-header">Notificações</div>
       <div class="popover-body">
@@ -651,7 +656,7 @@ function showUserForm(userId: string | null = null) {
         <input type="password" class="form-input" name="password" placeholder=" " required>
       </div>
       `
-          : ''
+        : ''
       }
       <div class="form-group">
         <label class="form-label">Função</label>
@@ -1520,3 +1525,155 @@ document.addEventListener('DOMContentLoaded', () => {
   loadCurrentUser();
   loadDashboard();
 });
+
+// ========================================
+// INSIGHTS
+// ========================================
+async function loadInsights() {
+  // Setup listeners if not already
+  const btn = document.getElementById('filterInsightsBtn');
+  if (btn && !btn.dataset.listening) {
+    btn.addEventListener('click', fetchInsightsData);
+    btn.dataset.listening = 'true';
+  }
+
+  // Initial fetch with defaults
+  await fetchInsightsData();
+}
+
+async function fetchInsightsData() {
+  try {
+    const startDateInput = document.getElementById('startDate') as HTMLInputElement;
+    const endDateInput = document.getElementById('endDate') as HTMLInputElement;
+
+    // Default to last 30 days if empty
+    if (!startDateInput.value) {
+      const d = new Date();
+      d.setDate(d.getDate() - 30);
+      startDateInput.value = d.toISOString().split('T')[0];
+    }
+    if (!endDateInput.value) {
+      endDateInput.value = new Date().toISOString().split('T')[0];
+    }
+
+    const start = startDateInput.value;
+    const end = endDateInput.value;
+
+    const startISO = new Date(start + 'T00:00:00').toISOString();
+    const endISO = new Date(end + 'T23:59:59').toISOString();
+
+    // Use apiCall wrapper
+    const result = await apiCall<{ data: any }>(`/metrics/insights?startDate=${startISO}&endDate=${endISO}`);
+
+    renderInsights(result.data);
+
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+function renderInsights(data: any) {
+  // 1. Summary Cards
+  const avgTicketEl = document.getElementById('insightAvgTicket');
+  if (avgTicketEl) avgTicketEl.textContent = formatCurrency(data.summary.average_ticket);
+
+  const revEl = document.getElementById('insightTotalRevenue');
+  if (revEl) revEl.textContent = formatCurrency(data.summary.total_revenue);
+
+  const ordEl = document.getElementById('insightTotalOrders');
+  if (ordEl) ordEl.textContent = data.summary.total_orders;
+
+  // 2. Hourly Sales Chart
+  renderHourlyChart(data.hourlySales);
+
+  // 3. ABC Curve
+  renderABCList(data.abcCurve);
+
+  // 4. Waiter Performance
+  renderWaiterTable(data.waiterPerformance);
+}
+
+function renderHourlyChart(hourlyData: any[]) {
+  const container = document.getElementById('hourlySalesChart');
+  if (!container) return;
+
+  container.innerHTML = '';
+
+  // Find max value for normalization
+  const maxRevenue = Math.max(...hourlyData.map((h: any) => h.revenue), 1);
+
+  // Create bars for 00-23 hours
+  const fullDayData = Array(24).fill(0).map((_, i) => {
+    const hourStr = i.toString().padStart(2, '0');
+    const found = hourlyData.find((h: any) => h.hour === hourStr);
+    return found ? found.revenue : 0;
+  });
+
+  fullDayData.forEach((revenue, hour) => {
+    const heightPercent = (revenue / maxRevenue) * 100;
+    const bar = document.createElement('div');
+    bar.className = 'chart-bar';
+    bar.style.height = `${Math.max(heightPercent, 1)}%`; // Min 1% visibility to show bar exists
+    bar.dataset.hour = `${hour}h`;
+    bar.dataset.value = formatCurrency(revenue);
+    bar.title = `${hour}h: ${formatCurrency(revenue)}`;
+    container.appendChild(bar);
+  });
+}
+
+function renderABCList(products: any[]) {
+  const container = document.getElementById('abcProductList');
+  if (!container) return;
+
+  container.innerHTML = '';
+
+  if (products.length === 0) {
+    container.innerHTML = '<p class="loading-text">Nenhum dado no período.</p>';
+    return;
+  }
+
+  products.forEach((p: any) => {
+    const item = document.createElement('div');
+    item.className = 'abc-item';
+
+    const badgeClass = p.classification === 'A' ? 'badge-a' : p.classification === 'B' ? 'badge-b' : 'badge-c';
+
+    item.innerHTML = `
+            <div class="abc-info">
+                <span class="product-name">${p.name}</span>
+                <span class="product-category">${p.category_name}</span>
+            </div>
+            <div class="abc-metrics">
+                <span class="abc-value">${formatCurrency(p.revenue)}</span>
+                <span class="abc-badge ${badgeClass}">${p.classification}</span>
+            </div>
+            <div class="abc-bar-bg">
+                <div class="abc-bar-fill ${badgeClass}" style="width: ${p.revenue_share * 2}%"></div> 
+            </div>
+        `;
+    container.appendChild(item);
+  });
+}
+
+function renderWaiterTable(waiters: any[]) {
+  const tbody = document.getElementById('waiterPerformanceBody');
+  if (!tbody) return;
+
+  tbody.innerHTML = '';
+
+  if (waiters.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" class="empty-text">Nenhum dado no período.</td></tr>';
+    return;
+  }
+
+  waiters.forEach((w: any) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+            <td>${w.name}</td>
+            <td>${formatCurrency(w.total_sales)}</td>
+            <td class="text-emerald">${formatCurrency(w.total_tips)}</td>
+            <td>${w.orders_count}</td>
+        `;
+    tbody.appendChild(tr);
+  });
+}

@@ -11,42 +11,23 @@ const categories = [
   { id: categoryComidasId, name: 'Comidas', slug: 'comidas' },
 ];
 
-// Gerar IDs dos usuários (3 admins)
-const userIds = Array.from({ length: 4 }, () => uuidv4());
+const adminId = uuidv4();
+const waiterId = uuidv4();
 
 const users = [
   {
-    id: userIds[0],
-    name: 'Carlos Silva',
-    username: 'carlos.silva',
-    password_hash:
-      '$2b$10$rGze23Ok9t9W0HECY1s71.tLNY8UXHbLxJXBX72hIEou1me8k1zv6',
+    id: adminId,
+    username: process.env.ADMIN_USERNAME,
+    password_hash: process.env.ADMIN_PASSWORD,
     role: userRole.ADMIN,
   },
   {
-    id: userIds[1],
-    name: 'Ana Santos',
-    username: 'ana.santos',
-    password_hash:
-      '$2b$10$rGze23Ok9t9W0HECY1s71.tLNY8UXHbLxJXBX72hIEou1me8k1zv6',
-    role: userRole.ADMIN,
-  },
-  {
-    id: userIds[2],
-    name: 'Pedro Costa',
-    username: 'pedro.costa',
-    password_hash:
-      '$2b$10$rGze23Ok9t9W0HECY1s71.tLNY8UXHbLxJXBX72hIEou1me8k1zv6',
-    role: userRole.ADMIN,
-  },
-  {
-    id: userIds[3],
-    name: 'Romulo',
-    username: 'romulo',
-    password_hash:
-      '$2b$10$rGze23Ok9t9W0HECY1s71.tLNY8UXHbLxJXBX72hIEou1me8k1zv6',
+    id: waiterId,
+    name: process.env.WAITER_NAME,
+    username: process.env.WAITER_USERNAME,
+    password_hash: process.env.WAITER_PASSWORD,
     role: userRole.WAITER,
-  },
+  }
 ];
 
 // Gerar IDs dos produtos (5 bebidas + 5 comidas)
@@ -158,11 +139,11 @@ const tables = [
   { id: tableIds[3], number: 4, status: 'AVAILABLE' },
   { id: tableIds[4], number: 5, status: 'AVAILABLE' },
   // 5 mesas ocupadas
-  { id: tableIds[5], number: 6, status: 'OCCUPIED', waiter_id: userIds[0] },
-  { id: tableIds[6], number: 7, status: 'OCCUPIED', waiter_id: userIds[1] },
-  { id: tableIds[7], number: 8, status: 'OCCUPIED', waiter_id: userIds[2] },
-  { id: tableIds[8], number: 9, status: 'OCCUPIED', waiter_id: userIds[0] },
-  { id: tableIds[9], number: 10, status: 'OCCUPIED', waiter_id: userIds[1] },
+  { id: tableIds[5], number: 6, status: 'OCCUPIED', waiter_id: waiterId },
+  { id: tableIds[6], number: 7, status: 'OCCUPIED', waiter_id: waiterId },
+  { id: tableIds[7], number: 8, status: 'OCCUPIED', waiter_id: waiterId },
+  { id: tableIds[8], number: 9, status: 'OCCUPIED', waiter_id: waiterId },
+  { id: tableIds[9], number: 10, status: 'OCCUPIED', waiter_id: waiterId },
 ];
 
 // Gerar IDs dos pedidos (10 pedidos: 5 abertos + 5 fechados)
@@ -172,7 +153,7 @@ const orders = [
   {
     id: orderIds[0],
     table_id: tableIds[5],
-    user_id: userIds[0],
+    user_id: waiterId,
     status: 'OPEN',
     total: 0,
     opened_at: new Date('2026-01-30T10:00:00'),
@@ -181,7 +162,7 @@ const orders = [
   {
     id: orderIds[1],
     table_id: tableIds[6],
-    user_id: userIds[1],
+    user_id: waiterId,
     status: 'OPEN',
     total: 0,
     opened_at: new Date('2026-01-30T10:30:00'),
@@ -190,7 +171,7 @@ const orders = [
   {
     id: orderIds[2],
     table_id: tableIds[7],
-    user_id: userIds[2],
+    user_id: waiterId,
     status: 'OPEN',
     total: 0,
     opened_at: new Date('2026-01-30T11:00:00'),
@@ -199,7 +180,7 @@ const orders = [
   {
     id: orderIds[3],
     table_id: tableIds[8],
-    user_id: userIds[0],
+    user_id: waiterId,
     status: 'OPEN',
     total: 0,
     opened_at: new Date('2026-01-30T11:30:00'),
@@ -208,7 +189,7 @@ const orders = [
   {
     id: orderIds[4],
     table_id: tableIds[9],
-    user_id: userIds[1],
+    user_id: waiterId,
     status: 'OPEN',
     total: 0,
     opened_at: new Date('2026-01-30T12:00:00'),
@@ -218,7 +199,7 @@ const orders = [
   {
     id: orderIds[5],
     table_id: tableIds[0],
-    user_id: userIds[0],
+    user_id: waiterId,
     status: 'CLOSED',
     total: 6600,
     tip: 660,
@@ -228,7 +209,7 @@ const orders = [
   {
     id: orderIds[6],
     table_id: tableIds[1],
-    user_id: userIds[1],
+    user_id: waiterId,
     status: 'CLOSED',
     total: 8100,
     tip: 810,
@@ -238,7 +219,7 @@ const orders = [
   {
     id: orderIds[7],
     table_id: tableIds[2],
-    user_id: userIds[2],
+    user_id: waiterId,
     status: 'CLOSED',
     total: 4900,
     tip: 490,
@@ -248,7 +229,7 @@ const orders = [
   {
     id: orderIds[8],
     table_id: tableIds[3],
-    user_id: userIds[0],
+    user_id: waiterId,
     status: 'CLOSED',
     total: 9200,
     tip: 920,
@@ -258,7 +239,7 @@ const orders = [
   {
     id: orderIds[9],
     table_id: tableIds[4],
-    user_id: userIds[1],
+    user_id: waiterId,
     status: 'CLOSED',
     total: 5700,
     tip: 570,

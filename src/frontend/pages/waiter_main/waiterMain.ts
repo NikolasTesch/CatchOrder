@@ -805,6 +805,11 @@ function renderCommissionsView(orders: Order[]) {
           const tipVal = Number(order.tip) || 0;
           const orderDate = order.closed_at ? new Date(order.closed_at) : null;
           const total = Number(order.total) || 0;
+
+          // Verify consistency: If tip exists (is not 0), enforce 10% of the current total
+          const calculatedTip = Math.round(total * 0.1);
+          const finalTip = tipVal > 0 ? calculatedTip : 0;
+
           let dateStr = "-";
 
           if (orderDate) {
@@ -824,12 +829,13 @@ function renderCommissionsView(orders: Order[]) {
               year: "numeric",
             });
 
-            if (simpleDateStr === todayStr) dailyTotal += tipVal;
+            // Stats collection using finalTip
+            if (simpleDateStr === todayStr) dailyTotal += finalTip;
             if (
               orderDate.getMonth() === currentMonth &&
               orderDate.getFullYear() === currentYear
             ) {
-              monthlyTotal += tipVal;
+              monthlyTotal += finalTip;
             }
           }
 
@@ -839,7 +845,7 @@ function renderCommissionsView(orders: Order[]) {
                         <td style="padding: 1rem; color: var(--color-primary);">${dateStr}</td>
                         <td style="padding: 1rem; color: var(--color-primary);">${order.table_id}</td> 
                         <td style="padding: 1rem; color: #64748b;">${formatCurrency(total)}</td>
-                        <td style="padding: 1rem; color: ${tipVal > 0 ? "#10b981" : "#94a3b8"}; font-weight: 600;">${tipVal > 0 ? formatCurrency(tipVal) : "---"}</td>
+                        <td style="padding: 1rem; color: ${finalTip > 0 ? "#10b981" : "#94a3b8"}; font-weight: 600;">${finalTip > 0 ? formatCurrency(finalTip) : "---"}</td>
                     </tr>
                 `;
         })

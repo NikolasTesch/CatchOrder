@@ -45,12 +45,8 @@ const searchInput = document.querySelector('.search-input') as HTMLInputElement;
 const newOrderButton = document.querySelector(
   '.btn-new-order',
 ) as HTMLButtonElement;
-const openOrdersSection = document.querySelector(
-  '.orders-section[aria-label="Ordens em aberto"]',
-);
-const finishedOrdersSection = document.querySelector(
-  '.orders-section[aria-label="Ordens finalizadas"]',
-);
+const openOrdersContainer = document.getElementById('open-orders-grid');
+const finishedOrdersContainer = document.getElementById('finished-orders-grid');
 
 document.addEventListener('DOMContentLoaded', () => {
   init();
@@ -127,8 +123,8 @@ function renderOrders() {
     .filter((order) => order.status === 'CLOSED' || order.status === 'PAID')
     .sort(sortByTable);
 
-  renderOrderList(openOrdersSection, openOrders, 'open');
-  renderOrderList(finishedOrdersSection, finishedOrders, 'finished');
+  renderOrderList(openOrdersContainer, openOrders, 'open');
+  renderOrderList(finishedOrdersContainer, finishedOrders, 'finished');
 }
 
 function filterOrders(): Order[] {
@@ -142,23 +138,20 @@ function filterOrders(): Order[] {
 }
 
 function renderOrderList(
-  container: Element | null,
+  container: HTMLElement | null,
   orderList: Order[],
   type: 'open' | 'finished',
 ) {
   if (!container) return;
 
-  // Clear existing cards but keep the title (h2)
-  const title = container.querySelector('.section-title');
   container.innerHTML = '';
-  if (title) container.appendChild(title);
 
   if (orderList.length === 0) {
     const emptyMessage = document.createElement('p');
     emptyMessage.textContent =
       type === 'open' ? 'Nenhuma ordem em aberto' : 'Nenhuma ordem finalizada';
     emptyMessage.style.cssText =
-      'text-align: center; padding: 2rem; color: var(--text-secondary); opacity: 0.7;';
+      'grid-column: 1 / -1; text-align: center; padding: 2rem; color: var(--text-secondary); opacity: 0.7;';
     container.appendChild(emptyMessage);
     return;
   }
@@ -183,45 +176,94 @@ function createOrderCard(order: Order, type: 'open' | 'finished'): HTMLElement {
   // Use name from backend JOIN or fallback to local mapping
   const userName =
     (order as any).user_name ||
-    (user ? user.username || user.name : 'Desconhecido');
+    (user ? user.username || user.name : 'Garçom');
 
   // Format price
-  const price = order.total ? parseFloat(order.total).toFixed(2) : '0.00';
-
+  const total = order.total ? parseFloat(order.total) : 0;
+  
   // Status Label
   const statusLabel = getStatusLabel(order.status);
   const statusClass = type === 'open' ? 'status-open' : 'status-finished';
 
-  // Items Summary
-  const itemsDescription =
-    order.items && order.items.length > 0
-      ? order.items
-        .map((item) => `${item.quantity}x ${item.name || item.product_name || 'Item'}`)
-        .join(', ')
-      : 'Sem itens';
+  // Time elapsed (optional enhancement)
+  let timeString = '--:--';
+  if (order.created_at) {
+    // Try standard constructor
+    let timeDate = new Date(order.created_at);
+    
+    // If invalid, try SQL format (replace space with T for ISO)
+    if (isNaN(timeDate.getTime())) {
+      const fixedDate = order.created_at.replace(' ', 'T');
+      timeDate = new Date(fixedDate);
+    }
+
+    if (!isNaN(timeDate.getTime())) {
+      timeString = timeDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+  }
+
+  // Items List Construction
+  let itemsHtml = '<div class="order-items-container"><p class="empty-items-text">Sem itens</p></div>';
+  
+  if (order.items && order.items.length > 0) {
+    const itemsList = order.items.map(item => {
+      const itemPrice = item.price ? parseFloat(item.price.toString()) : 0;
+      const totalItemPrice = itemPrice * item.quantity;
+      
+      return `
+        <div class="order-item-row">
+          <div class="item-qty-badge">${item.quantity}x</div>
+          <div class="item-details">
+            <span class="item-name">${item.name || item.product_name || 'Item'}</span>
+          </div>
+          <div class="item-price">${formatCurrency(totalItemPrice)}</div>
+        </div>
+      `;
+    }).join('');
+    
+    itemsHtml = `<div class="order-items-container">${itemsList}</div>`;
+  }
 
   // Observations
-  const obs = order.observations || '';
+  const obsHtml = order.observations 
+    ? `<div class="order-obs-section">
+         <span class="material-symbols-outlined obs-icon">sticky_note_2</span>
+         <span class="obs-text">${order.observations}</span>
+       </div>` 
+    : '';
 
   card.innerHTML = `
-    <div class="order-header">
-      <h3 class="order-title">Ordem #${order.id.substring(0, 8)}</h3>
-      <span class="order-status ${statusClass}">${statusLabel}</span>
-      <span class="table-badge">${tableNumber}</span>
+    <div class="card-header">
+      <div class="header-top">
+        <span class="table-indicator">Mesa ${tableNumber}</span>
+        <span class="order-id">#${order.id.substring(0, 6)}</span>
+      </div>
+      <div class="header-status">
+         <span class="status-badge ${statusClass}">${statusLabel}</span>
+         <span class="order-time">${timeString}</span>
+      </div>
     </div>
-    <div class="order-info">
-      <p class="order-price">${formatCurrency(parseFloat(order.total))}</p>
-      <p class="order-description">${itemsDescription}</p>
+
+    <div class="card-body">
+      ${itemsHtml}
     </div>
-    <div class="order-footer">
-      <p class="order-obs">${obs ? 'Obs: ' + obs : ''}</p>
-      <button class="btn-waiter">${userName}</button>
+
+    <div class="card-footer">
+      ${obsHtml}
+      <div class="footer-info">
+        <div class="waiter-info">
+          <span class="material-symbols-outlined waiter-icon">person</span>
+          <span class="waiter-name">${userName}</span>
+        </div>
+        <div class="total-price-section">
+          <span class="total-label">Total</span>
+          <span class="total-value">${formatCurrency(total)}</span>
+        </div>
+      </div>
     </div>
   `;
 
   card.addEventListener('click', () => {
-    // console.log(`Open details for order ${order.id}`);
-
     if (table) {
       window.location.href = `./createOrder.html?table_id=${table.id}&order_id=${order.id}`;
     } else {

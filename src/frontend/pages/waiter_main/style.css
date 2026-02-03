@@ -114,6 +114,29 @@ body.dark-mode .count-badge {
   color: #f8fafc;
 }
 
+/* --- Dark Mode Table Cards Fix --- */
+body.dark-mode .table-card {
+  background-color: #1e293b !important; /* Slate 800 */
+  border-color: #475569;
+}
+
+body.dark-mode .table-number {
+  color: var(--text-title);
+}
+
+body.dark-mode .table-label,
+body.dark-mode .card-body {
+  color: #94a3b8;
+}
+
+body.dark-mode .card-body .material-symbols-outlined {
+  color: #94a3b8;
+}
+
+body.dark-mode .card-footer {
+  background-color: transparent !important;
+}
+
 
 /* --- SUMMARY CARD --- */
 .summary-card {

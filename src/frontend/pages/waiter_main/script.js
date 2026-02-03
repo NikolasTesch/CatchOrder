@@ -29,8 +29,6 @@ function getAuthHeaders() {
  * Handle API errors
  */
 function handleApiError(error, response) {
-  // console.error('API Error:', error);
-
   if (response && response.status === 401) {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -46,8 +44,7 @@ function handleApiError(error, response) {
  * Show notification
  */
 function showNotification(message, type = 'info') {
-  // TODO: Implement a proper notification system
-  // console.log(`[${type.toUpperCase()}] ${message}`);
+  // Notification system not implemented yet
 }
 
 function initDarkMode() {
@@ -93,8 +90,7 @@ function setupEventListeners() {
   const menuBtn = document.getElementById('menuBtn');
   if (menuBtn) {
     menuBtn.addEventListener('click', () => {
-      // console.log('Menu clicked');
-      // TODO: Open navigation menu
+      // Menu functionality handled in TypeScript
     });
   }
 
@@ -102,8 +98,7 @@ function setupEventListeners() {
   const userBtn = document.getElementById('userBtn');
   if (userBtn) {
     userBtn.addEventListener('click', () => {
-      // console.log('User profile clicked');
-      // TODO: Navigate to user profile
+      // User profile functionality handled in TypeScript
     });
   }
 
@@ -111,8 +106,7 @@ function setupEventListeners() {
   const logoImage = document.getElementById('logoImage');
   if (logoImage) {
     logoImage.addEventListener('click', () => {
-      // console.log('Logo clicked');
-      // TODO: Navigate to home
+      // Logo click functionality handled in TypeScript
     });
   }
 
@@ -124,12 +118,8 @@ function setupEventListeners() {
     });
   }
 
-  // Logout functionality
-  const logoutBtn = document.getElementById('logoutBtn');
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', handleLogout);
-  }
 }
+
 
 /**
  * Handle user logout
@@ -202,8 +192,6 @@ function renderAllTables(tables) {
 }
 
 function handleTableClick(tableId) {
-  // console.log('Table clicked:', tableId);
-  // Navigate to table details/orders page
   window.location.href = `orders.html?tableId=${tableId}`;
 }
 
@@ -253,10 +241,9 @@ function displayUserInfo() {
   if (userStr) {
     try {
       const user = JSON.parse(userStr);
-      // console.log('Logged in as:', user.username);
-      // TODO: Display user name in UI if needed
+      // User info is displayed in the profile popover
     } catch (error) {
-      // console.error('Error parsing user data:', error);
+      // Error handling for user data parsing
     }
   }
 }
@@ -278,8 +265,6 @@ function init() {
     loadTables();
     loadSummary();
   }, 30000);
-
-  // console.log('WaiterMain page initialized');
 }
 
 // Initialize when DOM is ready

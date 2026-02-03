@@ -71,8 +71,6 @@ async function init() {
     loadSummary();
     loadActiveOrders(); // NEW
   }, 30000);
-
-  // console.log('WaiterMain page initialized (TS)');
 }
 
 // Utility Functions
@@ -128,7 +126,6 @@ async function loadCurrentUser(): Promise<User | null> {
     currentUser = response.user;
     return currentUser;
   } catch (error) {
-    // console.error('Failed to load user:', error);
     window.location.href = 'landingPage.html';
     return null;
   }
@@ -197,12 +194,6 @@ function setupEventListeners() {
     });
   }
 
-  // Logout
-  const logoutBtnHeader = document.getElementById("logoutBtn");
-  if (logoutBtnHeader) {
-    logoutBtnHeader.addEventListener("click", handleLogout);
-  }
-
   // Logo Click
   const logoImage = document.getElementById("logoImage");
   if (logoImage) {
@@ -229,8 +220,11 @@ function setupEventListeners() {
   }
 
   // Close popovers on click outside
-  document.addEventListener("click", () => {
-    closePopovers();
+  document.addEventListener("click", (e) => {
+    const popover = document.getElementById("profilePopover");
+    if (popover && !popover.contains(e.target as Node)) {
+      closePopovers();
+    }
   });
 
   // Sidebar Navigation Links
@@ -247,7 +241,7 @@ async function handleLogout() {
   try {
     await ApiService.post("/auth/logout", {});
   } catch (e) {
-    // console.error("Logout error", e);
+    // Logout error - continuing anyway
   } finally {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
@@ -305,6 +299,11 @@ function toggleProfilePopover(btn: HTMLElement) {
     // Append to header-actions
     const headerActions = document.querySelector(".header-actions");
     if (headerActions) headerActions.appendChild(popover);
+
+    // Prevent popover clicks from closing it
+    popover.addEventListener("click", (e) => {
+      e.stopPropagation();
+    });
   }
 
   popover.classList.toggle("active");
@@ -333,7 +332,7 @@ async function loadTables() {
       );
     }
   } catch (error) {
-    // console.error('Error loading tables:', error);
+    // Error loading tables
   }
 }
 
@@ -355,11 +354,11 @@ function renderOccupiedTables(tables: Table[]) {
              <span class="table-label">MESA</span>
           </div>
           <div class="card-body">
-             <span class="material-symbols-outlined">group</span>
-             <span>4 pessoas</span>
+             <span class="material-symbols-outlined">receipt_long</span>
+             <span>Pedido Ativo</span>
           </div>
           <div class="card-footer">
-             <span class="status-badge status-waiting">Aguardando Pedido</span>
+             <span class="status-badge status-waiting">Em Uso</span>
           </div>
         </button>
     `,
@@ -392,8 +391,8 @@ function renderAvailableTables(tables: Table[]) {
          <span class="table-label">MESA</span>
       </div>
       <div class="card-body">
-         <span class="material-symbols-outlined">group</span>
-         <span>-</span>
+         <span class="material-symbols-outlined">event_seat</span>
+         <span>Disponível</span>
       </div>
       <div class="card-footer">
          <span class="status-badge status-free">Livre</span>
@@ -481,9 +480,6 @@ async function loadSummary() {
     };
 
     const todayOrders = orders.filter((o) => {
-      // Robust logging for debugging
-      // console.log('Checking order:', o); 
-
       // Check both probable date fields
       const orderDate = o.created_at || o.opened_at;
       const orderSameDay = isToday(orderDate);
@@ -511,7 +507,7 @@ async function loadSummary() {
     if (subtitleEl)
       subtitleEl.textContent = `${todayOrders.length} mesa${todayOrders.length !== 1 ? 's' : ''} finalizada${todayOrders.length !== 1 ? 's' : ''} por mim`;
   } catch (error) {
-    // console.error('Error loading summary:', error);
+    // Error loading summary
   }
 }
 
@@ -537,7 +533,7 @@ async function loadActiveOrders() {
 
     renderActiveOrders(activeOrders, tables);
   } catch (error) {
-    console.error('Error loading active orders:', error);
+    // Error loading active orders
   }
 }
 

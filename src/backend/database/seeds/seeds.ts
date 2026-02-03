@@ -1,6 +1,10 @@
 import { getDb } from '../../config/database';
 import { v4 as uuidv4 } from 'uuid';
 import { userRole } from '../../../shared/types/user';
+import { hashPassword } from '../../utils/passwordHash';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 // Gerar IDs com UUID
 const categoryBebidasId = uuidv4();
@@ -14,37 +18,30 @@ const categories = [
 // Gerar IDs dos usuários (3 admins)
 const userIds = Array.from({ length: 4 }, () => uuidv4());
 
+// Hash removido daqui e gerado dinamicamente no runSeeds
 const users = [
   {
     id: userIds[0],
     name: 'Carlos Silva',
     username: 'carlos.silva',
-    password_hash:
-      '$2b$10$rGze23Ok9t9W0HECY1s71.tLNY8UXHbLxJXBX72hIEou1me8k1zv6',
     role: userRole.ADMIN,
   },
   {
     id: userIds[1],
     name: 'Ana Santos',
     username: 'ana.santos',
-    password_hash:
-      '$2b$10$rGze23Ok9t9W0HECY1s71.tLNY8UXHbLxJXBX72hIEou1me8k1zv6',
     role: userRole.ADMIN,
   },
   {
     id: userIds[2],
     name: 'Pedro Costa',
     username: 'pedro.costa',
-    password_hash:
-      '$2b$10$rGze23Ok9t9W0HECY1s71.tLNY8UXHbLxJXBX72hIEou1me8k1zv6',
     role: userRole.ADMIN,
   },
   {
     id: userIds[3],
     name: 'Romulo',
     username: 'romulo',
-    password_hash:
-      '$2b$10$rGze23Ok9t9W0HECY1s71.tLNY8UXHbLxJXBX72hIEou1me8k1zv6',
     role: userRole.WAITER,
   },
 ];
@@ -449,6 +446,11 @@ export const runSeeds = async () => {
       return;
     }
 
+    // --- NOVA LÓGICA DE SENHA ---
+    const plainPassword = process.env.SEED_PASSWORD || '123456';
+    const hashedPassword = await hashPassword(plainPassword);
+    // ----------------------------
+
     // Inserir categorias
     for (const category of categories) {
       await db.run('INSERT INTO categories (id, name, slug) VALUES (?, ?, ?)', [
@@ -463,7 +465,7 @@ export const runSeeds = async () => {
     for (const product of products) {
       await db.run(
         `INSERT INTO products (id, category_id, name, description, price, image_path, is_active)
-         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [
           product.id,
           product.category_id,
@@ -477,12 +479,12 @@ export const runSeeds = async () => {
     }
     console.log('✓ Produtos inseridos');
 
-    // Inserir usuários
+    // Inserir usuários (Agora usando o hash gerado dinamicamente)
     for (const user of users) {
       await db.run(
         `INSERT INTO users (id, name, username, password_hash, role)
-         VALUES (?, ?, ?, ?, ?)`,
-        [user.id, user.name, user.username, user.password_hash, user.role],
+          VALUES (?, ?, ?, ?, ?)`,
+        [user.id, user.name, user.username, hashedPassword, user.role],
       );
     }
     console.log('✓ Usuários inseridos');
@@ -500,7 +502,7 @@ export const runSeeds = async () => {
     for (const order of orders) {
       await db.run(
         `INSERT INTO orders (id, table_id, user_id, status, total, tip, opened_at, closed_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           order.id,
           order.table_id,
@@ -519,7 +521,7 @@ export const runSeeds = async () => {
     for (const item of orderItems) {
       await db.run(
         `INSERT INTO order_items (id, order_id, product_id, quantity, unit_price)
-         VALUES (?, ?, ?, ?, ?)`,
+          VALUES (?, ?, ?, ?, ?)`,
         [
           item.id,
           item.order_id,

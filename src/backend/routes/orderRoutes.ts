@@ -36,6 +36,13 @@ ordersRoutes.delete(
   orderController.removeItem,
 );
 
+// Marca item como entregue
+ordersRoutes.put(
+  '/:id/items/:itemId/deliver',
+  validateOrderId,
+  orderController.deliverItem,
+);
+
 // Fecha um pedido e gera a conta
 ordersRoutes.patch('/:id/close', validateOrderId, orderController.closeOrder);
 

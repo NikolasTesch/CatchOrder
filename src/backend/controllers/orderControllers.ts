@@ -203,6 +203,29 @@ class OrdersController {
       });
     }
   }
+
+  async deliverItem(req: Request, res: Response): Promise<Response> {
+    try {
+      const order_id = req.params.id as string;
+      const item_id = req.params.itemId as string;
+      const { quantity } = req.body;
+
+      const success = await OrderModel.deliverItem(order_id, item_id, quantity);
+
+      if (!success) {
+        return res.status(404).json({ message: 'Item n\u00e3o encontrado no pedido ou pedido inv\u00e1lido' });
+      }
+
+      return res.status(200).json({
+        message: 'Item entregue com sucesso'
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: 'Erro ao entregar item',
+        error: error instanceof Error ? error.message : 'Erro desconhecido'
+      });
+    }
+  }
 }
 
 export default new OrdersController();

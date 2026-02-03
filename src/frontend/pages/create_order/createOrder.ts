@@ -33,6 +33,8 @@ interface OrderItem {
   quantity: number;
   unit_price: number;
   total_item: number;
+  created_at?: string;
+  delivered_at?: string;
 }
 
 interface Order {
@@ -250,6 +252,9 @@ function renderProductsByCategory() {
   if (!productsContainer) return;
   productsContainer.innerHTML = '';
 
+  // Render Pending Items Logic Here (moved from sidebar)
+  renderPendingItemsInMainArea();
+
   if (categories.length === 0 || products.length === 0) {
     productsContainer.innerHTML = '<div class="empty-message">Nenhum produto disponível.</div>';
     return;
@@ -354,77 +359,79 @@ function renderOrderSummary() {
   if (!orderItemsList) return;
   orderItemsList.innerHTML = '';
 
-  // 1. Render Existing Items (Read Only-ish)
-  if (existingOrderItems.length > 0) {
-    existingOrderItems.forEach(item => {
+  // Filter existing items
+  const pendingItems = existingOrderItems.filter(i => !i.delivered_at); // Removed sort by created_at
+  const deliveredItems = existingOrderItems.filter(i => i.delivered_at).sort((a, b) => new Date(b.delivered_at || 0).getTime() - new Date(a.delivered_at || 0).getTime());
+
+  // 1. Section: A Entregar (Pending) moved to main area
+  // See renderPendingItemsInMainArea function below
+
+  // 2. Section: Adicionando (Cart)
+  const cartHeader = document.createElement('div');
+  cartHeader.innerHTML = `<h4 style="margin: 1rem 0 0.5rem 0; font-size: 0.9rem; color: #3b82f6; display:flex; align-items:center; gap:5px;"><span class="material-symbols-outlined" style="font-size:16px">shopping_cart</span> Adicionando...</h4>`;
+  orderItemsList.appendChild(cartHeader);
+
+  if (cart.length > 0) {
+    cart.forEach((item, index) => {
       const el = document.createElement('div');
       el.className = 'cart-item-row';
+      el.style.borderLeft = "3px solid #3b82f6";
+      el.style.paddingLeft = "8px";
       el.innerHTML = `
                 <div class="item-details">
-                    <span class="item-title">${item.product_name || 'Produto'}</span>
-                    <span class="item-meta">${item.quantity}x ${formatCurrency(item.unit_price)}</span>
+                    <span class="item-title">${item.name}</span>
+                    <span class="item-meta">${formatCurrency(item.price)}</span>
                 </div>
                 <div class="item-controls">
-                     <span style="font-size: 0.9rem; font-weight: bold;">R$ ${centsToReais((item.total_item || item.unit_price * item.quantity))}</span>
-                     ${currentOrderStatus !== 'CLOSED' ? `
-                     <button class="qty-btn btn-delete-existing" data-id="${item.id}" style="color: #ef4444; border-color: #fee2e2; background: #fef2f2;">
-                        <span class="material-symbols-outlined" style="font-size: 16px;">delete</span>
-                     </button>` : ''}
+                     <button class="qty-btn btn-minus" data-index="${index}">-</button>
+                     <span class="item-qty-display">${item.quantity}</span>
+                     <button class="qty-btn btn-plus" data-index="${index}">+</button>
                 </div>
             `;
-      // Add delete logic for existing items
-      const delBtn = el.querySelector('.btn-delete-existing');
-      if (delBtn) {
-        delBtn.addEventListener('click', () => {
-          removeOrderItem(currentOrderId!, item.id);
-        });
-      }
+      el.querySelector('.btn-minus')?.addEventListener('click', (e) => { e.stopPropagation(); updateCartQuantity(index, -1); });
+      el.querySelector('.btn-plus')?.addEventListener('click', (e) => { e.stopPropagation(); updateCartQuantity(index, 1); });
       orderItemsList.appendChild(el);
     });
-
-    // Separator if needed
-    if (cart.length > 0) {
-      const separator = document.createElement('div');
-      separator.style.cssText = "margin: 0.5rem 0; border-top: 1px dashed #e5e7eb;";
-      orderItemsList.appendChild(separator);
-    }
+  } else {
+    const emptyEl = document.createElement('div');
+    emptyEl.innerHTML = '<div style="font-style:italic; color:#9ca3af; padding: 0.5rem; font-size: 0.9rem;">Selecione produtos...</div>';
+    orderItemsList.appendChild(emptyEl);
   }
 
-  // 2. Render Cart Items (New)
-  cart.forEach((item, index) => {
-    const el = document.createElement('div');
-    el.className = 'cart-item-row';
-    el.innerHTML = `
+  // 3. Section: Entregues (History)
+  if (deliveredItems.length > 0) {
+    const dHeader = document.createElement('div');
+    dHeader.innerHTML = `<h4 style="margin: 1.5rem 0 0.5rem 0; font-size: 0.9rem; color: #10b981; display:flex; align-items:center; gap:5px;"><span class="material-symbols-outlined" style="font-size:16px">done_all</span> Entregues</h4>`;
+    orderItemsList.appendChild(dHeader);
+
+    deliveredItems.forEach(item => {
+      const el = document.createElement('div');
+      el.className = 'cart-item-row';
+      el.style.opacity = "0.8";
+      el.innerHTML = `
             <div class="item-details">
-                <span class="item-title">${item.name} <span style="font-size: 0.75rem; color: #10b981;">(Novo)</span></span>
-                <span class="item-meta">${formatCurrency(item.price)} unit.</span>
+                <span class="item-title" style="color:#374151;">${item.product_name || 'Produto'}</span>
+                <span class="item-meta" style="font-size: 0.8rem;">Entregue às ${item.delivered_at ? new Date(item.delivered_at).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-'}</span>
             </div>
             <div class="item-controls">
-                 <button class="qty-btn btn-minus" data-index="${index}">-</button>
-                 <span class="item-qty-display">${item.quantity}</span>
-                 <button class="qty-btn btn-plus" data-index="${index}">+</button>
+                 <span style="font-size: 0.9rem; font-weight: 600; color: #10b981;">${item.quantity}x ${formatCurrency(item.unit_price)}</span>
             </div>
         `;
-
-    el.querySelector('.btn-minus')?.addEventListener('click', (e) => { e.stopPropagation(); updateCartQuantity(index, -1); });
-    el.querySelector('.btn-plus')?.addEventListener('click', (e) => { e.stopPropagation(); updateCartQuantity(index, 1); });
-
-    orderItemsList.appendChild(el);
-  });
-
-  if (existingOrderItems.length === 0 && cart.length === 0) {
-    orderItemsList.innerHTML = '<div style="text-align:center; color:#9ca3af; padding: 1rem;">Nenhum item selecionado</div>';
+      orderItemsList.appendChild(el);
+    });
   }
 }
 
 function updateTotals() {
-  const cartTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const existingTotal = existingOrderItems.reduce(
-    (acc, item) => acc + (item.total_item || item.unit_price * item.quantity),
-    0
-  );
 
-  const grandTotal = cartTotal + existingTotal;
+
+  const deliveredTotal = existingOrderItems
+    .filter(i => i.delivered_at)
+    .reduce((acc, item) => acc + (item.total_item || item.unit_price * item.quantity), 0);
+
+
+
+  const grandTotal = deliveredTotal; // + cartTotal? No, keep strictly to delivered.
 
   if (subtotalEl) subtotalEl.textContent = formatCurrency(grandTotal);
   if (totalEl) totalEl.textContent = formatCurrency(grandTotal);
@@ -433,15 +440,31 @@ function updateTotals() {
 // --- API Actions ---
 
 async function removeOrderItem(orderId: string, itemId: string) {
+  showConfirmationModal('Cancelar Item', 'Tem certeza que deseja cancelar este item?', async () => {
+    try {
+      await ApiService.delete(`/orders/${orderId}/items/${itemId}`);
+      showSuccess('Item removido com sucesso!');
+      await loadOrderDetails(orderId);
+      renderOrderSummary(); // Re-render sidebar
+      renderProductsByCategory(); // Re-render main area to update pending list
+      updateTotals();
+    } catch (error: any) {
+      // console.error('Erro ao remover item:', error);
+      showError('Erro ao remover item');
+    }
+  });
+}
+
+async function deliverItem(orderId: string, itemId: string, quantity?: number) {
   try {
-    await ApiService.delete(`/orders/${orderId}/items/${itemId}`);
-    showSuccess('Item removido com sucesso!');
+    await ApiService.put(`/orders/${orderId}/items/${itemId}/deliver`, { quantity });
+    showSuccess('Item entregue!');
     await loadOrderDetails(orderId);
-    renderOrderSummary(); // Re-render logic
+    renderOrderSummary();
+    renderProductsByCategory(); // Update pending list
     updateTotals();
   } catch (error: any) {
-    // console.error('Erro ao remover item:', error);
-    showError('Erro ao remover item');
+    showError('Erro ao entregar item');
   }
 }
 
@@ -493,10 +516,26 @@ async function saveItems() {
     showSuccess(currentOrderId ? 'Pedido atualizado!' : 'Pedido criado com sucesso!');
     cart = [];
 
-    // Redirect to waiter main
-    setTimeout(() => {
-      window.location.href = 'waiterMain.html';
-    }, 1000);
+    // Stay on page logic
+    currentOrderId = orderId;
+
+    // Update URL if new order
+    const url = new URL(window.location.href);
+    if (!url.searchParams.has('order_id')) {
+      url.searchParams.set('order_id', orderId);
+      window.history.pushState({}, '', url);
+    }
+
+    // Refresh UI
+    await loadOrderDetails(orderId);
+    renderOrderSummary();
+    renderProductsByCategory();
+
+    // Re-enable button
+    if (sendBtn) {
+      sendBtn.disabled = false;
+      sendBtn.textContent = 'Salvar / Adicionar';
+    }
 
   } catch (error: any) {
     // console.error('Erro ao salvar:', error);
@@ -514,22 +553,20 @@ async function finalizeOrder() {
     return;
   }
 
-  // Save pending items first use case
-  if (cart.length > 0) {
-    if (!confirm("Existem itens não salvos. Deseja salvá-los e finalizar?")) return;
-    try {
-      await saveItems();
-      return; // Logic redirects after save, so user will click finalize again naturally or we chain it. 
-      // For simplicity, let's just redirect to closeOrder if save succeeds, but saveItems reloads page.
-      // Better flows exist, but let's stick to safe simple flow.
-    } catch (e) { return; }
+  // Validation: Check for pending items (not delivered)
+  const pendingItems = existingOrderItems.filter(i => !i.delivered_at);
+  if (pendingItems.length > 0) {
+    showError('Não é possível finalizar: Existem itens pendentes de entrega.');
+    return;
   }
+
+  if (cart.length > 0) {
+    if (!confirm("Existem itens no carrinho não enviados. Deseja descartá-los e finalizar?")) return;
+  }
+
 
   window.location.href = `closeOrder.html?order_id=${currentOrderId}&table_id=${currentTableId}`;
 }
-
-
-// --- Utils & Events ---
 
 
 // --- Utils & Events ---
@@ -678,8 +715,7 @@ function toggleProfilePopover(btn: HTMLElement) {
     popover.id = "profilePopover";
     popover.className = "popover";
 
-    // Try to get user from local storage first as a fallback, or use a loaded variable
-    // For now, let's parse localStorage 'user' again if we don't have a global user state
+
     let user: User | null = null;
     const userStr = localStorage.getItem('user');
     if (userStr) {
@@ -706,6 +742,11 @@ function toggleProfilePopover(btn: HTMLElement) {
     // Append to header-actions
     const headerActions = document.querySelector(".header-actions");
     if (headerActions) headerActions.appendChild(popover);
+
+    // Prevent close on click inside
+    popover.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
   }
 
   popover.classList.toggle("active");
@@ -715,6 +756,157 @@ function closePopovers() {
   document
     .querySelectorAll(".popover")
     .forEach((p) => p.classList.remove("active"));
+}
+
+
+function renderPendingItemsInMainArea() {
+  // Filter existing items
+  const pendingItems = existingOrderItems.filter(i => !i.delivered_at).sort((a, b) => new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime());
+
+  if (pendingItems.length === 0) return;
+
+  const section = document.createElement('section');
+  section.className = 'category-section';
+  section.style.marginBottom = "2rem";
+  section.innerHTML = `
+        <h2 class="category-title delivery-section-header">
+            <span class="material-symbols-outlined">schedule</span> 
+            Aguardando Entrega (${pendingItems.length})
+        </h2>
+        <div class="products-grid"></div>
+    `;
+
+  const grid = section.querySelector('.products-grid') as HTMLElement;
+
+  pendingItems.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'product-card product-card-pending';
+    card.innerHTML = `
+            <div class="card-info card-info-row">
+                <div>
+                    <h3 class="product-name">${item.product_name || 'Produto'}</h3>
+                    <p class="product-desc product-desc-pending">
+                        Pedido às: <strong>${item.created_at ? new Date(item.created_at).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-'}</strong>
+                    </p>
+                </div>
+                <div class="card-footer-row">
+                    <p class="product-price">${item.quantity}x ${formatCurrency(item.unit_price)}</p>
+                    <div class="btn-actions-wrapper">
+                         <button class="btn-add-action btn-deliver-main btn-deliver-custom" aria-label="Entregar">
+                           <span class="material-symbols-outlined">check</span>
+                         </button>
+                         <button class="btn-add-action btn-cancel-main btn-cancel-custom" aria-label="Cancelar">
+                           <span class="material-symbols-outlined">delete</span>
+                         </button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+    card.querySelector('.btn-deliver-main')?.addEventListener('click', () => {
+      if (item.quantity > 1) {
+        // Show simple prompt for now (or a custom modal if preferred, but prompt is easiest for partial logic)
+        // User asked for "selecionar", let's use a browser prompt first, then upgrade if needed for aesthetics.
+        // Actually, "Design Aesthetics" rule says avoid simple things. Let's create a dynamic modal.
+        showQuantityModal(item, (qty) => {
+          deliverItem(currentOrderId!, item.id, qty);
+        });
+      } else {
+        deliverItem(currentOrderId!, item.id);
+      }
+    });
+
+    card.querySelector('.btn-cancel-main')?.addEventListener('click', () => {
+      removeOrderItem(currentOrderId!, item.id);
+    });
+
+    grid.appendChild(card);
+  });
+
+  productsContainer.prepend(section);
+}
+
+// Helper Modal for Quantity
+function showQuantityModal(item: OrderItem, onConfirm: (qty: number) => void) {
+  const modal = document.createElement('div');
+  modal.className = 'quantity-modal-overlay active';
+  modal.innerHTML = `
+        <div class="quantity-modal-content glass">
+            <h3 class="modal-title">Confirmar Entrega</h3>
+            <p class="modal-desc">
+               Quantos <strong>${item.product_name}</strong> foram entregues?
+            </p>
+            <div class="modal-controls">
+                <button id="qty-minus" class="btn-icon modal-qty-btn">-</button>
+                <span id="qty-display" class="modal-qty-display">1</span>
+                <button id="qty-plus" class="btn-icon modal-qty-btn">+</button>
+            </div>
+            
+            <div class="modal-actions">
+                <button id="cancel-qty" class="btn btn-cancel-modal">Cancelar</button>
+                <button id="confirm-qty" class="btn btn-primary" style="flex: 1;">Confirmar</button>
+            </div>
+        </div>
+    `;
+
+  document.body.appendChild(modal);
+
+  let currentQty = 1;
+  const display = modal.querySelector('#qty-display')!;
+
+  modal.querySelector('#qty-minus')?.addEventListener('click', () => {
+    if (currentQty > 1) {
+      currentQty--;
+      display.textContent = currentQty.toString();
+    }
+  });
+
+  modal.querySelector('#qty-plus')?.addEventListener('click', () => {
+    if (currentQty < item.quantity) {
+      currentQty++;
+      display.textContent = currentQty.toString();
+    }
+  });
+
+  modal.querySelector('#confirm-qty')?.addEventListener('click', () => {
+    onConfirm(currentQty);
+    document.body.removeChild(modal);
+  });
+
+  modal.querySelector('#cancel-qty')?.addEventListener('click', () => {
+    document.body.removeChild(modal);
+  });
+}
+
+
+// Helper Modal for Confirmation
+function showConfirmationModal(title: string, message: string, onConfirm: () => void) {
+  const modal = document.createElement('div');
+  modal.className = 'quantity-modal-overlay active'; // Confirm reuse of same overlay style
+  modal.innerHTML = `
+        <div class="quantity-modal-content glass">
+            <h3 class="modal-title">${title}</h3>
+            <p class="modal-desc">${message}</p>
+            
+            <div class="modal-actions">
+                <button id="cancel-confirm" class="btn btn-cancel-modal">Não</button>
+                <button id="confirm-action" class="btn btn-primary" style="flex: 1;">Sim</button>
+            </div>
+        </div>
+    `;
+
+  document.body.appendChild(modal);
+
+  const close = () => document.body.removeChild(modal);
+
+  modal.querySelector('#confirm-action')?.addEventListener('click', () => {
+    onConfirm();
+    close();
+  });
+
+  modal.querySelector('#cancel-confirm')?.addEventListener('click', () => {
+    close();
+  });
 }
 
 interface User {

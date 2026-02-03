@@ -34,4 +34,6 @@ export interface OrderItemDTO {
   unit_price: number;
   total_item: number;
   product_name?: string;
+  created_at?: string;
+  delivered_at?: string;
 }

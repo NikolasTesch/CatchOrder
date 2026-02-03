@@ -58,9 +58,7 @@ async function init() {
   updateDateDisplay();
   loadTables();
   loadSummary();
-  loadTables();
-  loadSummary();
-  loadActiveOrders(); // NEW
+  loadActiveOrders();
 
   // Check for auto-open modal
   const urlParams = new URLSearchParams(window.location.search);
@@ -74,7 +72,7 @@ async function init() {
   setInterval(() => {
     loadTables();
     loadSummary();
-    loadActiveOrders(); // NEW
+    loadActiveOrders();
   }, 30000);
 }
 
@@ -284,10 +282,20 @@ function toggleProfilePopover(btn: HTMLElement) {
               <span class="role-badge ${currentUser.role.toLowerCase()}">${currentUser.role}</span>
             </div>
           </div>
+          <div class="popover-footer" style="padding-top: 1rem; border-top: 1px solid var(--border-light); margin-top: 1rem;">
+            <button class="btn btn-danger btn-full btn-sm" id="popoverLogoutBtn">
+              <span class="material-symbols-outlined" style="font-size: 18px; margin-right: 8px;">logout</span>
+              Sair
+            </button>
+          </div>
         </div>
       `;
 
       // Attach listener to new button
+      const popoverBtn = popover.querySelector("#popoverLogoutBtn");
+      if (popoverBtn) {
+        popoverBtn.addEventListener("click", handleLogout);
+      }
     } else {
       popover.innerHTML = `<div class="popover-body">Carregando perfil...</div>`;
     }

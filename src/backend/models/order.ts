@@ -122,10 +122,21 @@ export class OrderModel {
     if (data.tip !== undefined) updated.tip = data.tip;
     if (data.closed_at !== undefined) updated.closed_at = data.closed_at;
     if (data.observations !== undefined) updated.observations = data.observations;
+    if (data.table_id !== undefined) updated.table_id = data.table_id;
+    if (data.user_id !== undefined) updated.user_id = data.user_id;
 
     await db.run(
-      `UPDATE orders SET status = ?, total = ?, tip = ?, closed_at = ?, observations = ? WHERE id = ? `,
-      [updated.status, updated.total, updated.tip, updated.closed_at, updated.observations, id],
+      `UPDATE orders SET status = ?, total = ?, tip = ?, closed_at = ?, observations = ?, table_id = ?, user_id = ? WHERE id = ?`,
+      [
+        updated.status,
+        updated.total,
+        updated.tip,
+        updated.closed_at || null,
+        updated.observations || null,
+        updated.table_id,
+        updated.user_id,
+        id,
+      ],
     );
 
     return OrderModel.findById(id);

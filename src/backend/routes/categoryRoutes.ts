@@ -1,37 +1,14 @@
 import { Router } from 'express';
-import categoryControllers from '../controllers/categoryControllers';
-import { isAdminOrManager } from '../middlewares/roleAuth';
-import {
-  validateCategoryCreation,
-  validateCategoryUpdate,
-  validateCategoryId,
-} from '../middlewares/validateCategory';
+import { CategoryController } from '../controllers/categoryControllers';
 
-const categoryRoutes = Router();
+const router = Router();
 
-// Rotas públicas - acessíveis por todos os usuários autenticados
+router.get('/', CategoryController.getAll);
+router.get('/:id', CategoryController.getById);
+router.post('/', CategoryController.create);
+router.put('/:id', CategoryController.update);
+router.delete('/:id', CategoryController.delete);
 
-// Lista todas as categorias de produtos
-categoryRoutes.get('/', categoryControllers.index);
-
-// Busca uma categoria específica por ID
-categoryRoutes.get('/:id', validateCategoryId, categoryControllers.show);
-
-// Rotas restritas - apenas Admin ou Manager podem acessar
-categoryRoutes.use(isAdminOrManager);
-
-// Cria uma nova categoria de produtos
-categoryRoutes.post('/', validateCategoryCreation, categoryControllers.store);
-
-// Atualiza os dados de uma categoria existente
-categoryRoutes.put(
-  '/:id',
-  validateCategoryId,
-  validateCategoryUpdate,
-  categoryControllers.update,
-);
-
-// Remove uma categoria do sistema
-categoryRoutes.delete('/:id', validateCategoryId, categoryControllers.delete);
-
-export { categoryRoutes };
+// CORREÇÃO: Exportando como 'categoryRoutes' (singular) para satisfazer o index.ts
+export const categoryRoutes = router; 
+export default router;

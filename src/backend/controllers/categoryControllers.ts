@@ -1,103 +1,87 @@
 import { Request, Response } from 'express';
 import { CategoryModel } from '../models/category';
+import { v4 as uuidv4 } from 'uuid';
 
-class CategoriesController {
-  async index(req: Request, res: Response): Promise<Response> {
+export class CategoryController {
+  static async getAll(req: Request, res: Response) {
     try {
       const categories = await CategoryModel.findAll();
-      return res.status(200).json({
-        message: 'Lista de categorias',
-        data: categories,
-      });
+      res.json(categories);
     } catch (error) {
-      return res.status(500).json({
-        message: 'Erro ao listar categorias',
-        error: error instanceof Error ? error.message : 'Erro desconhecido',
-      });
+      res.status(500).json({ error: 'Erro ao buscar categorias' });
     }
   }
 
-  async show(req: Request, res: Response): Promise<Response> {
+  static async getById(req: Request, res: Response) {
     try {
-      const id = req.params.id as string;
-      const category = await CategoryModel.findById(id);
-
+      const { id } = req.params;
+      const category = await CategoryModel.findById(id as string);
+      
       if (!category) {
-        return res.status(404).json({ message: 'Categoria não encontrada' });
+        return res.status(404).json({ error: 'Categoria não encontrada' });
       }
-
-      return res.status(200).json({
-        message: `Categoria com ID ${id}`,
-        data: category,
-      });
+      
+      res.json(category);
     } catch (error) {
-      return res.status(500).json({
-        message: 'Erro ao buscar categoria',
-        error: error instanceof Error ? error.message : 'Erro desconhecido',
-      });
+      res.status(500).json({ error: 'Erro ao buscar categoria' });
     }
   }
 
-  async store(req: Request, res: Response): Promise<Response> {
+  static async create(req: Request, res: Response) {
     try {
       const { name } = req.body;
 
-      const newCategory = await CategoryModel.create({ name });
+      if (!name) {
+        return res.status(400).json({ error: 'Nome é obrigatório' });
+      }
 
-      return res.status(201).json({
-        message: 'Categoria criada com sucesso',
-        data: newCategory,
+      // CORREÇÃO: Passando ID gerado e name
+      const newCategory = await CategoryModel.create({ 
+        id: uuidv4(),
+        name 
       });
+      
+      res.status(201).json(newCategory);
     } catch (error) {
-      return res.status(500).json({
-        message: 'Erro ao criar categoria',
-        error: error instanceof Error ? error.message : 'Erro desconhecido',
-      });
+      res.status(500).json({ error: 'Erro ao criar categoria' });
     }
   }
 
-  async update(req: Request, res: Response): Promise<Response> {
+  static async update(req: Request, res: Response) {
     try {
-      const id = req.params.id as string;
+      const { id } = req.params;
       const { name } = req.body;
 
-      const updatedCategory = await CategoryModel.update(id, { name });
-
-      if (!updatedCategory) {
-        return res.status(404).json({ message: 'Categoria não encontrada' });
+      // Primeiro verifica se existe
+      const existing = await CategoryModel.findById(id as string);
+      if (!existing) {
+        return res.status(404).json({ error: 'Categoria não encontrada' });
       }
 
-      return res.status(200).json({
-        message: `Categoria ${id} atualizada com sucesso`,
-        data: updatedCategory,
-      });
+      // Executa o update (que retorna void)
+      await CategoryModel.update(id as string, { name });
+      
+      // Busca o atualizado para retornar
+      const updated = await CategoryModel.findById(id as string);
+      res.json(updated);
     } catch (error) {
-      return res.status(500).json({
-        message: 'Erro ao atualizar categoria',
-        error: error instanceof Error ? error.message : 'Erro desconhecido',
-      });
+      res.status(500).json({ error: 'Erro ao atualizar categoria' });
     }
   }
 
-  async delete(req: Request, res: Response): Promise<Response> {
+  static async delete(req: Request, res: Response) {
     try {
-      const id = req.params.id as string;
-      const success = await CategoryModel.delete(id);
-
-      if (!success) {
-        return res.status(404).json({ message: 'Categoria não encontrada' });
+      const { id } = req.params;
+      
+      const existing = await CategoryModel.findById(id as string);
+      if (!existing) {
+        return res.status(404).json({ error: 'Categoria não encontrada' });
       }
 
-      return res.status(200).json({
-        message: `Categoria ${id} removida com sucesso`,
-      });
+      await CategoryModel.delete(id as string);
+      res.status(204).send();
     } catch (error) {
-      return res.status(500).json({
-        message: 'Erro ao remover categoria',
-        error: error instanceof Error ? error.message : 'Erro desconhecido',
-      });
+      res.status(500).json({ error: 'Erro ao deletar categoria' });
     }
   }
 }
-
-export default new CategoriesController();

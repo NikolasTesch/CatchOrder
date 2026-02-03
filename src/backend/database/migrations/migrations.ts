@@ -3,9 +3,6 @@ import { runSeeds } from '../seeds/seeds';
 
 /**
  * Executa as migrations do banco de dados
- *
- * IMPORTANTE: Preços são armazenados como INTEGER em centavos
- * Exemplo: R$ 10,50 = 1050, R$ 0,99 = 99, R$ 100,00 = 10000
  */
 export const runMigrations = async () => {
   const db = await getDb();
@@ -13,11 +10,11 @@ export const runMigrations = async () => {
   // ========================================
   // TABELA: categories
   // ========================================
+  // Removido o campo SLUG da criação
   await db.exec(`
     CREATE TABLE IF NOT EXISTS categories (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
-      slug TEXT UNIQUE NOT NULL,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME
     )
@@ -26,6 +23,7 @@ export const runMigrations = async () => {
   // ========================================
   // TABELA: products
   // ========================================
+  // Adicionado preparation_time na criação
   await db.exec(`
     CREATE TABLE IF NOT EXISTS products (
       id TEXT PRIMARY KEY,
@@ -35,6 +33,7 @@ export const runMigrations = async () => {
       price INTEGER NOT NULL CHECK (price >= 0),
       image_path TEXT,
       is_active BOOLEAN DEFAULT 1,
+      preparation_time INTEGER DEFAULT 15,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME,
       FOREIGN KEY (category_id) REFERENCES categories(id) 
@@ -43,9 +42,7 @@ export const runMigrations = async () => {
     )
   `);
 
-  // ========================================
-  // TABELA: users
-  // ========================================
+  // ... (Tabelas de Users, Tables, Orders e OrderItems permanecem iguais)
   await db.exec(`
     CREATE TABLE IF NOT EXISTS users (
       id TEXT PRIMARY KEY,
@@ -59,9 +56,6 @@ export const runMigrations = async () => {
     )
   `);
 
-  // ========================================
-  // TABELA: restaurant_tables
-  // ========================================
   await db.exec(`
     CREATE TABLE IF NOT EXISTS restaurant_tables (
       id TEXT PRIMARY KEY,
@@ -78,9 +72,6 @@ export const runMigrations = async () => {
     )
   `);
 
-  // ========================================
-  // TABELA: orders
-  // ========================================
   await db.exec(`
     CREATE TABLE IF NOT EXISTS orders (
       id TEXT PRIMARY KEY,
@@ -102,84 +93,61 @@ export const runMigrations = async () => {
     )
   `);
 
-  // Migration for existing databases: Add observations column if not exists
-  try {
-    await db.exec(`ALTER TABLE orders ADD COLUMN observations TEXT`);
-  } catch (error) {
-    // Column likely already exists, ignore error
-  }
-
-
-  // ========================================
-  // TABELA: order_items
-  // ========================================
   await db.exec(`
     CREATE TABLE IF NOT EXISTS order_items(
-    id TEXT PRIMARY KEY,
-    order_id TEXT NOT NULL,
-    product_id TEXT NOT NULL,
-    quantity INTEGER NOT NULL CHECK(quantity > 0),
-    unit_price INTEGER NOT NULL CHECK(unit_price >= 0),
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY(order_id) REFERENCES orders(id) 
+      id TEXT PRIMARY KEY,
+      order_id TEXT NOT NULL,
+      product_id TEXT NOT NULL,
+      quantity INTEGER NOT NULL CHECK(quantity > 0),
+      unit_price INTEGER NOT NULL CHECK(unit_price >= 0),
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(order_id) REFERENCES orders(id) 
         ON DELETE CASCADE 
         ON UPDATE CASCADE,
-    FOREIGN KEY(product_id) REFERENCES products(id) 
+      FOREIGN KEY(product_id) REFERENCES products(id) 
         ON DELETE RESTRICT 
         ON UPDATE CASCADE
-  )
+    )
   `);
 
   // ========================================
-  // ÍNDICES PARA OTIMIZAÇÃO DE PERFORMANCE
+  // MIGRATIONS DE ALTERAÇÃO (Para bancos existentes)
   // ========================================
+  
+  // 1. Adicionar campo observations (Legado)
+  try {
+    await db.exec(`ALTER TABLE orders ADD COLUMN observations TEXT`);
+  } catch (error) {}
 
-  // Índices para categories
-  await db.exec(
-    `CREATE INDEX IF NOT EXISTS idx_categories_slug ON categories(slug)`,
-  );
+  // 2. Adicionar preparation_time em products
+  try {
+    await db.exec(`ALTER TABLE products ADD COLUMN preparation_time INTEGER DEFAULT 15`);
+    console.log('✓ Coluna preparation_time adicionada');
+  } catch (error) {}
 
-  // Índices para products
-  await db.exec(
-    `CREATE INDEX IF NOT EXISTS idx_products_category_id ON products(category_id)`,
-  );
-  await db.exec(
-    `CREATE INDEX IF NOT EXISTS idx_products_is_active ON products(is_active)`,
-  );
+  // 3. Remover slug de categories (SQLite moderno suporta DROP COLUMN)
+  try {
+    await db.exec(`ALTER TABLE categories DROP COLUMN slug`);
+    console.log('✓ Coluna slug removida');
+  } catch (error) {
+    // Se falhar (versão antiga do SQLite), não tem problema crítico, apenas fica lá sem uso.
+  }
 
-  // Índices para users
-  await db.exec(
-    `CREATE INDEX IF NOT EXISTS idx_users_username ON users(username)`,
-  );
+  // ========================================
+  // ÍNDICES
+  // ========================================
+  // Removido index de slug
+  await db.exec(`CREATE INDEX IF NOT EXISTS idx_products_category_id ON products(category_id)`);
+  await db.exec(`CREATE INDEX IF NOT EXISTS idx_products_is_active ON products(is_active)`);
+  await db.exec(`CREATE INDEX IF NOT EXISTS idx_users_username ON users(username)`);
   await db.exec(`CREATE INDEX IF NOT EXISTS idx_users_role ON users(role)`);
+  await db.exec(`CREATE INDEX IF NOT EXISTS idx_tables_status ON restaurant_tables(status)`);
+  await db.exec(`CREATE INDEX IF NOT EXISTS idx_tables_waiter_id ON restaurant_tables(waiter_id)`);
+  await db.exec(`CREATE INDEX IF NOT EXISTS idx_orders_table_id ON orders(table_id)`);
+  await db.exec(`CREATE INDEX IF NOT EXISTS idx_orders_user_id ON orders(user_id)`);
+  await db.exec(`CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status)`);
+  await db.exec(`CREATE INDEX IF NOT EXISTS idx_order_items_order_id ON order_items(order_id)`);
+  await db.exec(`CREATE INDEX IF NOT EXISTS idx_order_items_product_id ON order_items(product_id)`);
 
-  // Índices para restaurant_tables
-  await db.exec(
-    `CREATE INDEX IF NOT EXISTS idx_tables_status ON restaurant_tables(status)`,
-  );
-  await db.exec(
-    `CREATE INDEX IF NOT EXISTS idx_tables_waiter_id ON restaurant_tables(waiter_id)`,
-  );
-
-  // Índices para orders
-  await db.exec(
-    `CREATE INDEX IF NOT EXISTS idx_orders_table_id ON orders(table_id)`,
-  );
-  await db.exec(
-    `CREATE INDEX IF NOT EXISTS idx_orders_user_id ON orders(user_id)`,
-  );
-  await db.exec(
-    `CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status)`,
-  );
-
-  // Índices para order_items
-  await db.exec(
-    `CREATE INDEX IF NOT EXISTS idx_order_items_order_id ON order_items(order_id)`,
-  );
-  await db.exec(
-    `CREATE INDEX IF NOT EXISTS idx_order_items_product_id ON order_items(product_id)`,
-  );
-
-  // Executar seeds
   await runSeeds();
 };

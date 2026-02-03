@@ -6,4 +6,5 @@ export interface Product {
   price: number;
   image_path: string | null;
   is_active: boolean;
+  preparation_time: number; // Novo campo
 }

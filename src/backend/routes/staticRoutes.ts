@@ -14,12 +14,19 @@ assetTypes.forEach(type => {
 });
 
 // 2. Public Pages (Explicit exceptions)
-router.get('/pages/landingPage.html', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../../public/pages/landingPage.html'));
-});
-router.get('/pages/sellingPage.html', (req, res) => {
+const serveSellingPage = (req: express.Request, res: express.Response) => {
   res.sendFile(path.join(__dirname, '../../../public/pages/sellingPage.html'));
-});
+};
+const serveLandingPage = (req: express.Request, res: express.Response) => {
+  res.sendFile(path.join(__dirname, '../../../public/pages/landingPage.html'));
+};
+
+router.get('/pages/landingPage.html', serveLandingPage);
+router.get('/server09/pages/landingPage.html', serveLandingPage);
+
+router.get('/pages/sellingPage.html', serveSellingPage);
+router.get('/server09/pages/sellingPage.html', serveSellingPage);
+
 
 /* router.get('/pages/forgotPassword.html', (req, res) => {
   res.sendFile(path.join(__dirname, '../../../public/pages/forgotPassword.html'));
@@ -27,11 +34,11 @@ router.get('/pages/sellingPage.html', (req, res) => {
 
 // 3. Root & App Redirects
 router.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../../public/pages/sellingPage.html'));
+  res.redirect('/server09/pages/sellingPage.html');
 });
 
 router.get('/server09', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../../public/pages/sellingPage.html'));
+  res.redirect('/server09/pages/sellingPage.html');
 });
 
 // App Entry Points

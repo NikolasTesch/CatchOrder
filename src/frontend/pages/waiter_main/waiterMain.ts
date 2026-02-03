@@ -43,6 +43,7 @@ let allTables: Table[] = [];
 let allUsers: User[] = [];
 let currentEditingOrderId: string | null = null;
 let currentSection: string = "dashboard";
+let searchTerm: string = "";
 
 // DOM Elements
 const sidebar = document.getElementById("sidebar");
@@ -206,6 +207,15 @@ function setupEventListeners() {
       if (availableSection) {
         availableSection.scrollIntoView({ behavior: "smooth" });
       }
+    });
+  }
+
+  // Orders Search Input
+  const ordersSearch = document.getElementById("ordersSearchInput");
+  if (ordersSearch) {
+    ordersSearch.addEventListener("input", (e) => {
+      searchTerm = (e.target as HTMLInputElement).value;
+      if (currentSection === "orders") loadOrdersView();
     });
   }
 
@@ -714,22 +724,23 @@ function handleSectionChange(sectionId: string) {
   // Toggle Sections
   const dashboardSection = document.getElementById("dashboard-section");
   const commissionsSection = document.getElementById("commissions-section");
+  const ordersSection = document.getElementById("orders-section");
 
-  if (dashboardSection && commissionsSection) {
-    if (sectionId === "dashboard") {
-      dashboardSection.style.display = "block";
-      commissionsSection.style.display = "none";
+  // Hide all first
+  if (dashboardSection) dashboardSection.style.display = "none";
+  if (commissionsSection) commissionsSection.style.display = "none";
+  if (ordersSection) ordersSection.style.display = "none";
 
-      // Refresh Dashboard Data
-      loadTables();
-      loadActiveOrders();
-    } else if (sectionId === "commissions") {
-      dashboardSection.style.display = "none";
-      commissionsSection.style.display = "block";
-
-      // Refresh Commissions Data
-      loadCommissions();
-    }
+  if (sectionId === "dashboard" && dashboardSection) {
+    dashboardSection.style.display = "block";
+    loadTables();
+    loadActiveOrders();
+  } else if (sectionId === "commissions" && commissionsSection) {
+    commissionsSection.style.display = "block";
+    loadCommissions();
+  } else if (sectionId === "orders" && ordersSection) {
+    ordersSection.style.display = "block";
+    loadOrdersView();
   }
 }
 
@@ -839,6 +850,147 @@ function renderCommissionsView(orders: Order[]) {
   // Update Stats Cards
   if (dailyEl) dailyEl.textContent = formatCurrency(dailyTotal);
   if (monthlyEl) monthlyEl.textContent = formatCurrency(monthlyTotal);
+}
+
+// ========================================
+// ORDERS LOGIC (SPA Section)
+// ========================================
+async function loadOrdersView() {
+  try {
+    // We need tables and users to render orders properly
+    if (allTables.length === 0) await loadTables();
+    if (allUsers.length === 0) await loadUsers();
+
+    const response = await ApiService.get<{ data: Order[] }>("/orders");
+    const orders = response.data || [];
+
+    renderOrdersView(orders);
+  } catch (error) {
+    console.error("Error loading orders:", error);
+  }
+}
+
+async function loadUsers() {
+  try {
+    const response = await ApiService.get<{ data: User[] }>("/users");
+    allUsers = response.data || [];
+  } catch (e) {
+    // console.error("Error loading users", e);
+  }
+}
+
+function renderOrdersView(orders: Order[]) {
+  // Filter by search
+  const filtered = orders.filter((o) => {
+    if (!searchTerm) return true;
+
+    // Find table number
+    const table = allTables.find(
+      (t) => t.id === o.table_id || String(t.id) === String(o.table_id),
+    );
+    if (table && String(table.number).includes(searchTerm)) return true;
+
+    return false;
+  });
+
+  const openOrders = filtered.filter(
+    (o) => o.status === "OPEN" || o.status === "IN_PROGRESS",
+  );
+  const finishedOrders = filtered.filter(
+    (o) =>
+      o.status === "CLOSED" || o.status === "PAID" || o.status === "CANCELLED",
+  );
+
+  // Sort: Table Number
+  const sorter = (a: Order, b: Order) => {
+    const ta = allTables.find(
+      (t) => t.id === a.table_id || String(t.id) === String(a.table_id),
+    );
+    const tb = allTables.find(
+      (t) => t.id === b.table_id || String(t.id) === String(b.table_id),
+    );
+    return (ta ? ta.number : 0) - (tb ? tb.number : 0);
+  };
+
+  openOrders.sort(sorter);
+  finishedOrders.sort(sorter);
+
+  const openGrid = document.getElementById("orders-open-grid");
+  const finishedGrid = document.getElementById("orders-finished-grid");
+
+  renderOrderGrid(openGrid, openOrders, "open");
+  renderOrderGrid(finishedGrid, finishedOrders, "finished");
+}
+
+function renderOrderGrid(
+  container: HTMLElement | null,
+  ordersList: Order[],
+  type: "open" | "finished",
+) {
+  if (!container) return;
+
+  if (ordersList.length === 0) {
+    container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #64748b;">Nenhuma ordem ${type === "open" ? "aberta" : "finalizada"}.</p>`;
+    return;
+  }
+
+  container.innerHTML = ordersList
+    .map((order) => {
+      const table = allTables.find(
+        (t) =>
+          t.id === order.table_id || String(t.id) === String(order.table_id),
+      );
+      const user = allUsers.find(
+        (u) => u.id === order.user_id || String(u.id) === String(order.user_id),
+      );
+
+      const tableNum = table ? table.number : "?";
+      const userName = user ? user.name : "Desconhecido";
+      const total = Number(order.total) || 0;
+
+      const itemsDesc =
+        order.items && order.items.length
+          ? order.items
+              .map((i: any) => `${i.quantity}x ${i.name || i.product_name}`)
+              .join(", ")
+          : "Sem itens";
+
+      return `
+         <div class="active-order-card">
+            <div class="order-card-header">
+               <div class="table-indicator">
+                  <span class="label">Mesa</span>
+                  <span class="number">${tableNum}</span>
+               </div>
+               <span class="badge-status-${type === "open" ? "preparing" : "waiting"}">${translateStatus(order.status)}</span>
+            </div>
+            <div class="order-card-body">
+               <div class="order-items-list">
+                  <p style="font-size: 0.9rem; color: var(--text-muted); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">${itemsDesc}</p>
+               </div>
+               <p style="font-size: 0.8rem; color: var(--text-dim); margin-top: auto;">Garçom: ${userName}</p>
+            </div>
+            <div class="order-card-footer">
+               <span class="order-price">${formatCurrency(total)}</span>
+               <button class="btn-edit-order" onclick="window.location.href='createOrder.html?table_id=${order.table_id}&order_id=${order.id}'">
+                  <span class="material-symbols-outlined">edit</span>
+               </button>
+            </div>
+         </div>
+        `;
+    })
+    .join("");
+}
+
+function translateStatus(status: string) {
+  const map: Record<string, string> = {
+    OPEN: "Aberto",
+    IN_PROGRESS: "Em Andamento",
+    CLOSED: "Fechado",
+    PAID: "Pago",
+    CANCELLED: "Cancelado",
+  };
+  return map[status] || status;
 }
 
 

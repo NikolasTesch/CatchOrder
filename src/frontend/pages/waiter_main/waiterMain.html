@@ -66,7 +66,7 @@
         <span class="material-symbols-outlined">dashboard</span>
         <span class="nav-text">Dashboard</span>
       </button>
-      <button class="nav-item" data-href="orders.html">
+      <button class="nav-item" data-section="orders">
         <span class="material-symbols-outlined">receipt_long</span>
         <span class="nav-text">Pedidos</span>
       </button>
@@ -148,6 +148,31 @@
               </table>
           </div>
         </section>
+    </section>
+
+    <!-- Orders Section (Hidden by default) -->
+    <section id="orders-section" class="content-section" style="display: none;">
+      <!-- Search Bar -->
+      <div class="search-container" role="search" aria-label="Buscar pedidos" style="margin-bottom: 2rem;">
+        <span class="material-symbols-outlined search-icon" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--color-primary);">search</span>
+        <input type="text" id="ordersSearchInput" class="search-input" placeholder="Buscar por mesa..." style="width: 100%; padding: 1rem 1rem 1rem 3rem; border-radius: 12px; border: 1px solid #cbd5e1; outline: none;">
+      </div>
+
+      <!-- Open Orders -->
+      <section class="tables-section" style="background: transparent; box-shadow: none; padding: 0;">
+        <h3 class="section-title">Ordens Abertas</h3>
+        <div class="active-orders-grid" id="orders-open-grid">
+           <!-- Injected -->
+        </div>
+      </section>
+
+      <!-- Finished Orders -->
+      <section class="tables-section" style="background: transparent; box-shadow: none; padding: 0; margin-top: 2rem;">
+        <h3 class="section-title">Ordens Finalizadas</h3>
+        <div class="active-orders-grid" id="orders-finished-grid">
+           <!-- Injected -->
+        </div>
+      </section>
     </section>
   </main>
 

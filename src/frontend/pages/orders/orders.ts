@@ -1,4 +1,5 @@
 import './style.css';
+import { initHamburgerMenu } from '../../components/hamburgerMenu/hamburgerMenu';
 import { ApiService } from '../../services/apiService';
 import { formatCurrency } from '../../utils/currency';
 
@@ -281,13 +282,8 @@ function setupHeaderListeners() {
   const darkModeToggle = document.getElementById('darkModeToggle');
   if (darkModeToggle) darkModeToggle.addEventListener('click', toggleDarkMode);
 
-  const menuBtn = document.getElementById('menuBtn');
-  const sidebar = document.getElementById('sidebar');
-  if (menuBtn && sidebar) {
-    menuBtn.addEventListener('click', () => {
-      sidebar.classList.toggle('active');
-    });
-  }
+  // Hamburger menu (centralized component)
+  initHamburgerMenu();
 
   const userBtn = document.getElementById('userBtn');
   if (userBtn) {

@@ -1,6 +1,7 @@
 import '../../styles/global.css';
 import './style.css';
 import { ApiService } from '../../services/apiService';
+import { initHamburgerMenu } from '../../components/hamburgerMenu/hamburgerMenu';
 
 // Interfaces
 interface OrderItem {
@@ -40,8 +41,6 @@ interface User {
 let currentUser: User | null = null;
 
 // DOM Elements
-const sidebar = document.getElementById('sidebar');
-const menuBtn = document.getElementById('menuBtn');
 const logoutBtn = document.getElementById('logoutBtn');
 const darkModeToggle = document.getElementById('darkModeToggle');
 
@@ -167,12 +166,8 @@ function setupEventListeners() {
     darkModeToggle.addEventListener("click", toggleDarkMode);
   }
 
-  // Sidebar Toggle
-  if (menuBtn && sidebar) {
-    menuBtn.addEventListener("click", () => {
-      sidebar.classList.toggle("active");
-    });
-  }
+  // Hamburger menu (centralized component)
+  initHamburgerMenu();
 
   // New Order Button - Scroll to Available Tables
   const newOrderBtn = document.getElementById("newOrderBtn");

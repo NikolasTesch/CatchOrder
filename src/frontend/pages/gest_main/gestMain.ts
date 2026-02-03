@@ -6,6 +6,7 @@ import {
   reaisToCents,
   parseInputToCents,
 } from '../../utils/currency';
+import { initHamburgerMenu } from '../../components/hamburgerMenu/hamburgerMenu';
 // ========================================
 // INTERFACES
 // ========================================
@@ -89,8 +90,6 @@ let currentUser: User | null = null;
 // ========================================
 // Elements are fetched dynamically where possible to avoid null checks on init if elements are missing from partial views,
 // but for the main shell, we can fetch them.
-const sidebar = document.getElementById('sidebar');
-const menuBtn = document.getElementById('menuBtn');
 const modal = document.getElementById('formModal');
 const modalTitle = document.getElementById('modalTitle');
 const modalBody = document.getElementById('modalBody');
@@ -227,6 +226,7 @@ function switchSection(sectionName: string) {
   loadSectionData(sectionName);
 
   // Close sidebar on mobile
+  const sidebar = document.getElementById('sidebar');
   if (window.innerWidth <= 1024 && sidebar) {
     sidebar.classList.remove('active');
   }
@@ -1412,11 +1412,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initDarkMode();
 
   // Event Listeners
-  if (menuBtn && sidebar) {
-    menuBtn.addEventListener('click', () => {
-      sidebar.classList.toggle('active');
-    });
-  }
+  // Hamburger menu (centralized component)
+  initHamburgerMenu();
 
   const navItems = document.querySelectorAll('.nav-item');
   navItems.forEach((item) => {

@@ -4,6 +4,7 @@ export { };
 import { ApiService } from '../../services/apiService';
 import { ModalService } from '../../utils/modalService';
 import './style.css';
+import { initHamburgerMenu } from '../../components/hamburgerMenu/hamburgerMenu';
 
 // API Configuration
 // Using ApiService.getBaseUrl()
@@ -328,10 +329,8 @@ document.addEventListener('DOMContentLoaded', () => {
       darkModeToggle.addEventListener('click', toggleDarkMode);
     }
 
-    const menuBtn = document.getElementById('menuBtn');
-    if (menuBtn) {
-      menuBtn.addEventListener('click', toggleSidebar);
-    }
+    // Hamburger menu (centralized component)
+    initHamburgerMenu();
 
     // Sidebar close handlers
     const sidebarOverlay = document.getElementById('sidebarOverlay');

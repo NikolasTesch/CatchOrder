@@ -4,6 +4,10 @@ export class ApiService {
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
       return 'http://localhost:3000/api';
     }
+    // Check if running under a subpath like /server09/
+    if (window.location.pathname.startsWith('/server09/')) {
+      return '/server09/api';
+    }
     return '/api';
   }
 

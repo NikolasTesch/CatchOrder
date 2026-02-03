@@ -10,7 +10,6 @@ const router = Router();
 const assetTypes = ['css', 'js', 'img', 'uploads'];
 assetTypes.forEach(type => {
   router.use(`/${type}`, express.static(path.join(__dirname, `../../../public/${type}`)));
-  router.use(`/server09/${type}`, express.static(path.join(__dirname, `../../../public/${type}`)));
 });
 
 // 2. Public Pages (Explicit exceptions)
@@ -22,23 +21,11 @@ const serveLandingPage = (req: express.Request, res: express.Response) => {
 };
 
 router.get('/pages/landingPage.html', serveLandingPage);
-router.get('/server09/pages/landingPage.html', serveLandingPage);
-
 router.get('/pages/sellingPage.html', serveSellingPage);
-router.get('/server09/pages/sellingPage.html', serveSellingPage);
-
-
-/* router.get('/pages/forgotPassword.html', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../../public/pages/forgotPassword.html'));
-}); */
 
 // 3. Root & App Redirects
 router.get('/', (req, res) => {
-  res.redirect('/server09/pages/sellingPage.html');
-});
-
-router.get('/server09', (req, res) => {
-  res.redirect('/server09/pages/sellingPage.html');
+  res.redirect('/pages/sellingPage.html');
 });
 
 // App Entry Points
@@ -47,7 +34,6 @@ const appHandler = (req: express.Request, res: express.Response) => {
 };
 
 router.get('/app', appHandler);
-router.get('/server09/app', appHandler);
 
 // 4. Protected Pages (Rest of /pages)
 router.use('/pages', authenticatePage, express.static(path.join(__dirname, '../../../public/pages')));

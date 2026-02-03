@@ -6,9 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CatchOrder - Gestão</title>
   <link rel='icon' href='../img/icon.svg' type='image/svg+xml'>
-  
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 
 <body>
@@ -73,6 +74,10 @@
           <span class="material-symbols-outlined">category</span>
           <span class="nav-text">Categorias</span>
         </button>
+        <button class="nav-item" data-section="insights">
+          <span class="material-symbols-outlined">insights</span>
+          <span class="nav-text">Insights</span>
+        </button>
         <button class="nav-item" data-section="commissions">
           <span class="material-symbols-outlined">payments</span>
           <span class="nav-text">Comissões</span>
@@ -87,7 +92,7 @@
           <h2 class="section-title">Comissões da Equipe</h2>
         </div>
         <div id="waiters-grid" class="waiters-grid">
-           <!-- Loaded by TS -->
+          <!-- Loaded by TS -->
         </div>
 
         <!-- Commission Details Modal (Specific to this view) -->
@@ -207,7 +212,7 @@
           <div class="dashboard-card glass">
             <h3 class="card-title">Maiores Vendas</h3>
             <div id="biggestSales" class="recent-list">
-               <p class="loading-text">Carregando...</p>
+              <p class="loading-text">Carregando...</p>
             </div>
           </div>
         </div>
@@ -239,7 +244,9 @@
               </tr>
             </thead>
             <tbody id="usersTableBody">
-              <tr><td colspan="5" class="loading-cell">Carregando...</td></tr>
+              <tr>
+                <td colspan="5" class="loading-cell">Carregando...</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -346,6 +353,91 @@
         </div>
       </section>
 
+      <section id="insights-section" class="content-section">
+        <div class="section-header">
+          <h2 class="section-title">Insights Gerenciais</h2>
+          <div class="date-filter-group glass">
+            <div class="date-input-wrapper">
+              <label for="startDate">De:</label>
+              <input type="date" id="startDate" class="date-input">
+            </div>
+            <div class="date-input-wrapper">
+              <label for="endDate">Até:</label>
+              <input type="date" id="endDate" class="date-input">
+            </div>
+            <button id="filterInsightsBtn" class="btn-sm btn-primary">
+              <span class="material-symbols-outlined">filter_list</span>
+              Filtrar
+            </button>
+          </div>
+        </div>
+
+        <div class="insights-dashboard-grid">
+          <!-- Summary Cards -->
+          <div class="metric-card glass">
+            <div class="metric-info">
+              <span class="metric-label">Ticket Médio</span>
+              <span class="metric-value" id="insightAvgTicket">--</span>
+              <span class="metric-subtext">Por Pedido</span>
+            </div>
+          </div>
+          <div class="metric-card glass">
+            <div class="metric-info">
+              <span class="metric-label">Faturamento Período</span>
+              <span class="metric-value text-emerald" id="insightTotalRevenue">--</span>
+            </div>
+          </div>
+          <div class="metric-card glass">
+            <div class="metric-info">
+              <span class="metric-label">Total Pedidos</span>
+              <span class="metric-value" id="insightTotalOrders">--</span>
+            </div>
+          </div>
+
+          <!-- Hourly Sales Chart -->
+          <div class="dashboard-card glass span-col-2">
+            <h3 class="card-title">Picos de Venda (Por Hora)</h3>
+            <div class="chart-container" id="hourlySalesChart">
+              <p class="loading-text">Carregando dados...</p>
+              <!-- Bars will be injected here -->
+            </div>
+            <div class="chart-axis-x">
+              <span>00h</span><span>06h</span><span>12h</span><span>18h</span><span>23h</span>
+            </div>
+          </div>
+
+          <!-- ABC Curve -->
+          <div class="dashboard-card glass span-row-2">
+            <h3 class="card-title">Curva ABC (Produtos)</h3>
+            <div class="abc-list-container" id="abcProductList">
+              <p class="loading-text">Carregando...</p>
+            </div>
+          </div>
+
+          <!-- Waiter Performance -->
+          <div class="dashboard-card glass span-col-2">
+            <h3 class="card-title">Performance da Equipe</h3>
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Garçom</th>
+                    <th>Vendas Totais</th>
+                    <th>Gorjeta Gerada</th>
+                    <th>Pedidos</th>
+                  </tr>
+                </thead>
+                <tbody id="waiterPerformanceBody">
+                  <tr>
+                    <td colspan="4" class="loading-cell">Carregando...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
     </main>
   </div>
 
@@ -369,6 +461,6 @@
     <span class="toast-message"></span>
   </div>
 
-  <script src="gestMain.ts"></script>
 </body>
+
 </html>

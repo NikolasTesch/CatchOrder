@@ -1,0 +1,915 @@
+:root {
+    /* --- SUA PALETA PERSONALIZADA --- */
+
+    /* Primary Colors */
+    --color-primary: #154a57;
+    --color-primary-light: #1e6375;
+    --color-primary-dark: #0d3540;
+    --color-primary-rgb: 21, 74, 87;
+
+    /* Secondary Colors */
+    --color-secondary: #f4ac45;
+    --color-secondary-light: #f6bc66;
+    --color-secondary-dark: #e69a2a;
+    --color-secondary-rgb: 244, 172, 69;
+
+    /* Status Colors */
+    --color-success: #28a745;
+    --color-success-light: #48c765;
+    --color-success-dark: #1e7e34;
+
+    --color-danger: #9f2727;
+    --color-danger-light: #c53030;
+    --color-danger-dark: #7a1f1f;
+
+    --color-warning: #f4ac45;
+    --color-info: #17a2b8;
+
+    /* Background Colors */
+    --bg-primary: #fcf7f8;
+    --bg-secondary: #dfdfdf;
+    --bg-white: #ffffff;
+    --bg-card: #ffffff;
+    --bg-overlay: rgba(0, 0, 0, 0.5);
+
+    /* Text Colors */
+    --text-primary: #0d3540;
+    /* Ajustado levemente para o dark primary para contraste */
+    --text-secondary: #666666;
+    --text-tertiary: #999999;
+    --text-white: #ffffff;
+    --text-on-primary: #ffffff;
+    --text-on-secondary: #0d3540;
+    /* Texto escuro no fundo laranja para leitura */
+
+    /* Border Colors */
+    --border-light: #e0e0e0;
+    --border-medium: #cccccc;
+    --border-dark: #999999;
+
+    /* Shadow Colors */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+
+    /* Configurações Globais */
+    --radius: 12px;
+    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    --gradient-primary: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+    --gradient-accent: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-secondary-light) 100%);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+.logo {
+    font-family: 'Poppins', sans-serif;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+/* Navbar */
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    border-bottom: 1px solid var(--border-light);
+    padding: 1rem 0;
+    transition: all 0.3s ease;
+}
+
+.navbar.scrolled {
+    padding: 0.5rem 0;
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: var(--shadow-sm);
+}
+
+.navbar.scrolled .logo {
+    height: 60px;
+}
+
+.nav-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    height: 90px;
+    width: auto;
+    display: block;
+    transition: all 0.3s ease;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+    align-items: center;
+}
+
+.nav-links a:not(.btn-primary) {
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: color 0.2s;
+}
+
+.nav-links a:hover:not(.btn-primary) {
+    color: var(--color-primary);
+}
+
+/* Botões */
+.btn-primary {
+    background: var(--gradient-accent);
+    /* Laranja gradiente */
+    color: var(--text-on-secondary);
+    /* Texto escuro para contraste no laranja */
+    padding: 0.8rem 1.8rem;
+    border-radius: 50px;
+    font-weight: 700;
+    transition: var(--transition);
+    box-shadow: 0 4px 15px rgba(244, 172, 69, 0.4);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(244, 172, 69, 0.5);
+    filter: brightness(1.05);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--color-primary);
+    padding: 0.8rem 1.8rem;
+    font-weight: 600;
+    border: 2px solid var(--color-primary-light);
+    border-radius: 50px;
+    transition: var(--transition);
+}
+
+.btn-secondary:hover {
+    background: rgba(21, 74, 87, 0.05);
+    /* Usando RGB do primary */
+    border-color: var(--color-primary);
+}
+
+/* Hero Section */
+.hero {
+    padding-top: 140px;
+    padding-bottom: 80px;
+    position: relative;
+    background: var(--bg-primary);
+    overflow: hidden;
+}
+
+.hero-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+.badge {
+    background: rgba(244, 172, 69, 0.15);
+    /* Fundo laranja suave */
+    color: var(--color-secondary-dark);
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: inline-block;
+    border: 1px solid rgba(244, 172, 69, 0.2);
+}
+
+.hero h1 {
+    font-size: 3.5rem;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    color: var(--color-primary);
+    /* Teal Escuro */
+}
+
+.hero p {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    margin-bottom: 2.5rem;
+    max-width: 90%;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+/* Mockup Visual */
+.system-mockup {
+    position: relative;
+    width: 100%;
+    height: 400px;
+}
+
+.mockup-screen {
+    background: var(--bg-white);
+    border-radius: 20px;
+    box-shadow: var(--shadow-xl);
+    width: 90%;
+    height: 100%;
+    padding: 1rem;
+    border: 1px solid var(--border-light);
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    animation: float 6s ease-in-out infinite;
+}
+
+.mockup-header {
+    height: 12px;
+    width: 60px;
+    background: var(--border-medium);
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.skeleton-row {
+    height: 40px;
+    width: 100%;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.skeleton-card {
+    height: 100px;
+    width: 48%;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    display: inline-block;
+    margin-right: 2%;
+}
+
+.floating-card {
+    position: absolute;
+    background: var(--bg-white);
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    bottom: 40px;
+    right: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    border-left: 4px solid var(--color-success);
+    animation: float-delayed 5s ease-in-out infinite;
+}
+
+.floating-card span {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.floating-card small {
+    color: var(--color-success);
+    font-size: 0.8rem;
+}
+
+/* Shape Divider */
+.custom-shape-divider-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+}
+
+.custom-shape-divider-bottom svg {
+    position: relative;
+    display: block;
+    width: calc(100% + 1.3px);
+    height: 60px;
+}
+
+.custom-shape-divider-bottom .shape-fill {
+    fill: var(--bg-white);
+}
+
+/* Features */
+.section {
+    padding: 5rem 0;
+}
+
+.section-header {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto 4rem auto;
+}
+
+.section-header h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--color-primary);
+}
+
+.grid-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.card {
+    background: var(--bg-card);
+    padding: 2.5rem;
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+    transition: var(--transition);
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--color-secondary-light);
+    /* Borda laranja ao passar o mouse */
+}
+
+.icon-box {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--color-secondary);
+    /* Ícones laranja */
+}
+
+/* Tech Section */
+.tech-section {
+    background: var(--color-primary-dark);
+    /* Fundo Teal Escuro */
+    color: var(--text-white);
+    position: relative;
+}
+
+.tech-section p {
+    color: #b0c4c9;
+    /* Cor manual para contraste suave sobre o fundo escuro */
+}
+
+.badge-tech {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--color-secondary);
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: inline-block;
+}
+
+.tech-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+.tech-list {
+    list-style: none;
+    margin-top: 2rem;
+}
+
+.tech-list li {
+    margin-bottom: 1.5rem;
+    padding-left: 1.5rem;
+    border-left: 3px solid var(--color-secondary);
+    color: var(--text-white);
+}
+
+.code-block {
+    background: #09232b;
+    /* Um tom ainda mais escuro que o primary-dark para o editor */
+    padding: 2rem;
+    border-radius: 12px;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.9rem;
+    position: relative;
+    box-shadow: var(--shadow-xl);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.code-header {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.red {
+    background: var(--color-danger);
+}
+
+.yellow {
+    background: var(--color-warning);
+}
+
+.green {
+    background: var(--color-success);
+}
+
+/* Cores de Sintaxe (Code Highlighter) ajustadas */
+.kwd {
+    color: #c678dd;
+}
+
+.cls {
+    color: var(--color-secondary-light);
+}
+
+.func {
+    color: #61afef;
+}
+
+.type {
+    color: #56b6c2;
+}
+
+.str {
+    color: var(--color-success-light);
+}
+
+.cmt {
+    color: var(--text-tertiary);
+    font-style: italic;
+}
+
+.this {
+    color: #e06c75;
+}
+
+/* Footer */
+.footer {
+    background: var(--bg-primary);
+    padding: 3rem 0;
+    border-top: 1px solid var(--border-light);
+    text-align: center;
+}
+
+.footer p {
+    color: var(--text-secondary);
+}
+
+.socials {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+}
+
+.socials a {
+    color: var(--text-tertiary);
+    transition: 0.2s;
+}
+
+.socials a:hover {
+    color: var(--color-secondary);
+}
+
+/* Animations Keyframes */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-15px);
+    }
+}
+
+@keyframes float-delayed {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.fade-in-delayed {
+    opacity: 0;
+    animation: fadeInUp 0.8s ease-out 0.3s forwards;
+}
+
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(244, 172, 69, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(244, 172, 69, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(244, 172, 69, 0);
+    }
+}
+
+/* Responsividade */
+@media (max-width: 968px) {
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero-content,
+    .tech-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .hero-actions {
+        justify-content: center;
+    }
+
+    .floating-card {
+        display: none;
+    }
+
+    .tech-list li {
+        border-left: none;
+        border-bottom: 2px solid var(--color-secondary);
+        padding-left: 0;
+        padding-bottom: 1rem;
+    }
+
+    .code-block {
+        text-align: left;
+    }
+}
+
+/* --- Seção Como Funciona (Steps) --- */
+.bg-secondary {
+    background-color: var(--bg-primary);
+    /* Mantém limpo ou use #f4f6f8 para contraste */
+}
+
+.steps-grid {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    text-align: center;
+    gap: 1rem;
+    position: relative;
+}
+
+.step-item {
+    flex: 1;
+    padding: 1rem;
+}
+
+.step-number {
+    background: var(--color-primary-light);
+    color: var(--text-white);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 auto 1.5rem auto;
+    box-shadow: 0 5px 15px rgba(21, 74, 87, 0.3);
+}
+
+.step-item h3 {
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+}
+
+.step-connector {
+    font-size: 2rem;
+    color: var(--color-secondary);
+    margin-top: 10px;
+    font-weight: bold;
+    opacity: 0.5;
+}
+
+/* --- CTA Final --- */
+.cta-section {
+    padding: 6rem 0;
+    background: var(--bg-white);
+}
+
+.cta-content {
+    background: var(--gradient-primary);
+    /* Fundo Teal gradiente */
+    color: var(--text-white);
+    text-align: center;
+    padding: 4rem 2rem;
+    border-radius: 20px;
+    box-shadow: var(--shadow-xl);
+    max-width: 900px;
+    margin: 0 auto;
+    /* Centraliza o box */
+}
+
+.cta-content h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--text-white);
+}
+
+.cta-content p {
+    font-size: 1.1rem;
+    margin-bottom: 2.5rem;
+    opacity: 0.9;
+    color: #e0f2f1;
+    /* Branco levemente azulado */
+}
+
+.btn-large {
+    padding: 1rem 3rem;
+    font-size: 1.1rem;
+    background: var(--color-secondary);
+    /* Laranja se destaca no fundo Teal */
+    color: var(--text-on-secondary);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.btn-large:hover {
+    background: var(--color-secondary-light);
+    transform: translateY(-3px);
+}
+
+/* Responsividade dos novos elementos */
+@media (max-width: 768px) {
+    .steps-grid {
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .step-connector {
+        transform: rotate(90deg);
+        /* Seta aponta pra baixo no mobile */
+        margin: 0 auto;
+    }
+
+    .cta-content h2 {
+        font-size: 1.8rem;
+    }
+}
+
+/* --- Modal Styles --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    display: none;
+    /* Oculto por padrão */
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.open {
+    display: flex;
+    opacity: 1;
+}
+
+.modal-content {
+    background: var(--bg-white);
+    padding: 2.5rem;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 450px;
+    box-shadow: var(--shadow-xl);
+    position: relative;
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.open .modal-content {
+    transform: translateY(0);
+}
+
+.modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.modal-close:hover {
+    color: var(--color-danger);
+}
+
+.modal-content h3 {
+    margin-bottom: 0.5rem;
+    color: var(--color-primary);
+    font-size: 1.5rem;
+}
+
+.modal-content p {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+
+.form-group {
+    margin-bottom: 1.2rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid var(--border-medium);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(21, 74, 87, 0.1);
+}
+
+.btn-full {
+    width: 100%;
+    margin-top: 1rem;
+}
+
+/* --- VÍDEO COM EFEITO DE SOBREPOSIÇÃO (OVERLAP) --- */
+
+.video-section {
+    background-color: var(--bg-white);
+    position: relative;
+
+    /* MUDANÇA 1: Adicionei bastante espaço embaixo do vídeo */
+    padding-bottom: 6rem;
+    /* Aprox 96px de espaço em branco */
+}
+
+.video-container {
+    max-width: 900px;
+    margin: 0 auto;
+
+    /* MUDANÇA 2: Removi o margin-bottom: -80px */
+    margin-bottom: 0;
+
+    border-radius: 16px;
+    overflow: hidden;
+
+    /* MUDANÇA 3: Ajustei a borda. 
+       Como não está mais sobre o fundo escuro, uma borda grossa branca sumiria.
+       Coloquei uma borda fina cinza para acabamento. */
+    border: 1px solid var(--border-light);
+
+    /* Sombra mais suave, já que não precisa "flutuar" tanto */
+    box-shadow: var(--shadow-lg);
+}
+
+.video-container video {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.video-header {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto 3rem auto;
+    /* 3rem de espaço entre o texto e o vídeo */
+    padding-top: 3rem;
+    /* Espaço no topo para respirar */
+}
+
+.video-header h2 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    /* Usa o seu Teal escuro */
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+}
+
+.video-header p {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+}
+
+/* Ajuste Responsivo (Celular) */
+@media (max-width: 768px) {
+    .video-header h2 {
+        font-size: 1.8rem;
+    }
+
+    .video-header {
+        margin-bottom: 2rem;
+        padding-top: 2rem;
+    }
+}
+
+/* --- AJUSTE NA PRÓXIMA SEÇÃO (Tecnologia) --- */
+/* Como o vídeo desceu 80px, precisamos empurrar o conteúdo da Tech para baixo */
+.tech-section {
+    background: var(--color-primary-dark);
+    color: var(--text-white);
+
+    /* MUDANÇA 4: Voltei o padding para o padrão normal da seção.
+       Não precisamos mais compensar a invasão do vídeo. */
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+}
+
+/* Ajustes para Celular */
+@media (max-width: 768px) {
+    .video-container {
+        margin-bottom: -40px;
+        /* Invade menos no celular */
+        border-width: 4px;
+        /* Borda mais fina */
+    }
+
+    .tech-section {
+        padding-top: 100px;
+        /* Ajuste proporcional */
+    }
+}

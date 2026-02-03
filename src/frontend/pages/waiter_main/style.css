@@ -87,17 +87,31 @@ body.dark-mode .main-header {
 }
 
 body.dark-mode .tables-section {
-  background: #242424;
+  background: #334155; /* Slate 700 - Lighter for better contrast */
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 body.dark-mode .section-title {
-  color: white;
+  color: var(--text-title) !important; /* Ensure standardized light color */
+}
+
+body.dark-mode .header-title {
+  color: var(--text-title) !important;
+}
+
+body.dark-mode .logo-image {
+  filter: brightness(0) invert(1);
+  opacity: 0.9;
+}
+
+body.dark-mode .summary-date {
+  color: rgba(255, 255, 255, 0.9); /* Much lighter */
 }
 
 body.dark-mode .count-badge {
-  background: #333;
-  color: #ccc;
+  background: #475569;
+  color: #f8fafc;
 }
 
 

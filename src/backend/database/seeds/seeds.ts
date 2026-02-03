@@ -20,7 +20,7 @@ const users = [
     name: 'Carlos Silva',
     username: 'carlos.silva',
     password_hash:
-      '$2b$10$rGze23Ok9t9W0HECY1s71.tLNY8UXHbLxJXBX72hIEou1me8k1zv6',
+      '$2b$10$AyS5A3yP0Cbs7lBsBx1.iuq9VQSQp9bWfIKgfAYXVPq3ACMi15AiW', // senha123
     role: userRole.ADMIN,
   },
   {
@@ -28,7 +28,7 @@ const users = [
     name: 'Ana Santos',
     username: 'ana.santos',
     password_hash:
-      '$2b$10$rGze23Ok9t9W0HECY1s71.tLNY8UXHbLxJXBX72hIEou1me8k1zv6',
+      '$2b$10$AyS5A3yP0Cbs7lBsBx1.iuq9VQSQp9bWfIKgfAYXVPq3ACMi15AiW', // senha123
     role: userRole.ADMIN,
   },
   {
@@ -36,7 +36,7 @@ const users = [
     name: 'Pedro Costa',
     username: 'pedro.costa',
     password_hash:
-      '$2b$10$rGze23Ok9t9W0HECY1s71.tLNY8UXHbLxJXBX72hIEou1me8k1zv6',
+      '$2b$10$AyS5A3yP0Cbs7lBsBx1.iuq9VQSQp9bWfIKgfAYXVPq3ACMi15AiW', // senha123
     role: userRole.ADMIN,
   },
   {
@@ -44,7 +44,7 @@ const users = [
     name: 'Romulo',
     username: 'romulo',
     password_hash:
-      '$2b$10$rGze23Ok9t9W0HECY1s71.tLNY8UXHbLxJXBX72hIEou1me8k1zv6',
+      '$2b$10$AyS5A3yP0Cbs7lBsBx1.iuq9VQSQp9bWfIKgfAYXVPq3ACMi15AiW', // senha123
     role: userRole.WAITER,
   },
 ];

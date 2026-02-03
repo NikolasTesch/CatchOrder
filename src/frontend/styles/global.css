@@ -665,6 +665,7 @@ body.dark-mode {
   --text-secondary: #475569;
   --text-tertiary: #64748b;
   --text-white: #ffffff;
+  --text-title: #1e293b; /* Slate 800 - Standard Title Color */
 
   /* Status Colors */
   --emerald: #10b981;
@@ -736,6 +737,7 @@ body.dark-mode {
   /* Legacy Text (Dark) */
   --text-primary: #e2e8f0;
   --text-secondary: #94a3b8;
+  --text-title: #e0e7ff; /* Indigo 100 - High Contrast Light Color for Dark Mode */
 
   /* Bordas */
   --border-glass: rgba(255, 255, 255, 0.06);
@@ -759,6 +761,13 @@ body {
   transition:
     background-color var(--transition-base),
     color var(--transition-base);
+}
+
+h1, h2, h3, h4, h5, h6,
+.material-symbols-outlined,
+.material-icons {
+  color: var(--text-title);
+  transition: color var(--transition-base);
 }
 
 /* Scrollbar Customizada */

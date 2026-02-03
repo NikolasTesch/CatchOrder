@@ -1,6 +1,7 @@
 import { getDb } from '../../config/database';
 import { v4 as uuidv4 } from 'uuid';
 import { userRole } from '../../../shared/types/user';
+import { hashPassword } from '../../utils/passwordHash';
 
 // Gerar IDs com UUID
 const categoryBebidasId = uuidv4();
@@ -13,22 +14,6 @@ const categories = [
 
 const adminId = uuidv4();
 const waiterId = uuidv4();
-
-const users = [
-  {
-    id: adminId,
-    username: process.env.ADMIN_USERNAME,
-    password_hash: process.env.ADMIN_PASSWORD,
-    role: userRole.ADMIN,
-  },
-  {
-    id: waiterId,
-    name: process.env.WAITER_NAME,
-    username: process.env.WAITER_USERNAME,
-    password_hash: process.env.WAITER_PASSWORD,
-    role: userRole.WAITER,
-  }
-];
 
 // Gerar IDs dos produtos (5 bebidas + 5 comidas)
 const productIds = Array.from({ length: 10 }, () => uuidv4());
@@ -418,6 +403,30 @@ const orderItems = [
 
 export const runSeeds = async () => {
   const db = await getDb();
+
+  const adminPasswordHash = await hashPassword(
+    process.env.ADMIN_PASSWORD as string,
+  );
+  const waiterPasswordHash = await hashPassword(
+    process.env.WAITER_PASSWORD as string,
+  );
+
+  const users = [
+    {
+      id: adminId,
+      name: process.env.ADMIN_NAME,
+      username: process.env.ADMIN_USERNAME,
+      password_hash: adminPasswordHash,
+      role: userRole.ADMIN,
+    },
+    {
+      id: waiterId,
+      name: process.env.WAITER_NAME,
+      username: process.env.WAITER_USERNAME,
+      password_hash: waiterPasswordHash,
+      role: userRole.WAITER,
+    },
+  ];
 
   try {
     // Verificar se já existem dados

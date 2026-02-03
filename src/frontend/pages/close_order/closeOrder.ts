@@ -1,6 +1,6 @@
 import './style.css';
 import { ApiService } from '../../services/apiService';
-import { formatCurrency, centsToReais } from '../../utils/currency';
+import { formatCurrency } from "../../utils/currency";
 
 // Interfaces
 interface OrderItem {
@@ -78,7 +78,6 @@ async function loadOrder() {
 
     renderOrderDetails();
   } catch (error) {
-
     showError("Erro ao carregar pedido");
   }
 }
@@ -92,15 +91,11 @@ async function loadTable() {
     );
     tableNumber = response.data.number.toString();
 
-
     if (displayTableNumberEl) {
       displayTableNumberEl.textContent = tableNumber;
     }
-  } catch (error) {
-
-  }
+  } catch (error) {}
 }
-
 
 function renderOrderDetails() {
   if (!currentOrder) return;
@@ -171,7 +166,13 @@ function setupEventListeners() {
   }
 
   if (tipToggle) {
-    tipToggle.addEventListener("change", updateTotals);
+    tipToggle.addEventListener("change", () => {
+      updateTotals();
+      const splitModal = document.getElementById("splitModal");
+      if (splitModal && splitModal.style.display === "flex") {
+        calculateSplit();
+      }
+    });
   }
 }
 
@@ -209,6 +210,82 @@ function closeOrder() {
       }
     },
   );
+}
+
+// ========================================
+// SPLIT CHECK LOGIC
+// ========================================
+let splitPeople = 2;
+
+// Setup global click listener for split modal (Event Delegation)
+document.addEventListener("click", (e) => {
+  const target = e.target as HTMLElement;
+
+  // Open Split Modal
+  if (target.id === "btnOpenSplit" || target.closest("#btnOpenSplit")) {
+    openSplitModal();
+    calculateSplit(); // Recalculate based on current total
+  }
+
+  // Close Split Modal
+  if (target.id === "closeSplitModal" || target.closest("#closeSplitModal")) {
+    const modal = document.getElementById("splitModal");
+    if (modal) modal.style.display = "none";
+  }
+
+  // Outside Click Close
+  if (target.id === "splitModal") {
+    target.style.display = "none";
+  }
+
+  // Plus/Minus
+  if (target.id === "btnMinus" || target.closest("#btnMinus")) {
+    if (splitPeople > 2) {
+      splitPeople--;
+      updateSplitDisplay();
+    }
+  }
+
+  if (target.id === "btnPlus" || target.closest("#btnPlus")) {
+    splitPeople++;
+    updateSplitDisplay();
+  }
+});
+
+function openSplitModal() {
+  const splitModal = document.getElementById("splitModal");
+  if (splitModal) splitModal.style.display = "flex";
+  splitPeople = 2;
+  updateSplitDisplay();
+}
+
+function updateSplitDisplay() {
+  const splitCountInput = document.getElementById(
+    "splitCount",
+  ) as HTMLInputElement | null;
+  if (splitCountInput) splitCountInput.value = splitPeople.toString();
+  calculateSplit();
+}
+
+function calculateSplit() {
+  const splitValueEl = document.getElementById("splitValue");
+  if (!currentOrder || !splitValueEl) return;
+
+  // Get current total (including tip if checked)
+  const subtotal = currentOrder.items
+    ? currentOrder.items.reduce((acc, item) => acc + item.total_item, 0)
+    : 0;
+
+  let totalToSplit = subtotal;
+
+  if (tipToggle && tipToggle.checked) {
+    const tipAmount = Math.round(subtotal * 0.1);
+    totalToSplit += tipAmount;
+  }
+
+  const valuePerPerson = Math.ceil(totalToSplit / splitPeople);
+
+  splitValueEl.textContent = formatCurrency(valuePerPerson);
 }
 
 function initDarkMode() {

@@ -30,15 +30,18 @@ class MetricsController {
 
       const abcCurve = productPerformance.map((p) => {
         accumulatedRevenue += p.revenue;
-        const percentage = (accumulatedRevenue / totalProductRevenue) * 100;
+
+        const percentage = totalProductRevenue > 0 ? (accumulatedRevenue / totalProductRevenue) * 100 : 0;
         let classification = 'C';
         if (percentage <= 80) classification = 'A';
         else if (percentage <= 95) classification = 'B';
 
+        const revenue_share = totalProductRevenue > 0 ? (p.revenue / totalProductRevenue) * 100 : 0;
+
         return {
           ...p,
           classification,
-          revenue_share: (p.revenue / totalProductRevenue) * 100,
+          revenue_share,
         };
       });
 

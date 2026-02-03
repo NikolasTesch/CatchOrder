@@ -1579,8 +1579,13 @@ async function fetchInsightsData() {
 
     renderInsights(result.data);
 
-  } catch (error) {
-    console.error(error);
+  } catch (error: any) {
+    console.error('Error fetching insights:', error);
+    showToast(`Erro ao carregar insights: ${error.message}`, 'error');
+
+    // Update UI placeholders to show error state
+    const loadingTexts = document.querySelectorAll('#insights-section .loading-text');
+    loadingTexts.forEach(el => el.textContent = 'Erro ao carregar dados.');
   }
 }
 

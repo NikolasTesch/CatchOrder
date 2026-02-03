@@ -31,7 +31,7 @@ router.get('/server09/pages/sellingPage.html', serveSellingPage);
 // 3. Root & App Redirects
 // If accessing root, redirect to selling page based on context
 router.get('/', (req, res) => {
-  res.redirect('/pages/sellingPage.html');
+  res.redirect('pages/sellingPage.html');
 });
 
 router.get('/server09', (req, res) => {

@@ -23,6 +23,7 @@ interface CartItem {
 
 const STORAGE_KEYS = {
   TABLE: 'catchorder_table_id',
+  TABLE_NUMBER: 'catchorder_table_number',
   SESSION_STATUS: 'catchorder_session_active'
 };
 
@@ -41,6 +42,24 @@ class MenuController {
   private cartTotalEl: HTMLElement;
   private modalTotalEl: HTMLElement;
   private confirmOrderBtn: HTMLButtonElement;
+
+  /* Sent Orders UI Elements */
+  private sentOrdersFooter: HTMLElement;
+  private sentOrdersHeader: HTMLElement;
+  private sentOrdersBody: HTMLElement;
+  private sentOrdersCount: HTMLElement;
+  private sentOrders: any[] = []; // Store sent items
+
+  /* Payment Modal UI Elements */
+  private btnCloseOrder: HTMLElement;
+  private paymentModal: HTMLElement;
+  private closePaymentBtn: HTMLElement;
+  private billSummary: HTMLElement;
+  private billSubtotalEl: HTMLElement;
+  private billServiceFeeEl: HTMLElement;
+  private billTotalEl: HTMLElement;
+  private btnPayPix: HTMLElement;
+  private btnCallWaiter: HTMLElement;
 
   private products: Product[] = [];
   private categories: Category[] = [];
@@ -63,6 +82,23 @@ class MenuController {
     this.modalTotalEl = document.getElementById('modalTotal') as HTMLElement;
     this.confirmOrderBtn = document.getElementById('confirmOrderBtn') as HTMLButtonElement;
 
+    // Sent Orders Elements
+    this.sentOrdersFooter = document.getElementById('sentOrdersFooter') as HTMLElement;
+    this.sentOrdersHeader = document.getElementById('sentOrdersHeader') as HTMLElement;
+    this.sentOrdersBody = document.getElementById('sentOrdersBody') as HTMLElement;
+    this.sentOrdersCount = document.getElementById('sentOrdersCount') as HTMLElement;
+
+    // Payment Elements
+    this.btnCloseOrder = document.getElementById('btnCloseOrder') as HTMLElement;
+    this.paymentModal = document.getElementById('paymentModal') as HTMLElement;
+    this.closePaymentBtn = document.getElementById('closePaymentBtn') as HTMLElement;
+    this.billSummary = document.getElementById('billSummary') as HTMLElement;
+    this.billSubtotalEl = document.getElementById('billSubtotal') as HTMLElement;
+    this.billServiceFeeEl = document.getElementById('billServiceFee') as HTMLElement;
+    this.billTotalEl = document.getElementById('billTotal') as HTMLElement;
+    this.btnPayPix = document.getElementById('btnPayPix') as HTMLElement;
+    this.btnCallWaiter = document.getElementById('btnCallWaiter') as HTMLElement;
+
     this.init();
   }
 
@@ -76,8 +112,13 @@ class MenuController {
     try {
       await Promise.all([
         this.fetchCategories(),
-        this.fetchProducts()
+        this.fetchProducts(),
       ]);
+
+      // Fetch open orders after products are loaded so we can map names if needed (though API returns them usually?)
+      // Actually backend order includes product info usually? let's check. 
+      // If not, we have `this.products` to lookup.
+      await this.fetchOpenOrder();
 
       this.renderCategories();
       this.renderProducts();
@@ -97,9 +138,19 @@ class MenuController {
   }
 
   private renderTableInfo() {
-    const tableId = sessionStorage.getItem(STORAGE_KEYS.TABLE);
-    if (this.tableNumberEl && tableId) {
-      this.tableNumberEl.textContent = parseInt(tableId) < 10 ? `0${tableId}` : tableId;
+    const tableNumber = sessionStorage.getItem(STORAGE_KEYS.TABLE_NUMBER);
+    if (this.tableNumberEl && tableNumber) {
+      // Ensure it is 2 digits if numeric
+      const num = parseInt(tableNumber);
+      const display = !isNaN(num) && num < 10 ? `0${num}` : tableNumber;
+      this.tableNumberEl.textContent = display;
+    } else {
+      // Fallback or handle missing number. Ideally shouldn't happen if flow is followed.
+      const tableId = sessionStorage.getItem(STORAGE_KEYS.TABLE);
+      if (tableId && this.tableNumberEl) {
+        // Just show ID or '??' if number missing
+        this.tableNumberEl.textContent = '??';
+      }
     }
   }
 
@@ -158,6 +209,223 @@ class MenuController {
     if (this.confirmOrderBtn) {
       this.confirmOrderBtn.addEventListener('click', () => this.submitOrder());
     }
+
+    // Sent Orders Footer Toggle
+    if (this.sentOrdersHeader) {
+      this.sentOrdersHeader.addEventListener('click', (e) => {
+        // Check if click was on or inside the button, if so, don't toggle
+        if ((e.target as HTMLElement).closest('#btnCloseOrder')) return;
+
+        if (this.sentOrdersFooter) {
+          this.sentOrdersFooter.classList.toggle('open');
+        }
+      });
+    }
+
+    // Payment Modal Listeners
+    if (this.btnCloseOrder) {
+      this.btnCloseOrder.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent footer toggle
+        this.openPaymentModal();
+      });
+    }
+    if (this.closePaymentBtn) {
+      this.closePaymentBtn.addEventListener('click', () => this.closePaymentModal());
+    }
+    if (this.paymentModal) {
+      this.paymentModal.addEventListener('click', (e) => {
+        if (e.target === this.paymentModal) this.closePaymentModal();
+      });
+    }
+    if (this.btnPayPix) {
+      this.btnPayPix.addEventListener('click', () => this.handlePayPix());
+    }
+    if (this.btnCallWaiter) {
+      this.btnCallWaiter.addEventListener('click', () => this.handleCallWaiter());
+    }
+  }
+
+  /* Payment Logic */
+
+
+  private closePaymentModal() {
+    if (this.paymentModal) this.paymentModal.classList.remove('open');
+  }
+
+  private renderBill() {
+    if (!this.billSummary) return;
+
+    // Clear previous
+    this.billSummary.innerHTML = '';
+
+    if (this.sentOrders.length === 0) {
+      this.billSummary.innerHTML = '<p class="empty-state">Nenhum item consumido.</p>';
+      this.updateBillTotals(0);
+      return;
+    }
+
+    // Group identical items? Or just list them.
+    // Usually bills group by product.
+    const billItems: { [id: string]: { name: string, quantity: number, total: number } } = {};
+
+    this.sentOrders.forEach(item => {
+      // Use product_id or name as key
+      const key = item.product_id || item.name;
+      if (!billItems[key]) {
+        billItems[key] = {
+          name: item.product_name || item.name || 'Produto',
+          quantity: 0,
+          total: 0
+        };
+      }
+      billItems[key].quantity += item.quantity;
+      billItems[key].total += (item.unit_price * item.quantity);
+    });
+
+    let subtotal = 0;
+
+    Object.values(billItems).forEach(item => {
+      subtotal += item.total;
+
+      const row = document.createElement('div');
+      row.className = 'bill-item';
+      row.innerHTML = `
+             <div class="bill-item-info">
+                <span class="bill-item-name">${item.quantity}x ${item.name}</span>
+             </div>
+             <div class="bill-item-price">${this.formatPrice(item.total)}</div>
+          `;
+      this.billSummary.appendChild(row);
+    });
+
+    this.updateBillTotals(subtotal);
+  }
+
+  private updateBillTotals(subtotal: number) {
+    if (this.billSubtotalEl) this.billSubtotalEl.textContent = this.formatPrice(subtotal);
+
+    // Create separate var for service fee in case we toggle it later
+    const serviceFee = subtotal * 0.1;
+    if (this.billServiceFeeEl) this.billServiceFeeEl.textContent = this.formatPrice(serviceFee);
+
+    const total = subtotal + serviceFee;
+    if (this.billTotalEl) this.billTotalEl.textContent = this.formatPrice(total);
+  }
+
+
+
+  private async fetchOpenOrder() {
+    const tableId = sessionStorage.getItem(STORAGE_KEYS.TABLE);
+    if (!tableId) return;
+
+    try {
+      // Fetch all orders and find OPEN for this table
+      // Optimized endpoint would be GET /orders?table_id=X&status=OPEN
+      const response = await ApiService.get<{ data: any[] }>('/orders');
+      // We need to find the specific order that IS OPEN
+      // The backend returns an array of orders.
+      const openOrder = response.data.find((o: any) => o.table_id === tableId && o.status === 'OPEN');
+
+      if (openOrder) {
+        // Now we need items. Does `findAll` return items? Using `debug_db.ts` or controllers show:
+        // OrderController.index -> OrderModel.findAll -> basic select * from orders.
+        // We need `GET /orders/:id`.
+        const fullOrderRes = await ApiService.get<{ data: any }>(`/orders/${openOrder.id}`);
+        const fullOrder = fullOrderRes.data;
+
+        if (fullOrder && fullOrder.items) {
+          this.sentOrders = fullOrder.items;
+          this.renderSentOrders();
+        }
+      }
+    } catch (error) {
+      console.warn('Could not fetch open orders', error);
+    }
+  }
+
+  private renderSentOrders() {
+    if (!this.sentOrdersFooter || !this.sentOrdersCount || !this.sentOrdersBody) return;
+
+    const count = this.sentOrders.reduce((sum, item) => sum + item.quantity, 0);
+    this.sentOrdersCount.textContent = `${count} itens`;
+
+    this.sentOrdersBody.innerHTML = '';
+
+    if (this.sentOrders.length === 0) {
+      this.sentOrdersBody.innerHTML = `
+            <div class="empty-sent-state">
+              <p>Nenhum pedido enviado ainda.</p>
+            </div>`;
+      return;
+    }
+
+    // Group by created_at (timestamp) to show "batches"
+    // Date string format: "2026-02-03 21:05:45"
+    const groups: { [key: string]: any[] } = {};
+
+    this.sentOrders.forEach(item => {
+      // Robust grouping: use full timestamp or just HH:mm?
+      // Let's use HH:mm for display, but full timestamp for grouping key to avoid merging different batches in same minute?
+      // Let's use the raw string as key.
+      const key = item.created_at || 'Recentes'; // Fallback
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(item);
+    });
+
+    // Sort groups by time desc (newest first)
+    const sortedKeys = Object.keys(groups).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+
+    sortedKeys.forEach(key => {
+      const items = groups[key];
+
+      // Fix Timestamp: Assume UTC if string 'YYYY-MM-DD HH:MM:SS', convert to local
+      let timeStr = 'Recentes';
+      if (key !== 'Recentes') {
+        try {
+          // Append Z if missing to force UTC interpretation
+          const dateStr = key.replace(' ', 'T') + (key.includes('Z') ? '' : 'Z');
+          const date = new Date(dateStr);
+          if (!isNaN(date.getTime())) {
+            timeStr = date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+          } else {
+            timeStr = key.split(' ')[1]?.substring(0, 5) || key;
+          }
+        } catch (e) {
+          timeStr = key;
+        }
+      }
+
+      const groupEl = document.createElement('div');
+      groupEl.className = 'sent-order-group';
+
+      let itemsHtml = '';
+      items.forEach(item => {
+        // Find product name if not populated (assuming backend might join it, but if not locallookup)
+        // The backend `OrderModel.findById` likely joins products.
+        const name = item.product_name || item.name || 'Produto'; // Check backend response structure if poss
+        const price = this.formatPrice(item.unit_price * item.quantity); // Total for this line
+
+        itemsHtml += `
+                 <div class="sent-item">
+                    <span class="sent-item-qty">${item.quantity}x</span>
+                    <span class="sent-item-name">${name}</span>
+                    <span class="sent-item-price">${price}</span>
+                 </div>
+              `;
+      });
+
+      groupEl.innerHTML = `
+             <div class="group-header">
+                <span>Enviado às ${timeStr}</span>
+                <i class="fa-solid fa-check-double"></i>
+             </div>
+             <div class="group-items">
+                ${itemsHtml}
+             </div>
+          `;
+
+      this.sentOrdersBody.appendChild(groupEl);
+    });
   }
 
   private async submitOrder() {
@@ -165,7 +433,7 @@ class MenuController {
 
     const tableId = sessionStorage.getItem(STORAGE_KEYS.TABLE);
     if (!tableId) {
-      this.showError('Erro: Mesa não identificada.');
+      this.showToast('Erro: Mesa não identificada.', 'error');
       return;
     }
 
@@ -184,7 +452,6 @@ class MenuController {
           orderId = openOrder.id;
         } else {
           // Create new order
-          // Use a default service user ID since menuPage is public
           const defaultUserId = '140e6988-51f7-418b-96c2-05452d3999e5';
           const newOrder = await ApiService.post<{ data: any }>('/orders', {
             table_id: tableId,
@@ -193,8 +460,6 @@ class MenuController {
           orderId = newOrder.data.id;
         }
       } catch (err) {
-        // If getting orders fails, try creating one directly?
-        // Or assume we can't search. Let's try create.
         const defaultUserId = '140e6988-51f7-418b-96c2-05452d3999e5';
         const newOrder = await ApiService.post<{ data: any }>('/orders', {
           table_id: tableId,
@@ -212,29 +477,36 @@ class MenuController {
       }
 
       // Success
-      alert('Pedido enviado com sucesso!');
+      this.showToast('Pedido enviado com sucesso!'); // Toast instead of alert
       this.cart = [];
       this.updateCartUI();
       this.closeCart();
 
+      // Update Sent Orders Footer
+      await this.fetchOpenOrder();
+
+      // Ensure footer is visible/updated
+      if (this.sentOrdersFooter) {
+        // Optionally wiggle or highlight
+      }
+
     } catch (error) {
       console.error('Error submitting order', error);
-      alert('Erro ao enviar pedido. Tente novamente.');
+      this.showToast('Erro ao enviar pedido. Tente novamente.', 'error');
     } finally {
       this.confirmOrderBtn.disabled = false;
       this.confirmOrderBtn.innerHTML = '<i class="fa-solid fa-check"></i> Confirmar Pedido';
     }
   }
 
+  /* Restored Methods */
   private openCart() {
     this.renderCartItems();
     this.cartModal.classList.add('open');
-    // document.body.style.overflow = 'hidden'; // Removed for sidebar
   }
 
   private closeCart() {
     this.cartModal.classList.remove('open');
-    // document.body.style.overflow = ''; // Removed for sidebar
   }
 
   private async fetchCategories() {
@@ -267,7 +539,6 @@ class MenuController {
     }
   }
 
-  /* Cart Logic */
   private addToCart(product: Product) {
     const existingItem = this.cart.find(item => item.product.id === product.id);
 
@@ -303,9 +574,7 @@ class MenuController {
     const totalCount = this.cart.reduce((sum, item) => sum + item.quantity, 0);
     const totalPrice = this.cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
 
-    // Update Floating Button
     if (this.floatingCartBtn) {
-      // Show/Hide based on cart content
       this.floatingCartBtn.style.display = totalCount > 0 ? 'block' : 'none';
     }
 
@@ -321,7 +590,6 @@ class MenuController {
       this.confirmOrderBtn.disabled = totalCount === 0;
     }
 
-    // Always render items for sidebar
     this.renderCartItems();
   }
 
@@ -355,13 +623,85 @@ class MenuController {
         </div>
       `;
 
-      // Event Listeners for quantity buttons
       el.querySelector('.btn-minus')?.addEventListener('click', () => this.updateQuantity(item.product.id, -1));
       el.querySelector('.btn-plus')?.addEventListener('click', () => this.updateQuantity(item.product.id, 1));
 
       this.cartItemsListEl.appendChild(el);
     });
   }
+
+  /* Toast Notification */
+  private showToast(message: string, type: 'success' | 'error' = 'success') {
+    const toast = document.createElement('div');
+    toast.className = `toast-notification ${type} show`;
+    toast.innerHTML = `
+          <i class="fa-solid ${type === 'success' ? 'fa-check-circle' : 'fa-circle-exclamation'}"></i>
+          <span>${message}</span>
+      `;
+
+    document.body.appendChild(toast);
+
+    // Trigger animation
+    requestAnimationFrame(() => {
+      toast.classList.add('show');
+    });
+
+    setTimeout(() => {
+      toast.classList.remove('show');
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
+
+  /* Payment Handling Updates */
+  private handlePayPix() {
+    const billSummary = document.getElementById('billSummary');
+    const paymentTotals = document.querySelector('.payment-totals') as HTMLElement;
+    const pixQrContainer = document.getElementById('pixQrContainer');
+    const btnPayPix = document.getElementById('btnPayPix') as HTMLElement;
+
+    if (billSummary && paymentTotals && pixQrContainer && btnPayPix) {
+      // Toggle view
+      if (pixQrContainer.style.display === 'none') {
+        // Show Pix
+        billSummary.style.display = 'none';
+        paymentTotals.style.display = 'none';
+        pixQrContainer.style.display = 'block';
+        btnPayPix.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Voltar';
+        this.showToast('Escaneie o QR Code para pagar.', 'success');
+      } else {
+        // Hide Pix (Back)
+        billSummary.style.display = 'block';
+        paymentTotals.style.display = 'block';
+        pixQrContainer.style.display = 'none';
+        btnPayPix.innerHTML = '<i class="fa-brands fa-pix"></i> Pagar com Pix';
+      }
+    }
+  }
+
+  private handleCallWaiter() {
+    const tableNumber = sessionStorage.getItem(STORAGE_KEYS.TABLE_NUMBER);
+    this.showToast(`Garçom chamado para a mesa ${tableNumber || ''}!`, 'success');
+    this.closePaymentModal();
+  }
+
+  private openPaymentModal() {
+    if (!this.paymentModal) return;
+
+    // Reset view when opening
+    const billSummary = document.getElementById('billSummary');
+    const paymentTotals = document.querySelector('.payment-totals') as HTMLElement;
+    const pixQrContainer = document.getElementById('pixQrContainer');
+    const btnPayPix = document.getElementById('btnPayPix') as HTMLElement; // Ensure we have reference
+
+    if (billSummary) billSummary.style.display = 'block';
+    if (paymentTotals) paymentTotals.style.display = 'block';
+    if (pixQrContainer) pixQrContainer.style.display = 'none';
+    if (btnPayPix) btnPayPix.innerHTML = '<i class="fa-brands fa-pix"></i> Pagar com Pix';
+
+    this.paymentModal.classList.add('open');
+    this.renderBill();
+  }
+
 
   private formatPrice(cents: number): string {
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(cents / 100);
@@ -470,6 +810,8 @@ class MenuController {
   private filterProducts(term: string) {
     this.renderProducts(term);
   }
+
+
 
   private showError(msg: string) {
     if (this.productsGridEl) {

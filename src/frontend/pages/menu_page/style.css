@@ -770,3 +770,436 @@ body {
     display: none;
   }
 }
+
+/* --- Toast Notification --- */
+.toast-notification {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100%);
+  background: var(--color-success);
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  z-index: 3000;
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.toast-notification.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.toast-notification.error {
+  background: var(--color-danger);
+}
+
+/* --- Sent Orders Footer --- */
+.sent-orders-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: var(--bg-white);
+  border-top: 1px solid var(--border-light);
+  box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.08);
+  z-index: 900;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 20px 20px 0 0;
+}
+
+/* ... (Sent orders previous styles are fine, ensuring they match what I verified earlier) ... */
+/* NOTE: I will only replace the top block and append. Wait, I should use replace carefully. 
+   I will append Toast styles at the end, and MODIFY Payment Modal styles. 
+   Let's modify the Payment Modal styles first. */
+
+
+.sent-orders-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  background: var(--bg-white);
+  border-radius: 20px 20px 0 0;
+  position: relative;
+  z-index: 901;
+}
+
+.sent-orders-header:hover {
+  background: #f9f9f9;
+}
+
+.sent-orders-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  font-size: 1rem;
+}
+
+.sent-orders-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.sent-count {
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: #f0f0f0;
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+}
+
+.sent-orders-body {
+  max-height: 0;
+  overflow-y: auto;
+  transition: max-height 0.3s ease-out;
+  background: #fcfcfc;
+}
+
+.sent-orders-footer.open .sent-orders-body {
+  max-height: 50vh;
+  border-top: 1px solid var(--border-light);
+}
+
+.sent-orders-footer.open #sentOrdersIcon {
+  transform: rotate(180deg);
+}
+
+#sentOrdersIcon {
+  transition: transform 0.3s ease;
+}
+
+/* Order Groups */
+.sent-order-group {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.sent-order-group:last-child {
+  border-bottom: none;
+}
+
+.group-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.group-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sent-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+}
+
+.sent-item-qty {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-right: 0.5rem;
+  min-width: 20px;
+}
+
+.sent-item-name {
+  flex: 1;
+  color: var(--text-secondary);
+}
+
+.sent-item-price {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.empty-sent-state {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 1024px) {
+  .floating-action-bar {
+    bottom: 4.5rem;
+    transition: bottom 0.3s ease;
+  }
+}
+
+/* --- Sent Orders Footer Adjustments --- */
+.sent-orders-header {
+  padding: 0.75rem 1.5rem;
+  /* Reduced padding */
+}
+
+.sent-orders-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.sent-orders-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.btn-close-order {
+  background: var(--color-danger);
+  /* Red/Attention color */
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  /* radius-md */
+  font-weight: 600;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(159, 39, 39, 0.2);
+}
+
+.btn-close-order:hover {
+  background: #8a2222;
+  transform: translateY(-1px);
+}
+
+.btn-close-order:active {
+  transform: scale(0.98);
+}
+
+.toggle-icon {
+  display: flex;
+  align-items: center;
+  /* Helper for icon centering */
+}
+
+/* --- Payment Sidebar Styles --- */
+.payment-body {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  background: #f8f9fa;
+}
+
+.bill-summary {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+  background: white;
+}
+
+/* Bill Items (Receipt Style) */
+.bill-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px dashed var(--border-light);
+  font-size: 0.95rem;
+}
+
+.bill-item:last-child {
+  border-bottom: none;
+}
+
+.bill-item-name {
+  color: var(--text-primary);
+}
+
+.bill-item-price {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.payment-totals {
+  background: white;
+  padding: 1.5rem;
+  border-top: 1px solid var(--border-light);
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.03);
+}
+
+.bill-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.bill-row.total {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-light);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-primary-dark);
+}
+
+/* Payment Footer Buttons */
+.payment-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  background: var(--bg-white);
+}
+
+.btn-payment {
+  width: 100%;
+  padding: 1rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.btn-pix {
+  background: #32BCAD;
+  /* Brand Pix Color */
+  color: white;
+  box-shadow: 0 4px 6px -1px rgba(50, 188, 173, 0.2);
+}
+
+.btn-pix:hover {
+  background: #2aa89a;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 10px -1px rgba(50, 188, 173, 0.3);
+}
+
+.btn-waiter {
+  background: white;
+  color: var(--text-primary);
+  border: 1px solid var(--border-light);
+}
+
+.btn-waiter:hover {
+  background: #f0f0f0;
+  border-color: #ccc;
+
+}
+
+/* --- Payment Modal (Centered Overrides) --- */
+#paymentModal.cart-modal {
+  /* Ensure it covers screen */
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+#paymentModal.cart-modal.open {
+  display: flex !important;
+}
+
+#paymentModal .modal-content {
+  width: 90%;
+  max-width: 400px;
+  max-height: 85vh;
+  height: auto;
+  border-radius: 20px;
+  transform: scale(0.9);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+#paymentModal.cart-modal.open .modal-content {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* Specific inner adjustments */
+#paymentModal .modal-body {
+  padding: 0;
+  background: #f8f9fa;
+  flex: 1;
+  overflow: hidden;
+  /* Flex container */
+  display: flex;
+  flex-direction: column;
+}
+
+#paymentModal .bill-summary {
+  padding: 1.5rem;
+  overflow-y: auto;
+  background: white;
+}
+
+#paymentModal .payment-totals {
+  background: white;
+  padding: 1.5rem;
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.03);
+  z-index: 10;
+}
+
+#paymentModal .modal-footer {
+  padding: 1.5rem;
+  background: #f8f9fa;
+}
+
+@media (min-width: 1024px) {
+
+  /* Override the grid sidebar behavior for payment modal */
+  #paymentModal.cart-modal {
+    position: fixed;
+    grid-column: auto;
+    grid-row: auto;
+    z-index: 5000;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    border: none;
+    box-shadow: none;
+    background: rgba(0, 0, 0, 0.6);
+    display: none !important;
+    /* Hide by default override sidebar */
+    align-items: center;
+    justify-content: center;
+  }
+
+  #paymentModal.cart-modal.open {
+    display: flex !important;
+  }
+
+  #paymentModal .modal-content {
+    width: 400px;
+    height: auto;
+    max-height: 85vh;
+    transform: scale(0.9);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  }
+
+  #paymentModal.cart-modal.open .modal-content {
+    transform: scale(1);
+  }
+}

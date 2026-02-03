@@ -103,6 +103,90 @@
       </div>
     </div>
   </div>
+  <!-- Sent Orders Footer (New) -->
+  <!-- Sent Orders Footer (New) -->
+  <div class="sent-orders-footer" id="sentOrdersFooter">
+    <div class="sent-orders-header" id="sentOrdersHeader">
+      <div class="sent-orders-info">
+        <div class="sent-orders-title">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          <span>Meus Pedidos</span>
+        </div>
+        <span class="sent-count" id="sentOrdersCount">0 itens</span>
+      </div>
+
+      <div class="sent-orders-actions">
+        <button id="btnCloseOrder" class="btn-close-order">
+          <i class="fa-solid fa-file-invoice-dollar"></i>
+          <span>Fechar Conta</span>
+        </button>
+        <div class="toggle-icon">
+          <i class="fa-solid fa-chevron-up" id="sentOrdersIcon"></i>
+        </div>
+      </div>
+    </div>
+    <div class="sent-orders-body" id="sentOrdersBody">
+      <!-- Sent items groups will be injected here -->
+      <div class="empty-sent-state">
+        <p>Nenhum pedido enviado ainda.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Sidebar / Modal -->
+  <div class="cart-modal" id="paymentModal">
+    <div class="modal-content payment-content">
+      <div class="modal-header">
+        <h2>Conta da Mesa</h2>
+        <button id="closePaymentBtn">
+          <i class="fa-solid fa-times"></i>
+        </button>
+      </div>
+
+      <div class="modal-body payment-body">
+        <div class="bill-summary" id="billSummary">
+          <!-- Bill items injected here -->
+          <div class="loading-spinner"><i class="fa-solid fa-circle-notch fa-spin"></i></div>
+        </div>
+
+        <div class="payment-totals">
+          <div class="bill-row">
+            <span>Subtotal</span>
+            <span id="billSubtotal">R$ 0,00</span>
+          </div>
+          <div class="bill-row">
+            <span>Taxa de Serviço (10%)</span>
+            <span id="billServiceFee">R$ 0,00</span>
+          </div>
+          <div class="bill-row total">
+            <span>Total</span>
+            <span id="billTotal">R$ 0,00</span>
+          </div>
+        </div>
+
+        <!-- Pix QR Code Container (Hidden by default) -->
+        <div id="pixQrContainer" class="pix-qr-container" style="display: none; text-align: center; padding: 2rem;">
+          <h3 style="margin-bottom: 1rem; color: var(--color-primary-dark);">Escaneie para pagar</h3>
+          <!-- Assuming standard path, matching logo relative path -->
+          <img src="../img/qrcode-pix.png" alt="QR Code Pix"
+            style="width: 200px; max-width: 100%; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+          <p style="margin-top: 1rem; color: var(--text-secondary); font-size: 0.9rem;">Aguardando confirmação...</p>
+        </div>
+      </div>
+
+      <div class="modal-footer payment-footer">
+        <button id="btnPayPix" class="btn-payment btn-pix">
+          <i class="fa-brands fa-pix"></i>
+          Pagar com Pix
+        </button>
+        <button id="btnCallWaiter" class="btn-payment btn-waiter">
+          <i class="fa-solid fa-hand-holding-dollar"></i>
+          Chamar Garçom
+        </button>
+      </div>
+    </div>
+  </div>
+  </div>
 </body>
 
 </html>

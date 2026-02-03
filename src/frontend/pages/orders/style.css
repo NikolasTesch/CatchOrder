@@ -423,7 +423,7 @@ body.dark-mode .order-obs-section {
 }
 
 body.dark-mode .card-footer {
-  background-color: transparent;
+  background-color: transparent !important;
   border-top-color: rgba(255,255,255,0.05);
 }
 

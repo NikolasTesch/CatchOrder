@@ -185,8 +185,8 @@ function createOrderCard(order: Order, type: 'open' | 'finished'): HTMLElement {
   const statusLabel = getStatusLabel(order.status);
   const statusClass = type === 'open' ? 'status-open' : 'status-finished';
 
-  // Time elapsed (optional enhancement)
-  let timeString = '--:--';
+  // Date and Time formatting
+  let dateTimeString = 'Data não disponível';
   if (order.created_at) {
     // Try standard constructor
     let timeDate = new Date(order.created_at);
@@ -198,7 +198,17 @@ function createOrderCard(order: Order, type: 'open' | 'finished'): HTMLElement {
     }
 
     if (!isNaN(timeDate.getTime())) {
-      timeString = timeDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      // Format: "25/01/2026 às 14:30"
+      const dateStr = timeDate.toLocaleDateString('pt-BR', { 
+        day: '2-digit', 
+        month: '2-digit', 
+        year: 'numeric' 
+      });
+      const timeStr = timeDate.toLocaleTimeString('pt-BR', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+      dateTimeString = `${dateStr} às ${timeStr}`;
     }
   }
 
@@ -240,7 +250,7 @@ function createOrderCard(order: Order, type: 'open' | 'finished'): HTMLElement {
       </div>
       <div class="header-status">
          <span class="status-badge ${statusClass}">${statusLabel}</span>
-         <span class="order-time">${timeString}</span>
+         <span class="order-time">${dateTimeString}</span>
       </div>
     </div>
 

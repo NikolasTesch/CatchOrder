@@ -42,12 +42,14 @@ interface Order {
   id: string;
   table_id: number; // or string depending on API, script calls it table_id but renders table_id directly
   user_id?: string;
+  user_name?: string;
   status: "OPEN" | "CLOSED" | "CANCELLED";
   total: number;
   tip?: number; // Added tip property
   opened_at: string;
   closed_at?: string;
   items?: any[];
+  observations?: string;
 }
 
 interface ApiResponse<T> {
@@ -1138,19 +1140,47 @@ function renderOrders(ordersData: Order[]) {
 
   if (ordersData.length === 0) {
     tbody.innerHTML =
-      '<tr><td colspan="6" class="loading-cell">Nenhum pedido encontrado</td></tr>';
+      '<tr><td colspan="8" class="loading-cell">Nenhum pedido encontrado</td></tr>';
     return;
   }
 
   tbody.innerHTML = ordersData
     .map(
-      (order) => `
+      (order) => {
+        // Format date and time
+        let dateTimeString = '-';
+        if (order.opened_at) {
+          const timeDate = new Date(order.opened_at);
+          if (!isNaN(timeDate.getTime())) {
+            const dateStr = timeDate.toLocaleDateString('pt-BR', { 
+              day: '2-digit', 
+              month: '2-digit', 
+              year: 'numeric' 
+            });
+            const timeStr = timeDate.toLocaleTimeString('pt-BR', { 
+              hour: '2-digit', 
+              minute: '2-digit' 
+            });
+            dateTimeString = `${dateStr} às ${timeStr}`;
+          }
+        }
+        
+        // Count items
+        const itemCount = order.items ? order.items.length : 0;
+        const itemsDisplay = itemCount > 0 ? `${itemCount} ${itemCount === 1 ? 'item' : 'itens'}` : '-';
+        
+        // Waiter name
+        const waiterName = order.user_name || '-';
+        
+        return `
       <tr>
         <td>#${order.id.substring(0, 8)}</td>
-        <td>${getTableNumber(order.table_id)}</td>
+        <td>Mesa ${getTableNumber(order.table_id)}</td>
+        <td>${itemsDisplay}</td>
+        <td>${waiterName}</td>
         <td><span class="status-pill ${order.status.toLowerCase()}">${translateStatus(order.status)}</span></td>
         <td>${formatCurrency(order.total || 0)}</td>
-        <td>${order.opened_at ? new Date(order.opened_at).toLocaleDateString("pt-BR") : "-"}</td>
+        <td>${dateTimeString}</td>
         <td>
           <div class="action-btns">
             <button class="btn-icon" onclick="viewOrder('${order.id}')" title="Visualizar">
@@ -1159,7 +1189,8 @@ function renderOrders(ordersData: Order[]) {
           </div>
         </td>
       </tr>
-    `,
+    `;
+      },
     )
     .join("");
 }
@@ -1202,19 +1233,75 @@ async function viewOrder(orderId: string) {
         `
           : "<p>Nenhum item neste pedido.</p>";
 
+      // Format date and time
+      let dateTimeString = '-';
+      if (order.opened_at) {
+        const timeDate = new Date(order.opened_at);
+        if (!isNaN(timeDate.getTime())) {
+          const dateStr = timeDate.toLocaleDateString('pt-BR', { 
+            day: '2-digit', 
+            month: '2-digit', 
+            year: 'numeric' 
+          });
+          const timeStr = timeDate.toLocaleTimeString('pt-BR', { 
+            hour: '2-digit', 
+            minute: '2-digit' 
+          });
+          dateTimeString = `${dateStr} às ${timeStr}`;
+        }
+      }
+
+      // Observations
+      const obsHtml = order.observations 
+        ? `<div style="margin-top: 15px; padding: 12px; background: var(--card-bg, #f5f5f5); border-radius: 8px; border-left: 3px solid var(--primary-color, #FF6B35);">
+             <p style="margin: 0; display: flex; align-items: center; gap: 8px;">
+               <span class="material-symbols-outlined" style="font-size: 20px;">sticky_note_2</span>
+               <strong>Observações:</strong>
+             </p>
+             <p style="margin: 8px 0 0 28px; color: var(--text-secondary, #666);">${order.observations}</p>
+           </div>` 
+        : '';
+
       modalBody.innerHTML = `
-      <div style="margin-bottom: 20px;">
-        <p><strong>Mesa:</strong> ${getTableNumber(order.table_id)}</p>
-        <p><strong>Status:</strong> <span class="status-pill ${order.status.toLowerCase()}">${translateStatus(order.status)}</span></p>
-        <p><strong>Data:</strong> ${order.opened_at ? new Date(order.opened_at).toLocaleString("pt-BR") : "-"}</p>
-        <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
-        <h4 style="margin-bottom: 10px;">Itens do Pedido</h4>
+      <div style="padding: 10px;">
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px;">
+          <div>
+            <p style="color: var(--text-secondary, #666); font-size: 0.9rem; margin-bottom: 4px;">Mesa</p>
+            <p style="font-size: 1.1rem; font-weight: 600; margin: 0;">Mesa ${getTableNumber(order.table_id)}</p>
+          </div>
+          <div>
+            <p style="color: var(--text-secondary, #666); font-size: 0.9rem; margin-bottom: 4px;">Status</p>
+            <span class="status-pill ${order.status.toLowerCase()}">${translateStatus(order.status)}</span>
+          </div>
+          <div>
+            <p style="color: var(--text-secondary, #666); font-size: 0.9rem; margin-bottom: 4px;">Data e Hora</p>
+            <p style="font-size: 1rem; margin: 0; display: flex; align-items: center; gap: 6px;">
+              <span class="material-symbols-outlined" style="font-size: 18px;">schedule</span>
+              ${dateTimeString}
+            </p>
+          </div>
+          <div>
+            <p style="color: var(--text-secondary, #666); font-size: 0.9rem; margin-bottom: 4px;">Garçom</p>
+            <p style="font-size: 1rem; margin: 0;">${order.user_name || 'N/A'}</p>
+          </div>
+        </div>
+        
+        <hr style="margin: 20px 0; border: 0; border-top: 1px solid var(--border-color, #e0e0e0);">
+        
+        <h4 style="margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+          <span class="material-symbols-outlined">restaurant_menu</span>
+          Itens do Pedido
+        </h4>
         ${itemsHtml}
-        <div style="margin-top: 15px; text-align: right;">
-           <p class="summary-value" style="font-size: 1.2rem;"><strong>Total: ${formatCurrency(order.total || 0)}</strong></p>
+        
+        ${obsHtml}
+        
+        <div style="margin-top: 20px; padding: 15px; background: var(--card-bg, #f8f9fa); border-radius: 8px; text-align: right;">
+           <p style="color: var(--text-secondary, #666); font-size: 0.9rem; margin-bottom: 4px;">Total do Pedido</p>
+           <p class="summary-value" style="font-size: 1.5rem; font-weight: 700; margin: 0; color: var(--primary-color, #FF6B35);">${formatCurrency(order.total || 0)}</p>
         </div>
       </div>
-      <div class="form-actions">
+      <div class="form-actions" style="margin-top: 20px;">
         <button type="button" class="btn-secondary" onclick="closeModal()">Fechar</button>
       </div>
     `;

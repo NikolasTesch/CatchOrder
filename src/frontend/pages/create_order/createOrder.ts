@@ -454,9 +454,9 @@ async function removeOrderItem(orderId: string, itemId: string) {
   }
 }
 
-async function deliverItem(orderId: string, itemId: string) {
+async function deliverItem(orderId: string, itemId: string, quantity?: number) {
   try {
-    await ApiService.put(`/orders/${orderId}/items/${itemId}/deliver`, {});
+    await ApiService.put(`/orders/${orderId}/items/${itemId}/deliver`, { quantity });
     showSuccess('Item entregue!');
     await loadOrderDetails(orderId);
     renderOrderSummary();
@@ -515,10 +515,26 @@ async function saveItems() {
     showSuccess(currentOrderId ? 'Pedido atualizado!' : 'Pedido criado com sucesso!');
     cart = [];
 
-    // Redirect to waiter main
-    setTimeout(() => {
-      window.location.href = 'waiterMain.html';
-    }, 1000);
+    // Stay on page logic
+    currentOrderId = orderId;
+
+    // Update URL if new order
+    const url = new URL(window.location.href);
+    if (!url.searchParams.has('order_id')) {
+      url.searchParams.set('order_id', orderId);
+      window.history.pushState({}, '', url);
+    }
+
+    // Refresh UI
+    await loadOrderDetails(orderId);
+    renderOrderSummary();
+    renderProductsByCategory();
+
+    // Re-enable button
+    if (sendBtn) {
+      sendBtn.disabled = false;
+      sendBtn.textContent = 'Salvar / Adicionar';
+    }
 
   } catch (error: any) {
     // console.error('Erro ao salvar:', error);
@@ -747,7 +763,7 @@ function renderPendingItemsInMainArea() {
   section.className = 'category-section';
   section.style.marginBottom = "2rem";
   section.innerHTML = `
-        <h2 class="category-title" style="color: #f59e0b; display:flex; align-items:center; gap:10px;">
+        <h2 class="category-title delivery-section-header">
             <span class="material-symbols-outlined">schedule</span> 
             Aguardando Entrega (${pendingItems.length})
         </h2>
@@ -758,23 +774,22 @@ function renderPendingItemsInMainArea() {
 
   pendingItems.forEach(item => {
     const card = document.createElement('div');
-    card.className = 'product-card';
-    card.style.border = "1px solid #f59e0b";
+    card.className = 'product-card product-card-pending';
     card.innerHTML = `
-            <div class="card-info" style="justify-content:space-between;">
+            <div class="card-info card-info-row">
                 <div>
                     <h3 class="product-name">${item.product_name || 'Produto'}</h3>
-                    <p class="product-desc" style="color: #6b7280; font-size: 0.9rem; margin-top: 5px;">
+                    <p class="product-desc product-desc-pending">
                         Pedido às: <strong>${item.created_at ? new Date(item.created_at).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-'}</strong>
                     </p>
                 </div>
                 <div class="card-footer-row">
                     <p class="product-price">${item.quantity}x ${formatCurrency(item.unit_price)}</p>
-                    <div style="display:flex; gap:10px;">
-                         <button class="btn-add-action btn-deliver-main" aria-label="Entregar" style="background:#ecfdf5; border-color:#d1fae5; color:#10b981;">
+                    <div class="btn-actions-wrapper">
+                         <button class="btn-add-action btn-deliver-main btn-deliver-custom" aria-label="Entregar">
                            <span class="material-symbols-outlined">check</span>
                          </button>
-                         <button class="btn-add-action btn-cancel-main" aria-label="Cancelar" style="background:#fef2f2; border-color:#fee2e2; color:#ef4444;">
+                         <button class="btn-add-action btn-cancel-main btn-cancel-custom" aria-label="Cancelar">
                            <span class="material-symbols-outlined">delete</span>
                          </button>
                     </div>
@@ -783,7 +798,16 @@ function renderPendingItemsInMainArea() {
         `;
 
     card.querySelector('.btn-deliver-main')?.addEventListener('click', () => {
-      deliverItem(currentOrderId!, item.id);
+      if (item.quantity > 1) {
+        // Show simple prompt for now (or a custom modal if preferred, but prompt is easiest for partial logic)
+        // User asked for "selecionar", let's use a browser prompt first, then upgrade if needed for aesthetics.
+        // Actually, "Design Aesthetics" rule says avoid simple things. Let's create a dynamic modal.
+        showQuantityModal(item, (qty) => {
+          deliverItem(currentOrderId!, item.id, qty);
+        });
+      } else {
+        deliverItem(currentOrderId!, item.id);
+      }
     });
 
     card.querySelector('.btn-cancel-main')?.addEventListener('click', () => {
@@ -794,6 +818,58 @@ function renderPendingItemsInMainArea() {
   });
 
   productsContainer.prepend(section);
+}
+
+// Helper Modal for Quantity
+function showQuantityModal(item: OrderItem, onConfirm: (qty: number) => void) {
+  const modal = document.createElement('div');
+  modal.className = 'quantity-modal-overlay active';
+  modal.innerHTML = `
+        <div class="quantity-modal-content glass">
+            <h3 class="modal-title">Confirmar Entrega</h3>
+            <p class="modal-desc">
+               Quantos <strong>${item.product_name}</strong> foram entregues?
+            </p>
+            <div class="modal-controls">
+                <button id="qty-minus" class="btn-icon modal-qty-btn">-</button>
+                <span id="qty-display" class="modal-qty-display">1</span>
+                <button id="qty-plus" class="btn-icon modal-qty-btn">+</button>
+            </div>
+            
+            <div class="modal-actions">
+                <button id="cancel-qty" class="btn btn-cancel-modal">Cancelar</button>
+                <button id="confirm-qty" class="btn btn-primary" style="flex: 1;">Confirmar</button>
+            </div>
+        </div>
+    `;
+
+  document.body.appendChild(modal);
+
+  let currentQty = 1;
+  const display = modal.querySelector('#qty-display')!;
+
+  modal.querySelector('#qty-minus')?.addEventListener('click', () => {
+    if (currentQty > 1) {
+      currentQty--;
+      display.textContent = currentQty.toString();
+    }
+  });
+
+  modal.querySelector('#qty-plus')?.addEventListener('click', () => {
+    if (currentQty < item.quantity) {
+      currentQty++;
+      display.textContent = currentQty.toString();
+    }
+  });
+
+  modal.querySelector('#confirm-qty')?.addEventListener('click', () => {
+    onConfirm(currentQty);
+    document.body.removeChild(modal);
+  });
+
+  modal.querySelector('#cancel-qty')?.addEventListener('click', () => {
+    document.body.removeChild(modal);
+  });
 }
 
 interface User {

@@ -243,26 +243,53 @@ export class OrderModel {
     return OrderModel.findById(id);
   }
 
-  static async deliverItem(orderId: string, itemId: string): Promise<boolean> {
+  static async deliverItem(orderId: string, itemId: string, quantityToDeliver?: number): Promise<boolean> {
     const db = await getDb();
 
     // Get item
     const item = await db.get<{
+      id: string;
+      product_id: string;
       quantity: number;
       unit_price: number;
       order_id: string;
       delivered_at?: string;
-    }>('SELECT quantity, unit_price, order_id, delivered_at FROM order_items WHERE id = ?', [itemId]);
+      created_at: string;
+    }>('SELECT id, product_id, quantity, unit_price, order_id, delivered_at, created_at FROM order_items WHERE id = ?', [itemId]);
 
     if (!item || item.order_id !== orderId) return false;
     if (item.delivered_at) return true; // Already delivered
 
+    const deliverQty = quantityToDeliver !== undefined ? quantityToDeliver : item.quantity;
+
+    if (deliverQty <= 0 || deliverQty > item.quantity) {
+      throw new Error("Invalid quantity to deliver");
+    }
+
     const delivered_at = new Date().toISOString();
-    const totalToAdd = item.quantity * item.unit_price;
 
-    await db.run('UPDATE order_items SET delivered_at = ? WHERE id = ?', [delivered_at, itemId]);
+    if (deliverQty < item.quantity) {
+      // PARTIAL DELIVERY
+      const remainingQty = item.quantity - deliverQty;
 
-    // Update Order Total
+      // 1. Update current item to delivered quantity and set delivered_at
+      await db.run('UPDATE order_items SET quantity = ?, delivered_at = ? WHERE id = ?', [deliverQty, delivered_at, itemId]);
+
+      // 2. Create NEW item for the remaining quantity (Pending)
+      // Helper function ensures created_at is preserved
+      const newItemId = uuidv4();
+      await db.run(
+        `INSERT INTO order_items(id, order_id, product_id, quantity, unit_price, created_at) values(?, ?, ?, ?, ?, ?)`,
+        [newItemId, orderId, item.product_id, remainingQty, item.unit_price, item.created_at],
+      );
+
+    } else {
+      // FULL DELIVERY
+      await db.run('UPDATE order_items SET delivered_at = ? WHERE id = ?', [delivered_at, itemId]);
+    }
+
+    // Update Order Total (add value of delivered items)
+    const totalToAdd = deliverQty * item.unit_price;
     await db.run('UPDATE orders SET total = total + ? WHERE id = ?', [totalToAdd, orderId]);
 
     return true;

@@ -174,8 +174,9 @@ class OrdersController {
     try {
       const order_id = req.params.id as string;
       const item_id = req.params.itemId as string;
+      const { quantity } = req.body;
 
-      const success = await OrderModel.deliverItem(order_id, item_id);
+      const success = await OrderModel.deliverItem(order_id, item_id, quantity);
 
       if (!success) {
         return res.status(404).json({ message: 'Item n\u00e3o encontrado no pedido ou pedido inv\u00e1lido' });

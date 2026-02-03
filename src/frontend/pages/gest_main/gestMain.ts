@@ -44,6 +44,7 @@ interface Order {
   user_id?: string;
   status: "OPEN" | "CLOSED" | "CANCELLED";
   total: number;
+  tip?: number; // Added tip property
   opened_at: string;
   closed_at?: string;
   items?: any[];
@@ -1608,14 +1609,21 @@ function renderCommissionWaiters() {
     return db - da;
   });
 
+  // Calculate Total Sales and Total Commissions (Real Tips)
   const totalSales = waiterOrders.reduce(
     (sum, order) => sum + (Number(order.total) || 0),
     0,
   );
+  
+  // Sum up tips validation
+  const totalCommissions = waiterOrders.reduce((sum, order) => {
+      const tipVal = order.tip ? Number(order.tip) : 0;
+      return sum + tipVal;
+  }, 0);
 
   if (waiterOrders.length === 0) {
     tbody.innerHTML =
-      '<tr><td colspan="3" style="text-align: center; padding: 2rem; color: var(--text-muted);">Nenhuma venda finalizada.</td></tr>';
+      '<tr><td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-muted);">Nenhuma venda finalizada.</td></tr>';
   } else {
     tbody.innerHTML = waiterOrders
       .map((order) => {
@@ -1628,20 +1636,47 @@ function renderCommissionWaiters() {
               minute: "2-digit",
             })
           : "-";
+        
+        const orderTotal = Number(order.total) || 0;
+        const tipVal = order.tip ? Number(order.tip) : 0;
+        const commissionDisplay = tipVal > 0 ? formatCurrency(tipVal) : "---"; // Validation logic
+
+        // Resolve Table Number
+        const tableObj = tables.find(t => t.id === String(order.table_id));
+        // If table_id is number directly (most likely based on interface), try finding by id or just display it if it matches the number pattern
+        // The Order interface says table_id: number. The Table interface says id: string, number: number. 
+        // We need to match order.table_id to table.id?? Or is order.table_id actually the ID?
+        // Let's assume order.table_id corresponds to table.id.
+        
+        let tableDisplay = "Mesa ?";
+        if (tableObj) {
+            tableDisplay = `Mesa ${tableObj.number}`;
+        } else {
+             // Fallback if we can't find the table object, maybe order.table_id IS the number? 
+             // Logic in other files suggests order.table_id references table.id.
+             // If we can't find it, show ID snippet or just '?'
+             tableDisplay = `Mesa ?`;
+        }
+
         return `
           <tr>
               <td>#${order.id.slice(0, 8)}</td>
               <td>${dateStr}</td>
-              <td>${formatCurrency(order.total || 0)}</td>
+              <td>${tableDisplay}</td>
+              <td style="color: var(--text-muted);">${formatCurrency(orderTotal)}</td>
+              <td style="color: ${tipVal > 0 ? 'var(--emerald)' : 'var(--text-dim)'}; font-weight: 600;">${commissionDisplay}</td>
           </tr>
           `;
       })
       .join("");
   }
 
-  totalEl.textContent = formatCurrency(totalSales);
+  totalEl.innerHTML = `
+      <span style="font-size: 0.9rem; color: var(--text-muted); font-weight: 400; margin-right: 1rem;">Vendas: ${formatCurrency(totalSales)}</span>
+      Comissão Total: <span style="color: var(--emerald);">${formatCurrency(totalCommissions)}</span>
+    `;
   modal.classList.add("active");
-};
+};;
 
 (window as any).closeCommissionModal = () => {
   const modal = document.getElementById("commissionModal");

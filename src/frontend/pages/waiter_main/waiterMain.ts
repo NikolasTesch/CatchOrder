@@ -61,7 +61,6 @@ async function init() {
   loadTables();
   loadSummary();
   loadActiveOrders(); // NEW
-  loadAllData(); // NEW: Load auxiliary data for edit modal
 
   // Check for auto-open modal
   const urlParams = new URLSearchParams(window.location.search);
@@ -84,27 +83,27 @@ async function init() {
 // Utility Functions
 function formatCurrentDate(): string {
   const days = [
-    'Domingo',
-    'Segunda-feira',
-    'Terça-feira',
-    'Quarta-feira',
-    'Quinta-feira',
-    'Sexta-feira',
-    'Sábado',
+    "Domingo",
+    "Segunda-feira",
+    "Terça-feira",
+    "Quarta-feira",
+    "Quinta-feira",
+    "Sexta-feira",
+    "Sábado",
   ];
   const months = [
-    'Janeiro',
-    'Fevereiro',
-    'Março',
-    'Abril',
-    'Maio',
-    'Junho',
-    'Julho',
-    'Agosto',
-    'Setembro',
-    'Outubro',
-    'Novembro',
-    'Dezembro',
+    "Janeiro",
+    "Fevereiro",
+    "Março",
+    "Abril",
+    "Maio",
+    "Junho",
+    "Julho",
+    "Agosto",
+    "Setembro",
+    "Outubro",
+    "Novembro",
+    "Dezembro",
   ];
 
   const now = new Date();
@@ -118,11 +117,11 @@ function formatCurrentDate(): string {
 
 function formatCurrency(cents: number): string {
   const reais = cents / 100;
-  return reais.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  return reais.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
 function updateDateDisplay() {
-  const titleEl = document.querySelector('.summary-title');
+  const titleEl = document.querySelector(".summary-title");
   if (titleEl) {
     titleEl.textContent = formatCurrentDate();
   }
@@ -130,23 +129,23 @@ function updateDateDisplay() {
 
 async function loadCurrentUser(): Promise<User | null> {
   try {
-    const response = await ApiService.get<{ user: User }>('/auth/me');
+    const response = await ApiService.get<{ user: User }>("/auth/me");
     currentUser = response.user;
     return currentUser;
   } catch (error) {
     // console.error('Failed to load user:', error);
-    window.location.href = 'landingPage.html';
+    window.location.href = "landingPage.html";
     return null;
   }
 }
 
 // Dark Mode
 function initDarkMode() {
-  const savedTheme = localStorage.getItem('theme');
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const savedTheme = localStorage.getItem("theme");
+  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
-  if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-    document.body.classList.add('dark-mode');
+  if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+    document.body.classList.add("dark-mode");
     updateDarkModeIcon(true);
   } else {
     updateDarkModeIcon(false);
@@ -154,15 +153,15 @@ function initDarkMode() {
 }
 
 function toggleDarkMode() {
-  const isDark = document.body.classList.toggle('dark-mode');
-  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  const isDark = document.body.classList.toggle("dark-mode");
+  localStorage.setItem("theme", isDark ? "dark" : "light");
   updateDarkModeIcon(isDark);
 }
 
 function updateDarkModeIcon(isDark: boolean) {
-  const icon = darkModeToggle?.querySelector('.material-symbols-outlined');
+  const icon = darkModeToggle?.querySelector(".material-symbols-outlined");
   if (icon) {
-    icon.textContent = isDark ? 'dark_mode' : 'light_mode';
+    icon.textContent = isDark ? "dark_mode" : "light_mode";
   }
 }
 
@@ -171,27 +170,6 @@ function setupEventListeners() {
   // Dark mode
   if (darkModeToggle) {
     darkModeToggle.addEventListener("click", toggleDarkMode);
-  }
-
-  // Edit Order Modal Listeners
-  const closeEditModal = document.getElementById("closeEditOrderModal");
-  const cancelEditBtn = document.getElementById("cancelEditOrderBtn");
-  const saveEditBtn = document.getElementById("saveEditOrderBtn");
-  const editModalOverlay = document.getElementById("editOrderModal");
-
-  if (closeEditModal) {
-    closeEditModal.addEventListener("click", closeEditOrderModal);
-  }
-  if (cancelEditBtn) {
-    cancelEditBtn.addEventListener("click", closeEditOrderModal);
-  }
-  if (saveEditBtn) {
-    saveEditBtn.addEventListener("click", handleSaveEditOrder);
-  }
-  if (editModalOverlay) {
-    editModalOverlay.addEventListener("click", (e) => {
-      if (e.target === editModalOverlay) closeEditOrderModal();
-    });
   }
 
   // Sidebar Toggle
@@ -205,9 +183,11 @@ function setupEventListeners() {
   const newOrderBtn = document.getElementById("newOrderBtn");
   if (newOrderBtn) {
     newOrderBtn.addEventListener("click", () => {
-      const availableSection = document.getElementById("availableTablesSection");
+      const availableSection = document.getElementById(
+        "availableTablesSection",
+      );
       if (availableSection) {
-        availableSection.scrollIntoView({ behavior: 'smooth' });
+        availableSection.scrollIntoView({ behavior: "smooth" });
       }
     });
   }
@@ -310,20 +290,10 @@ function toggleProfilePopover(btn: HTMLElement) {
               <span class="role-badge ${currentUser.role.toLowerCase()}">${currentUser.role}</span>
             </div>
           </div>
-          <div class="popover-footer" style="padding-top: 1rem; border-top: 1px solid var(--border-light); margin-top: 1rem;">
-            <button class="btn btn-danger btn-full btn-sm" id="popoverLogoutBtn">
-              <span class="material-symbols-outlined" style="font-size: 18px; margin-right: 8px;">logout</span>
-              Sair
-            </button>
-          </div>
         </div>
       `;
 
       // Attach listener to new button
-      const popoverBtn = popover.querySelector("#popoverLogoutBtn");
-      if (popoverBtn) {
-        popoverBtn.addEventListener("click", handleLogout);
-      }
     } else {
       popover.innerHTML = `<div class="popover-body">Carregando perfil...</div>`;
     }
@@ -598,9 +568,6 @@ function renderActiveOrders(orders: Order[], tables: Table[]) {
         <div class="card-header">
            <span class="table-number">${typeof tableNumber === "number" && tableNumber < 10 ? "0" + tableNumber : tableNumber}</span>
            <span class="table-label">MESA</span>
-           <button class="icon-btn-small edit-order-btn" data-order-id="${order.id}" aria-label="Editar" style="margin-left: auto; width: 32px; height: 32px; background: rgba(0,0,0,0.05); border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-              <span class="material-symbols-outlined" style="font-size: 18px; color: var(--color-primary);">edit</span>
-           </button>
         </div>
         <div class="card-body">
            <span class="material-symbols-outlined">receipt_long</span>
@@ -626,158 +593,10 @@ function renderActiveOrders(orders: Order[], tables: Table[]) {
         }
       }
     });
-
-    // Edit button click
-    const editBtn = card.querySelector(".edit-order-btn");
-    if (editBtn) {
-      editBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const orderId = (card as HTMLElement).dataset.orderId;
-        if (orderId) openEditModal(orderId);
-      });
-    }
   });
 }
 
-// Edit Order Logic
-async function loadAllData() {
-  try {
-    const tablesRes = await ApiService.get<{ data: Table[] }>("/tables");
-    const usersRes = await ApiService.get<{ data: User[] }>("/users");
-    allTables = tablesRes.data || [];
-    allUsers = usersRes.data || [];
-  } catch (error) {
-    console.error("Error loading auxiliary data", error);
-  }
-}
 
-function getUserRole(): string {
-  return currentUser?.role || "WAITER";
-}
-
-function openEditModal(orderId: string) {
-  currentEditingOrderId = orderId;
-  const modal = document.getElementById("editOrderModal");
-  const tableSelect = document.getElementById(
-    "editOrderTable",
-  ) as HTMLSelectElement;
-  const waiterSelect = document.getElementById(
-    "editOrderWaiter",
-  ) as HTMLSelectElement;
-
-  if (!modal || !tableSelect || !waiterSelect) return;
-
-  populateEditModal(orderId);
-  modal.classList.add("active");
-}
-
-async function populateEditModal(orderId: string) {
-  try {
-    const response = await ApiService.get<{ data: Order }>(
-      `/orders/${orderId}`,
-    );
-    const order = response.data;
-    if (!order) return;
-
-    // Populate Table Select
-    const tableSelect = document.getElementById(
-      "editOrderTable",
-    ) as HTMLSelectElement;
-    tableSelect.innerHTML = allTables
-      .map(
-        (t) =>
-          `<option value="${t.id}" ${t.id === order.table_id ? "selected" : ""} ${t.status === "OCCUPIED" && t.id !== order.table_id ? "disabled" : ""}>
-                Mesa ${t.number} ${t.status === "OCCUPIED" && t.id !== order.table_id ? "(Ocupada)" : ""}
-            </option>`,
-      )
-      .join("");
-
-    // Populate Waiter Select
-    const waiterSelect = document.getElementById(
-      "editOrderWaiter",
-    ) as HTMLSelectElement;
-    waiterSelect.innerHTML = allUsers
-      .map(
-        (u) =>
-          `<option value="${u.id}" ${u.id === order.user_id ? "selected" : ""}>
-                ${u.name} (${u.role})
-            </option>`,
-      )
-      .join("");
-
-    // Handle Permissions
-    const role = getUserRole();
-    const waiterGroup = document.getElementById("editOrderWaiterGroup");
-    if (waiterGroup) {
-      // Manager or Admin can edit waiter
-      if (role === "MANAGER" || role === "admin") {
-        waiterGroup.style.display = "block";
-        waiterSelect.disabled = false;
-      } else {
-        // Waiter cannot edit waiter
-        waiterGroup.style.display = "none";
-        waiterSelect.disabled = true;
-      }
-    }
-  } catch (e) {
-    console.error("Error populating modal", e);
-    closeEditOrderModal();
-    alert("Erro ao carregar detalhes do pedido.");
-  }
-}
-
-function closeEditOrderModal() {
-  const modal = document.getElementById("editOrderModal");
-  if (modal) modal.classList.remove("active");
-  currentEditingOrderId = null;
-}
-
-async function handleSaveEditOrder() {
-  if (!currentEditingOrderId) return;
-
-  const tableSelect = document.getElementById(
-    "editOrderTable",
-  ) as HTMLSelectElement;
-  const waiterSelect = document.getElementById(
-    "editOrderWaiter",
-  ) as HTMLSelectElement;
-
-  const newTableId = tableSelect.value;
-  const role = getUserRole();
-
-  const payload: any = {
-    table_id: newTableId,
-  };
-
-  if ((role === "MANAGER" || role === "admin") && !waiterSelect.disabled) {
-    payload.user_id = waiterSelect.value;
-  }
-
-  try {
-    await ApiService.put(`/orders/${currentEditingOrderId}`, payload);
-
-    closeEditOrderModal();
-    loadActiveOrders();
-    loadTables();
-    loadSummary();
-
-    // alert('Pedido atualizado com sucesso!');
-  } catch (error: any) {
-    console.error("Error updating order:", error);
-    const msg = error.message || "";
-    if (
-      msg.toLowerCase().includes("fechado") ||
-      msg.toLowerCase().includes("inconsistência")
-    ) {
-      alert(`Atenção: ${msg}. O pedido foi fechado automaticamente.`);
-      closeEditOrderModal();
-      loadActiveOrders();
-      loadTables();
-    } else {
-      alert("Erro ao atualizar pedido: " + msg);
-    }
-  }
-}
 
 // Initialize
 document.addEventListener('DOMContentLoaded', init);

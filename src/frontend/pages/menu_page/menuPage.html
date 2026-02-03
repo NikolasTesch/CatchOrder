@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CatchOrder - Cardápio</title>
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="menu-header">
+      <div class="header-top">
+        <div class="brand">
+          <img src="../img/logoName.svg" alt="CatchOrder Logo" class="logo">
+        </div>
+        <div class="table-info" id="tableInfo">
+          <span class="table-label">Mesa</span>
+          <span class="table-number" id="tableNumber">--</span>
+        </div>
+      </div>
+
+      <div class="search-bar-container">
+        <div class="search-input-wrapper">
+          <i class="fa-solid fa-search"></i>
+          <input type="text" id="searchInput" placeholder="Buscar produtos...">
+        </div>
+      </div>
+
+      <!-- Category Filter -->
+      <div class="category-scroll-container">
+        <div class="category-list" id="categoryList">
+          <!-- Categories will be injected here -->
+          <button class="category-item active" data-id="all">
+            <i class="fa-solid fa-layer-group"></i>
+            <span>Todos</span>
+          </button>
+          <!-- Example of dynamic category:
+                    <button class="category-item" data-id="1">
+                        <i class="fa-solid fa-hamburger"></i>
+                        <span>Lanches</span>
+                    </button> 
+                    -->
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content (Products) -->
+    <main class="menu-content">
+      <div class="products-grid" id="productsGrid">
+        <!-- Products will be injected here -->
+        <div class="loading-spinner">
+          <i class="fa-solid fa-circle-notch fa-spin"></i>
+          <span>Carregando cardápio...</span>
+        </div>
+      </div>
+    </main>
+
+    <!-- Floating Cart/Action Button (Future use) -->
+    <!-- 
+        <div class="floating-action-bar">
+            <button class="btn-view-cart">
+                <span class="cart-count">0</span>
+                <span>Ver Pedido</span>
+                <span class="cart-total">R$ 0,00</span>
+            </button>
+        </div> 
+        -->
+  </div>
+</body>
+
+</html>

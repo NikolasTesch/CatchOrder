@@ -440,18 +440,19 @@ function updateTotals() {
 // --- API Actions ---
 
 async function removeOrderItem(orderId: string, itemId: string) {
-  if (!confirm("Tem certeza que deseja cancelar este item?")) return;
-  try {
-    await ApiService.delete(`/orders/${orderId}/items/${itemId}`);
-    showSuccess('Item removido com sucesso!');
-    await loadOrderDetails(orderId);
-    renderOrderSummary(); // Re-render sidebar
-    renderProductsByCategory(); // Re-render main area to update pending list
-    updateTotals();
-  } catch (error: any) {
-    // console.error('Erro ao remover item:', error);
-    showError('Erro ao remover item');
-  }
+  showConfirmationModal('Cancelar Item', 'Tem certeza que deseja cancelar este item?', async () => {
+    try {
+      await ApiService.delete(`/orders/${orderId}/items/${itemId}`);
+      showSuccess('Item removido com sucesso!');
+      await loadOrderDetails(orderId);
+      renderOrderSummary(); // Re-render sidebar
+      renderProductsByCategory(); // Re-render main area to update pending list
+      updateTotals();
+    } catch (error: any) {
+      // console.error('Erro ao remover item:', error);
+      showError('Erro ao remover item');
+    }
+  });
 }
 
 async function deliverItem(orderId: string, itemId: string, quantity?: number) {
@@ -741,6 +742,11 @@ function toggleProfilePopover(btn: HTMLElement) {
     // Append to header-actions
     const headerActions = document.querySelector(".header-actions");
     if (headerActions) headerActions.appendChild(popover);
+
+    // Prevent close on click inside
+    popover.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
   }
 
   popover.classList.toggle("active");
@@ -869,6 +875,37 @@ function showQuantityModal(item: OrderItem, onConfirm: (qty: number) => void) {
 
   modal.querySelector('#cancel-qty')?.addEventListener('click', () => {
     document.body.removeChild(modal);
+  });
+}
+
+
+// Helper Modal for Confirmation
+function showConfirmationModal(title: string, message: string, onConfirm: () => void) {
+  const modal = document.createElement('div');
+  modal.className = 'quantity-modal-overlay active'; // Confirm reuse of same overlay style
+  modal.innerHTML = `
+        <div class="quantity-modal-content glass">
+            <h3 class="modal-title">${title}</h3>
+            <p class="modal-desc">${message}</p>
+            
+            <div class="modal-actions">
+                <button id="cancel-confirm" class="btn btn-cancel-modal">Não</button>
+                <button id="confirm-action" class="btn btn-primary" style="flex: 1;">Sim</button>
+            </div>
+        </div>
+    `;
+
+  document.body.appendChild(modal);
+
+  const close = () => document.body.removeChild(modal);
+
+  modal.querySelector('#confirm-action')?.addEventListener('click', () => {
+    onConfirm();
+    close();
+  });
+
+  modal.querySelector('#cancel-confirm')?.addEventListener('click', () => {
+    close();
   });
 }
 

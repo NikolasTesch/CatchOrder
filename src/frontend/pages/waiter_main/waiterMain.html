@@ -107,6 +107,36 @@
 
 
 
+  <!-- Edit Order Modal -->
+  <div class="modal-overlay" id="editOrderModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Editar Pedido</h3>
+        <button class="icon-btn-small" id="closeEditOrderModal">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="editOrderTable">Nova Mesa</label>
+          <select id="editOrderTable" class="form-input">
+            <!-- Populated by JS -->
+          </select>
+        </div>
+        <div class="form-group" id="editOrderWaiterGroup">
+          <label for="editOrderWaiter">Novo Garçom</label>
+          <select id="editOrderWaiter" class="form-input">
+             <!-- Populated by JS -->
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-dark" id="cancelEditOrderBtn">Cancelar</button>
+        <button class="btn btn-gold" id="saveEditOrderBtn">Salvar Alterações</button>
+      </div>
+    </div>
+  </div>
+
   <script src="waiterMain.js"></script>
 </body>
 

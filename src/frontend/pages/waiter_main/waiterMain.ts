@@ -38,6 +38,9 @@ interface User {
 
 // State
 let currentUser: User | null = null;
+let allTables: Table[] = [];
+let allUsers: User[] = [];
+let currentEditingOrderId: string | null = null;
 
 // DOM Elements
 const sidebar = document.getElementById('sidebar');
@@ -55,11 +58,14 @@ async function init() {
   updateDateDisplay();
   loadTables();
   loadSummary();
+  loadTables();
+  loadSummary();
   loadActiveOrders(); // NEW
+  loadAllData(); // NEW: Load auxiliary data for edit modal
 
   // Check for auto-open modal
   const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.get('action') === 'new_order') {
+  if (urlParams.get("action") === "new_order") {
     openTableSelectionModal();
     // Clean URL
     window.history.replaceState({}, document.title, window.location.pathname);
@@ -167,6 +173,27 @@ function setupEventListeners() {
     darkModeToggle.addEventListener("click", toggleDarkMode);
   }
 
+  // Edit Order Modal Listeners
+  const closeEditModal = document.getElementById("closeEditOrderModal");
+  const cancelEditBtn = document.getElementById("cancelEditOrderBtn");
+  const saveEditBtn = document.getElementById("saveEditOrderBtn");
+  const editModalOverlay = document.getElementById("editOrderModal");
+
+  if (closeEditModal) {
+    closeEditModal.addEventListener("click", closeEditOrderModal);
+  }
+  if (cancelEditBtn) {
+    cancelEditBtn.addEventListener("click", closeEditOrderModal);
+  }
+  if (saveEditBtn) {
+    saveEditBtn.addEventListener("click", handleSaveEditOrder);
+  }
+  if (editModalOverlay) {
+    editModalOverlay.addEventListener("click", (e) => {
+      if (e.target === editModalOverlay) closeEditOrderModal();
+    });
+  }
+
   // Sidebar Toggle
   if (menuBtn && sidebar) {
     menuBtn.addEventListener("click", () => {
@@ -269,8 +296,8 @@ function toggleProfilePopover(btn: HTMLElement) {
       const createdDate =
         "created_at" in currentUser && currentUser.created_at
           ? new Date(currentUser.created_at as string).toLocaleDateString(
-            "pt-BR",
-          )
+              "pt-BR",
+            )
           : "-";
 
       popover.innerHTML = `
@@ -297,7 +324,6 @@ function toggleProfilePopover(btn: HTMLElement) {
       if (popoverBtn) {
         popoverBtn.addEventListener("click", handleLogout);
       }
-
     } else {
       popover.innerHTML = `<div class="popover-body">Carregando perfil...</div>`;
     }
@@ -319,17 +345,17 @@ function closePopovers() {
 // Data Loading
 async function loadTables() {
   try {
-    const response = await ApiService.get<{ data: Table[] }>('/tables');
+    const response = await ApiService.get<{ data: Table[] }>("/tables");
     const tables = response.data || [];
 
-    renderOccupiedTables(tables.filter((t) => t.status === 'OCCUPIED'));
-    renderAvailableTables(tables.filter((t) => t.status === 'AVAILABLE'));
+    renderOccupiedTables(tables.filter((t) => t.status === "OCCUPIED"));
+    renderAvailableTables(tables.filter((t) => t.status === "AVAILABLE"));
 
     // If modal exists, also render modal tables
-    const modalGrid = document.getElementById('availableTablesGrid');
+    const modalGrid = document.getElementById("availableTablesGrid");
     if (modalGrid) {
       renderModalAvailableTables(
-        tables.filter((t) => t.status === 'AVAILABLE'),
+        tables.filter((t) => t.status === "AVAILABLE"),
       );
     }
   } catch (error) {
@@ -338,7 +364,7 @@ async function loadTables() {
 }
 
 function renderOccupiedTables(tables: Table[]) {
-  const container = document.querySelector('.occupied-scroll');
+  const container = document.querySelector(".occupied-scroll");
   if (!container) return;
 
   if (tables.length === 0) {
@@ -351,7 +377,7 @@ function renderOccupiedTables(tables: Table[]) {
       (table) => `
         <button class="table-card occupied" data-table-id="${table.id}" data-status="OCCUPIED">
           <div class="card-header">
-             <span class="table-number">${table.number < 10 ? '0' + table.number : table.number}</span>
+             <span class="table-number">${table.number < 10 ? "0" + table.number : table.number}</span>
              <span class="table-label">MESA</span>
           </div>
           <div class="card-body">
@@ -364,17 +390,17 @@ function renderOccupiedTables(tables: Table[]) {
         </button>
     `,
     )
-    .join('');
+    .join("");
 
-  container.querySelectorAll('.table-card').forEach((card) => {
-    (card as HTMLElement).addEventListener('click', () => {
-      handleTableClick((card as HTMLElement).dataset.tableId!, 'OCCUPIED');
+  container.querySelectorAll(".table-card").forEach((card) => {
+    (card as HTMLElement).addEventListener("click", () => {
+      handleTableClick((card as HTMLElement).dataset.tableId!, "OCCUPIED");
     });
   });
 }
 
 function renderAvailableTables(tables: Table[]) {
-  const container = document.querySelector('.available-tables-grid');
+  const container = document.querySelector(".available-tables-grid");
   if (!container) return;
 
   if (tables.length === 0) {
@@ -388,7 +414,7 @@ function renderAvailableTables(tables: Table[]) {
       (table) => `
     <button class="table-card available" data-table-id="${table.id}" data-status="AVAILABLE">
       <div class="card-header">
-         <span class="table-number">${table.number < 10 ? '0' + table.number : table.number}</span>
+         <span class="table-number">${table.number < 10 ? "0" + table.number : table.number}</span>
          <span class="table-label">MESA</span>
       </div>
       <div class="card-body">
@@ -401,26 +427,26 @@ function renderAvailableTables(tables: Table[]) {
     </button>
   `,
     )
-    .join('');
+    .join("");
 
-  container.querySelectorAll('.table-card').forEach((card) => {
-    (card as HTMLElement).addEventListener('click', () => {
-      handleTableClick((card as HTMLElement).dataset.tableId!, 'AVAILABLE');
+  container.querySelectorAll(".table-card").forEach((card) => {
+    (card as HTMLElement).addEventListener("click", () => {
+      handleTableClick((card as HTMLElement).dataset.tableId!, "AVAILABLE");
     });
   });
 }
 
 // Modal Functions
 function openTableSelectionModal() {
-  const modal = document.getElementById('tableModalOverlay');
+  const modal = document.getElementById("tableModalOverlay");
   if (modal) {
-    modal.classList.add('active');
+    modal.classList.add("active");
     loadTables();
   }
 }
 
 function renderModalAvailableTables(tables: Table[]) {
-  const container = document.getElementById('availableTablesGrid');
+  const container = document.getElementById("availableTablesGrid");
   if (!container) return;
 
   if (tables.length === 0) {
@@ -437,18 +463,18 @@ function renderModalAvailableTables(tables: Table[]) {
     </button>
   `,
     )
-    .join('');
+    .join("");
 
-  container.querySelectorAll('.table-card').forEach((card) => {
-    (card as HTMLElement).addEventListener('click', () => {
+  container.querySelectorAll(".table-card").forEach((card) => {
+    (card as HTMLElement).addEventListener("click", () => {
       // Navigate to Create Order with selected table
       window.location.href = `createOrder.html?table_id=${(card as HTMLElement).dataset.tableId}`;
     });
   });
 }
 
-function handleTableClick(tableId: string, status: string = 'OCCUPIED') {
-  if (status === 'AVAILABLE') {
+function handleTableClick(tableId: string, status: string = "OCCUPIED") {
+  if (status === "AVAILABLE") {
     window.location.href = `createOrder.html?table_id=${tableId}`;
   } else {
     window.location.href = `orders.html?tableId=${tableId}`;
@@ -460,7 +486,7 @@ async function loadSummary() {
     if (!currentUser) return;
     const user = currentUser; // Capture user to ensure it's not null in callback
 
-    const response = await ApiService.get<{ data: Order[] }>('/orders');
+    const response = await ApiService.get<{ data: Order[] }>("/orders");
     const orders = response.data || [];
 
     const now = new Date();
@@ -471,45 +497,49 @@ async function loadSummary() {
       let d = new Date(dateStr);
       // Fallback for SQL-style timestamps
       if (isNaN(d.getTime())) {
-        d = new Date(dateStr.replace(' ', 'T'));
+        d = new Date(dateStr.replace(" ", "T"));
       }
       if (isNaN(d.getTime())) return false;
 
-      return d.getDate() === now.getDate() &&
+      return (
+        d.getDate() === now.getDate() &&
         d.getMonth() === now.getMonth() &&
-        d.getFullYear() === now.getFullYear();
+        d.getFullYear() === now.getFullYear()
+      );
     };
 
     const todayOrders = orders.filter((o) => {
       // Robust logging for debugging
-      // console.log('Checking order:', o); 
+      // console.log('Checking order:', o);
 
       // Check both probable date fields
       const orderDate = o.created_at || o.opened_at;
       const orderSameDay = isToday(orderDate);
 
       // Loose comparison for IDs (string vs number)
-      const isMyOrder = (o.user_id == user.id || String(o.user_id) === String(user.id));
-      const status = (o.status || '').toUpperCase();
-      const isClosed = ['CLOSED', 'PAID'].includes(status);
+      const isMyOrder =
+        o.user_id == user.id || String(o.user_id) === String(user.id);
+      const status = (o.status || "").toUpperCase();
+      const isClosed = ["CLOSED", "PAID"].includes(status);
 
       return orderSameDay && isMyOrder && isClosed;
     });
 
     const totalSales = todayOrders.reduce((sum, order) => {
-      const val = typeof order.total === 'string' ? parseFloat(order.total) : order.total;
+      const val =
+        typeof order.total === "string" ? parseFloat(order.total) : order.total;
       return sum + (val || 0);
     }, 0);
-    const totalTip = totalSales * 0.10;
+    const totalTip = totalSales * 0.1;
 
-    const valueEl = document.querySelector('.summary-value');
-    const subtitleEl = document.querySelector('.summary-subtitle');
-    const badgeEl = document.querySelector('.badge-today');
+    const valueEl = document.querySelector(".summary-value");
+    const subtitleEl = document.querySelector(".summary-subtitle");
+    const badgeEl = document.querySelector(".badge-today");
 
-    if (badgeEl) badgeEl.textContent = 'Minhas Comissões (10%)';
+    if (badgeEl) badgeEl.textContent = "Minhas Comissões (10%)";
     if (valueEl) valueEl.textContent = formatCurrency(totalTip); // formatCurrency expects cents
     if (subtitleEl)
-      subtitleEl.textContent = `${todayOrders.length} mesa${todayOrders.length !== 1 ? 's' : ''} finalizada${todayOrders.length !== 1 ? 's' : ''} por mim`;
+      subtitleEl.textContent = `${todayOrders.length} mesa${todayOrders.length !== 1 ? "s" : ""} finalizada${todayOrders.length !== 1 ? "s" : ""} por mim`;
   } catch (error) {
     // console.error('Error loading summary:', error);
   }
@@ -521,48 +551,56 @@ async function loadActiveOrders() {
     if (!currentUser) return;
     const user = currentUser;
 
-    const response = await ApiService.get<{ data: Order[] }>('/orders');
+    const response = await ApiService.get<{ data: Order[] }>("/orders");
     const orders = response.data || [];
 
     // Also load tables to resolve table numbers
-    const tablesResponse = await ApiService.get<{ data: Table[] }>('/tables');
+    const tablesResponse = await ApiService.get<{ data: Table[] }>("/tables");
     const tables = tablesResponse.data || [];
 
     // Filter active orders for the current user
     const activeOrders = orders.filter((o) => {
       const isMyOrder = o.user_id === user.id;
-      const isActive = ['OPEN', 'IN_PROGRESS'].includes(o.status);
+      const isActive = ["OPEN", "IN_PROGRESS"].includes(o.status);
       return isMyOrder && isActive;
     });
 
     renderActiveOrders(activeOrders, tables);
   } catch (error) {
-    console.error('Error loading active orders:', error);
+    console.error("Error loading active orders:", error);
   }
 }
 
 function renderActiveOrders(orders: Order[], tables: Table[]) {
-  const container = document.getElementById('activeOrdersGrid');
+  const container = document.getElementById("activeOrdersGrid");
   if (!container) return;
 
   if (orders.length === 0) {
-    container.innerHTML = '<p class="empty-message">Nenhum pedido em andamento</p>';
+    container.innerHTML =
+      '<p class="empty-message">Nenhum pedido em andamento</p>';
     return;
   }
 
-  container.innerHTML = orders.map(order => {
-    const table = tables.find(t => t.id === order.table_id);
-    const tableNumber = table ? table.number : '?';
-    const itemsDescription = order.items && order.items.length > 0
-      ? order.items.map(i => `${i.quantity}x ${i.name || i.product_name}`).join(', ')
-      : 'Sem itens';
-    const total = order.total ? parseFloat(order.total.toString()) : 0;
+  container.innerHTML = orders
+    .map((order) => {
+      const table = tables.find((t) => t.id === order.table_id);
+      const tableNumber = table ? table.number : "?";
+      const itemsDescription =
+        order.items && order.items.length > 0
+          ? order.items
+              .map((i) => `${i.quantity}x ${i.name || i.product_name}`)
+              .join(", ")
+          : "Sem itens";
+      const total = order.total ? parseFloat(order.total.toString()) : 0;
 
-    return `
+      return `
       <div class="table-card active-order" data-order-id="${order.id}">
         <div class="card-header">
-           <span class="table-number">${typeof tableNumber === 'number' && tableNumber < 10 ? '0' + tableNumber : tableNumber}</span>
+           <span class="table-number">${typeof tableNumber === "number" && tableNumber < 10 ? "0" + tableNumber : tableNumber}</span>
            <span class="table-label">MESA</span>
+           <button class="icon-btn-small edit-order-btn" data-order-id="${order.id}" aria-label="Editar" style="margin-left: auto; width: 32px; height: 32px; background: rgba(0,0,0,0.05); border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+              <span class="material-symbols-outlined" style="font-size: 18px; color: var(--color-primary);">edit</span>
+           </button>
         </div>
         <div class="card-body">
            <span class="material-symbols-outlined">receipt_long</span>
@@ -573,21 +611,172 @@ function renderActiveOrders(orders: Order[], tables: Table[]) {
         </div>
       </div>
     `;
-  }).join('');
+    })
+    .join("");
 
   // Add click listeners
-  container.querySelectorAll('.active-order').forEach(card => {
-    card.addEventListener('click', () => {
+  container.querySelectorAll(".active-order").forEach((card) => {
+    card.addEventListener("click", () => {
       const orderId = (card as HTMLElement).dataset.orderId;
       if (orderId) {
         // Find the table id for this order
-        const order = orders.find(o => o.id === orderId);
+        const order = orders.find((o) => o.id === orderId);
         if (order) {
           window.location.href = `createOrder.html?table_id=${order.table_id}&order_id=${order.id}`;
         }
       }
     });
+
+    // Edit button click
+    const editBtn = card.querySelector(".edit-order-btn");
+    if (editBtn) {
+      editBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const orderId = (card as HTMLElement).dataset.orderId;
+        if (orderId) openEditModal(orderId);
+      });
+    }
   });
+}
+
+// Edit Order Logic
+async function loadAllData() {
+  try {
+    const tablesRes = await ApiService.get<{ data: Table[] }>("/tables");
+    const usersRes = await ApiService.get<{ data: User[] }>("/users");
+    allTables = tablesRes.data || [];
+    allUsers = usersRes.data || [];
+  } catch (error) {
+    console.error("Error loading auxiliary data", error);
+  }
+}
+
+function getUserRole(): string {
+  return currentUser?.role || "WAITER";
+}
+
+function openEditModal(orderId: string) {
+  currentEditingOrderId = orderId;
+  const modal = document.getElementById("editOrderModal");
+  const tableSelect = document.getElementById(
+    "editOrderTable",
+  ) as HTMLSelectElement;
+  const waiterSelect = document.getElementById(
+    "editOrderWaiter",
+  ) as HTMLSelectElement;
+
+  if (!modal || !tableSelect || !waiterSelect) return;
+
+  populateEditModal(orderId);
+  modal.classList.add("active");
+}
+
+async function populateEditModal(orderId: string) {
+  try {
+    const response = await ApiService.get<{ data: Order }>(
+      `/orders/${orderId}`,
+    );
+    const order = response.data;
+    if (!order) return;
+
+    // Populate Table Select
+    const tableSelect = document.getElementById(
+      "editOrderTable",
+    ) as HTMLSelectElement;
+    tableSelect.innerHTML = allTables
+      .map(
+        (t) =>
+          `<option value="${t.id}" ${t.id === order.table_id ? "selected" : ""} ${t.status === "OCCUPIED" && t.id !== order.table_id ? "disabled" : ""}>
+                Mesa ${t.number} ${t.status === "OCCUPIED" && t.id !== order.table_id ? "(Ocupada)" : ""}
+            </option>`,
+      )
+      .join("");
+
+    // Populate Waiter Select
+    const waiterSelect = document.getElementById(
+      "editOrderWaiter",
+    ) as HTMLSelectElement;
+    waiterSelect.innerHTML = allUsers
+      .map(
+        (u) =>
+          `<option value="${u.id}" ${u.id === order.user_id ? "selected" : ""}>
+                ${u.name} (${u.role})
+            </option>`,
+      )
+      .join("");
+
+    // Handle Permissions
+    const role = getUserRole();
+    const waiterGroup = document.getElementById("editOrderWaiterGroup");
+    if (waiterGroup) {
+      // Manager or Admin can edit waiter
+      if (role === "MANAGER" || role === "admin") {
+        waiterGroup.style.display = "block";
+        waiterSelect.disabled = false;
+      } else {
+        // Waiter cannot edit waiter
+        waiterGroup.style.display = "none";
+        waiterSelect.disabled = true;
+      }
+    }
+  } catch (e) {
+    console.error("Error populating modal", e);
+    closeEditOrderModal();
+    alert("Erro ao carregar detalhes do pedido.");
+  }
+}
+
+function closeEditOrderModal() {
+  const modal = document.getElementById("editOrderModal");
+  if (modal) modal.classList.remove("active");
+  currentEditingOrderId = null;
+}
+
+async function handleSaveEditOrder() {
+  if (!currentEditingOrderId) return;
+
+  const tableSelect = document.getElementById(
+    "editOrderTable",
+  ) as HTMLSelectElement;
+  const waiterSelect = document.getElementById(
+    "editOrderWaiter",
+  ) as HTMLSelectElement;
+
+  const newTableId = tableSelect.value;
+  const role = getUserRole();
+
+  const payload: any = {
+    table_id: newTableId,
+  };
+
+  if ((role === "MANAGER" || role === "admin") && !waiterSelect.disabled) {
+    payload.user_id = waiterSelect.value;
+  }
+
+  try {
+    await ApiService.put(`/orders/${currentEditingOrderId}`, payload);
+
+    closeEditOrderModal();
+    loadActiveOrders();
+    loadTables();
+    loadSummary();
+
+    // alert('Pedido atualizado com sucesso!');
+  } catch (error: any) {
+    console.error("Error updating order:", error);
+    const msg = error.message || "";
+    if (
+      msg.toLowerCase().includes("fechado") ||
+      msg.toLowerCase().includes("inconsistência")
+    ) {
+      alert(`Atenção: ${msg}. O pedido foi fechado automaticamente.`);
+      closeEditOrderModal();
+      loadActiveOrders();
+      loadTables();
+    } else {
+      alert("Erro ao atualizar pedido: " + msg);
+    }
+  }
 }
 
 // Initialize

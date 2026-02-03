@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
 import { OrderModel } from '../models/order';
+import { TableModel } from "../models/tableModel";
+import { UserModel } from "../models/userModel";
 
 class OrdersController {
-
   async index(req: Request, res: Response): Promise<Response> {
     try {
       const orders = await OrderModel.findAll();
@@ -59,9 +60,42 @@ class OrdersController {
   async update(req: Request, res: Response): Promise<Response> {
     try {
       const id = req.params.id as string;
-      const { status, total, tip, closed_at, observations } = req.body;
+      const { status, total, tip, closed_at, observations, table_id, user_id } =
+        req.body;
 
-      const updatedOrder = await OrderModel.update(id, { status, total, tip, closed_at, observations });
+      // START MODIFICATION: Check existence
+      if (table_id) {
+        const table = await TableModel.findById(table_id);
+        if (!table) {
+          await OrderModel.close(id);
+          return res.status(400).json({
+            message:
+              "Pedido fechado por inconsistência de dados (Mesa não encontrada)",
+          });
+        }
+      }
+
+      if (user_id) {
+        const user = await UserModel.findById(user_id);
+        if (!user) {
+          await OrderModel.close(id);
+          return res.status(400).json({
+            message:
+              "Pedido fechado por inconsistência de dados (Usuário não encontrado)",
+          });
+        }
+      }
+      // END MODIFICATION
+
+      const updatedOrder = await OrderModel.update(id, {
+        status,
+        total,
+        tip,
+        closed_at,
+        observations,
+        table_id,
+        user_id,
+      });
 
       if (!updatedOrder) {
         return res.status(404).json({ message: 'Pedido não encontrado' });

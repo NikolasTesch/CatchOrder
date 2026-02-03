@@ -21,11 +21,12 @@ interface Order {
   id: string;
   table_id: string;
   user_id: string;
-  status: 'OPEN' | 'CLOSED' | 'CANCELLED';
+  status: "OPEN" | "IN_PROGRESS" | "CLOSED" | "PAID" | "CANCELLED";
   total: number;
   tip: number;
   created_at?: string;
   opened_at?: string;
+  closed_at?: string;
   items?: OrderItem[];
 }
 
@@ -41,12 +42,13 @@ let currentUser: User | null = null;
 let allTables: Table[] = [];
 let allUsers: User[] = [];
 let currentEditingOrderId: string | null = null;
+let currentSection: string = "dashboard";
 
 // DOM Elements
-const sidebar = document.getElementById('sidebar');
-const menuBtn = document.getElementById('menuBtn');
-const logoutBtn = document.getElementById('logoutBtn');
-const darkModeToggle = document.getElementById('darkModeToggle');
+const sidebar = document.getElementById("sidebar");
+const menuBtn = document.getElementById("menuBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const darkModeToggle = document.getElementById("darkModeToggle");
 
 async function init() {
   // Check authentication and load user data
@@ -55,7 +57,7 @@ async function init() {
 
   initDarkMode();
   setupEventListeners();
-  updateDateDisplay();
+  // updateDateDisplay(); // removed from header
   loadTables();
   loadSummary();
   loadTables();
@@ -127,6 +129,21 @@ function updateDateDisplay() {
   }
 }
 
+function formatTimeElapsed(dateStr?: string): string {
+  if (!dateStr) return "";
+  const start = new Date(dateStr);
+  const now = new Date();
+  const diffMs = now.getTime() - start.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+
+  if (diffMins < 60) {
+    return `Há ${diffMins} minutos`;
+  } else {
+    const hours = Math.floor(diffMins / 60);
+    return `Há ${hours} horas`;
+  }
+}
+
 async function loadCurrentUser(): Promise<User | null> {
   try {
     const response = await ApiService.get<{ user: User }>("/auth/me");
@@ -179,8 +196,8 @@ function setupEventListeners() {
     });
   }
 
-  // New Order Button - Scroll to Available Tables
-  const newOrderBtn = document.getElementById("newOrderBtn");
+  // New Order Button (Header)
+  const newOrderBtn = document.getElementById("headerNewOrderBtn");
   if (newOrderBtn) {
     newOrderBtn.addEventListener("click", () => {
       const availableSection = document.getElementById(
@@ -243,9 +260,16 @@ function setupEventListeners() {
   // Sidebar Navigation Links
   const navItems = document.querySelectorAll(".nav-item");
   navItems.forEach((item) => {
-    item.addEventListener("click", () => {
-      const dest = (item as HTMLElement).dataset.href;
-      if (dest) window.location.href = dest;
+    item.addEventListener("click", (e) => {
+      const sectionId = (item as HTMLElement).getAttribute("data-section");
+      const href = (item as HTMLElement).getAttribute("data-href");
+
+      if (sectionId) {
+        e.preventDefault();
+        handleSectionChange(sectionId);
+      } else if (href) {
+        window.location.href = href;
+      }
     });
   });
 }
@@ -482,9 +506,9 @@ async function loadSummary() {
       // Robust logging for debugging
       // console.log('Checking order:', o);
 
-      // Check both probable date fields
-      const orderDate = o.created_at || o.opened_at;
-      const orderSameDay = isToday(orderDate);
+      // Check date - use closed_at if available (sales/commissions usually based on closing time)
+      const orderDateStr = o.closed_at || o.created_at || o.opened_at;
+      const orderSameDay = isToday(orderDateStr);
 
       // Loose comparison for IDs (string vs number)
       const isMyOrder =
@@ -495,21 +519,27 @@ async function loadSummary() {
       return orderSameDay && isMyOrder && isClosed;
     });
 
-    const totalSales = todayOrders.reduce((sum, order) => {
-      const val =
-        typeof order.total === "string" ? parseFloat(order.total) : order.total;
-      return sum + (val || 0);
+    // Calculate total tip directly from tip field if available, fallback to 10%
+    const totalTip = todayOrders.reduce((sum, order) => {
+      let val = Number(order.tip);
+      if (isNaN(val)) {
+        const total =
+          typeof order.total === "string"
+            ? parseFloat(order.total)
+            : order.total;
+        val = (total || 0) * 0.1;
+      }
+      return sum + val;
     }, 0);
-    const totalTip = totalSales * 0.1;
 
-    const valueEl = document.querySelector(".summary-value");
-    const subtitleEl = document.querySelector(".summary-subtitle");
-    const badgeEl = document.querySelector(".badge-today");
+    const valueEl = document.getElementById("headerCommissionValue");
+    // const subtitleEl = document.querySelector(".summary-subtitle");
+    // const badgeEl = document.querySelector(".badge-today");
 
-    if (badgeEl) badgeEl.textContent = "Minhas Comissões (10%)";
+    // if (badgeEl) badgeEl.textContent = "Minhas Comissões (10%)";
     if (valueEl) valueEl.textContent = formatCurrency(totalTip); // formatCurrency expects cents
-    if (subtitleEl)
-      subtitleEl.textContent = `${todayOrders.length} mesa${todayOrders.length !== 1 ? "s" : ""} finalizada${todayOrders.length !== 1 ? "s" : ""} por mim`;
+    // if (subtitleEl)
+    //   subtitleEl.textContent = `${todayOrders.length} mesa${todayOrders.length !== 1 ? "s" : ""} finalizada${todayOrders.length !== 1 ? "s" : ""} por mim`;
   } catch (error) {
     // console.error('Error loading summary:', error);
   }
@@ -551,49 +581,264 @@ function renderActiveOrders(orders: Order[], tables: Table[]) {
     return;
   }
 
-  container.innerHTML = orders
+  // Clean container
+  container.innerHTML = "";
+
+  // Render Orders
+  const ordersHtml = orders
     .map((order) => {
       const table = tables.find((t) => t.id === order.table_id);
       const tableNumber = table ? table.number : "?";
-      const itemsDescription =
+
+      // Items list (limit to 3 for space)
+      const itemsHtml =
         order.items && order.items.length > 0
           ? order.items
-              .map((i) => `${i.quantity}x ${i.name || i.product_name}`)
-              .join(", ")
-          : "Sem itens";
+              .slice(0, 3)
+              .map(
+                (i) => `
+              <div class="order-item-line">
+                <span class="item-qty">${i.quantity}x</span>
+                <span class="item-name">${i.name || i.product_name}</span>
+              </div>
+            `,
+              )
+              .join("")
+          : '<span class="item-name">Sem itens</span>';
+
+      const moreItems =
+        order.items && order.items.length > 3
+          ? `<div class="order-item-line" style="margin-top:4px; font-style:italic;">+ ${order.items.length - 3} itens...</div>`
+          : "";
+
       const total = order.total ? parseFloat(order.total.toString()) : 0;
+      const timeElapsed = formatTimeElapsed(
+        order.created_at || order.opened_at,
+      );
+
+      // Determine status badge
+      let statusBadge = "";
+      if (order.status === "OPEN" || order.status === "IN_PROGRESS") {
+        statusBadge = '<span class="badge-status-preparing">PREPARANDO</span>';
+      } else {
+        statusBadge = '<span class="badge-status-waiting">AGUARDANDO</span>';
+      }
 
       return `
-      <div class="table-card active-order" data-order-id="${order.id}">
-        <div class="card-header">
-           <span class="table-number">${typeof tableNumber === "number" && tableNumber < 10 ? "0" + tableNumber : tableNumber}</span>
-           <span class="table-label">MESA</span>
+      <div class="active-order-card" data-order-id="${order.id}">
+        <div class="order-card-header">
+           <div class="table-indicator">
+              <span class="number">${typeof tableNumber === "number" && tableNumber < 10 ? "0" + tableNumber : tableNumber}</span>
+              <span class="label">MESA</span>
+           </div>
+           ${statusBadge}
         </div>
-        <div class="card-body">
-           <span class="material-symbols-outlined">receipt_long</span>
-           <span class="items-summary">${itemsDescription}</span>
+        
+        <div class="order-card-body">
+           <div class="order-items-list">
+              ${itemsHtml}
+              ${moreItems}
+           </div>
+           
+           <div class="time-elapsed">
+              <span class="material-symbols-outlined">schedule</span>
+              <span>${timeElapsed}</span>
+           </div>
         </div>
-        <div class="card-footer">
-           <span class="order-total">${formatCurrency(total)}</span>
+        
+        <div class="order-card-footer">
+           <span class="order-price">${formatCurrency(total)}</span>
+           <button class="btn-edit-order" aria-label="Editar pedido">
+              <span class="material-symbols-outlined">edit</span>
+           </button>
         </div>
       </div>
     `;
     })
     .join("");
 
-  // Add click listeners
-  container.querySelectorAll(".active-order").forEach((card) => {
-    card.addEventListener("click", () => {
-      const orderId = (card as HTMLElement).dataset.orderId;
-      if (orderId) {
-        // Find the table id for this order
-        const order = orders.find((o) => o.id === orderId);
-        if (order) {
-          window.location.href = `createOrder.html?table_id=${order.table_id}&order_id=${order.id}`;
-        }
+  // New Order Placeholder Card
+  const newOrderCardHtml = `
+    <div class="new-order-card" id="cardNewOrderBtn">
+      <div class="new-order-icon">
+         <span class="material-symbols-outlined">add</span>
+      </div>
+      <span class="new-order-text">Novo Pedido</span>
+    </div>
+  `;
+
+  container.innerHTML = ordersHtml + newOrderCardHtml;
+
+  // Add click listeners to Edit Buttons
+  container.querySelectorAll(".btn-edit-order").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const card = btn.closest(".active-order-card") as HTMLElement;
+      const orderId = card.dataset.orderId;
+      const order = orders.find((o) => o.id === orderId);
+      if (order) {
+        // Edit/Detail Mode
+        window.location.href = `createOrder.html?table_id=${order.table_id}&order_id=${order.id}`;
       }
     });
   });
+
+  // Add click listener to New Order Card
+  const cardNewOrderBtn = document.getElementById("cardNewOrderBtn");
+  if (cardNewOrderBtn) {
+    cardNewOrderBtn.addEventListener("click", () => {
+      const availableSection = document.getElementById(
+        "availableTablesSection",
+      );
+      if (availableSection)
+        availableSection.scrollIntoView({ behavior: "smooth" });
+    });
+  }
+}
+
+// ========================================
+// SECTION HANDLING (SPA)
+// ========================================
+function handleSectionChange(sectionId: string) {
+  currentSection = sectionId;
+
+  // Update Sidebar
+  document.querySelectorAll(".nav-item").forEach((btn) => {
+    if (btn.getAttribute("data-section") === sectionId) {
+      btn.classList.add("active");
+    } else if (btn.getAttribute("data-section")) {
+      btn.classList.remove("active");
+    }
+  });
+
+  // Toggle Sections
+  const dashboardSection = document.getElementById("dashboard-section");
+  const commissionsSection = document.getElementById("commissions-section");
+
+  if (dashboardSection && commissionsSection) {
+    if (sectionId === "dashboard") {
+      dashboardSection.style.display = "block";
+      commissionsSection.style.display = "none";
+
+      // Refresh Dashboard Data
+      loadTables();
+      loadActiveOrders();
+    } else if (sectionId === "commissions") {
+      dashboardSection.style.display = "none";
+      commissionsSection.style.display = "block";
+
+      // Refresh Commissions Data
+      loadCommissions();
+    }
+  }
+}
+
+// ========================================
+// COMMISSIONS LOGIC (SPA Section)
+// ========================================
+async function loadCommissions() {
+  try {
+    if (!currentUser) return;
+
+    const response = await ApiService.get<{ data: Order[] }>("/orders");
+    const orders = response.data || [];
+
+    renderCommissionsView(orders);
+  } catch (error) {
+    console.error("Error loading commissions:", error);
+  }
+}
+
+function renderCommissionsView(orders: Order[]) {
+  if (!currentUser) return;
+
+  const now = new Date();
+  const todayStr = now.toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+
+  // Filter My Orders (Closed)
+  const myOrders = orders.filter(
+    (o) =>
+      (o.user_id == currentUser!.id ||
+        String(o.user_id) === String(currentUser!.id)) &&
+      (o.status === "CLOSED" || o.status === "PAID"),
+  );
+
+  // Sort by date desc
+  myOrders.sort((a, b) => {
+    const da = a.closed_at ? new Date(a.closed_at).getTime() : 0;
+    const db = b.closed_at ? new Date(b.closed_at).getTime() : 0;
+    return db - da;
+  });
+
+  let dailyTotal = 0;
+  let monthlyTotal = 0;
+
+  const tableBody = document.getElementById("commissionTableBody");
+  const dailyEl = document.getElementById("dailyCommission");
+  const monthlyEl = document.getElementById("monthlyCommission");
+
+  if (myOrders.length === 0) {
+    if (tableBody)
+      tableBody.innerHTML =
+        '<tr><td colspan="5" style="text-align: center; padding: 2rem; color: #64748b;">Nenhuma venda finalizada.</td></tr>';
+  } else {
+    if (tableBody) {
+      tableBody.innerHTML = myOrders
+        .map((order) => {
+          const tipVal = Number(order.tip) || 0;
+          const orderDate = order.closed_at ? new Date(order.closed_at) : null;
+          const total = Number(order.total) || 0;
+          let dateStr = "-";
+
+          if (orderDate) {
+            dateStr = orderDate.toLocaleDateString("pt-BR", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            });
+
+            // Calc Stats
+            // Re-construct clean date string for comparison to avoid time issues
+            const simpleDateStr = orderDate.toLocaleDateString("pt-BR", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            });
+
+            if (simpleDateStr === todayStr) dailyTotal += tipVal;
+            if (
+              orderDate.getMonth() === currentMonth &&
+              orderDate.getFullYear() === currentYear
+            ) {
+              monthlyTotal += tipVal;
+            }
+          }
+
+          return `
+                    <tr style="border-bottom: 1px solid #f1f5f9;">
+                        <td style="padding: 1rem; color: var(--color-primary);">#${order.id.slice(0, 8)}</td>
+                        <td style="padding: 1rem; color: var(--color-primary);">${dateStr}</td>
+                        <td style="padding: 1rem; color: var(--color-primary);">${order.table_id}</td> 
+                        <td style="padding: 1rem; color: #64748b;">${formatCurrency(total)}</td>
+                        <td style="padding: 1rem; color: ${tipVal > 0 ? "#10b981" : "#94a3b8"}; font-weight: 600;">${tipVal > 0 ? formatCurrency(tipVal) : "---"}</td>
+                    </tr>
+                `;
+        })
+        .join("");
+    }
+  }
+
+  // Update Stats Cards
+  if (dailyEl) dailyEl.textContent = formatCurrency(dailyTotal);
+  if (monthlyEl) monthlyEl.textContent = formatCurrency(monthlyTotal);
 }
 
 

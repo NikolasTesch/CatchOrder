@@ -628,43 +628,44 @@ body.dark-mode {
 
 :root {
   /* === PALETA DE CORES (Light Mode - Default) === */
-  
+
   /* Cores Principais */
-  --primary: #6366f1;           /* Indigo 500 */
-  --primary-hover: #4f46e5;     /* Indigo 600 */
+  --primary: #6366f1; /* Indigo 500 */
+  --primary-hover: #4f46e5; /* Indigo 600 */
   --primary-soft: rgba(99, 102, 241, 0.1);
-  
+
   /* Legacy Mapping (Light) */
   --color-primary: var(--primary);
   --color-primary-rgb: 99, 102, 241;
-  --color-secondary: #0f172a;   /* Slate 900 */
-  --color-info: #3b82f6;        /* Blue 500 */
-  --color-success: #10b981;     /* Emerald 500 */
-  --color-warning: #f59e0b;     /* Amber 500 */
-  --color-danger: #ef4444;      /* Red 500 */
-  
+  --color-secondary: #0f172a; /* Slate 900 */
+  --color-info: #3b82f6; /* Blue 500 */
+  --color-success: #10b981; /* Emerald 500 */
+  --color-warning: #f59e0b; /* Amber 500 */
+  --color-danger: #ef4444; /* Red 500 */
+
   /* Backgrounds (Light) */
-  --background-dark: #f8fafc;   /* Slate 50 */
+  --background-dark: #f8fafc; /* Slate 50 */
   --background-glass: rgba(255, 255, 255, 0.7);
   --background-glass-hover: rgba(255, 255, 255, 0.9);
   --background-card: #ffffff;
-  
+
   /* Legacy Backgrounds (Light) */
   --bg-primary: #f8fafc;
   --bg-secondary: #ffffff;
   --bg-tertiary: #e2e8f0;
-  
+
   /* Textos (Light) */
-  --text-light: #1e293b;        /* Slate 800 */
-  --text-main: #334155;         /* Slate 700 */
-  --text-muted: #475569;        /* Slate 600 (Darker for contrast) */
-  --text-dim: #64748b;          /* Slate 500 (Darker for contrast) */
-  
+  --text-light: #1e293b; /* Slate 800 */
+  --text-main: #334155; /* Slate 700 */
+  --text-muted: #475569; /* Slate 600 (Darker for contrast) */
+  --text-dim: #64748b; /* Slate 500 (Darker for contrast) */
+
   /* Legacy Text (Light) */
   --text-primary: #1e293b;
   --text-secondary: #475569;
   --text-tertiary: #64748b;
   --text-white: #ffffff;
+  --text-title: #1e293b; /* Slate 800 - Standard Title Color */
 
   /* Status Colors */
   --emerald: #10b981;
@@ -673,26 +674,31 @@ body.dark-mode {
   --blue: #3b82f6;
 
   /* Bordas e Efeitos */
-  --border-glass: rgba(0, 0, 0, 0.1); /* Darker border for light mode visibility */
+  --border-glass: rgba(
+    0,
+    0,
+    0,
+    0.1
+  ); /* Darker border for light mode visibility */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
-  
+
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-xl: 24px;
   --radius-full: 9999px;
-  
+
   /* Layout */
   --header-height: 70px;
   --sidebar-width: 260px;
-  
+
   /* Transitions */
   --transition-base: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-fast: 150ms ease-in-out;
-  
+
   /* Z-Index */
   --z-negative: -1;
   --z-normal: 1;
@@ -704,34 +710,35 @@ body.dark-mode {
 /* === DARK MODE (Glassmorphism Identity - Requested) === */
 body.dark-mode {
   /* Cores Principais */
-  --primary: #6366f1;           /* Indigo 500 */
-  --primary-hover: #4f46e5;     /* Indigo 600 */
+  --primary: #6366f1; /* Indigo 500 */
+  --primary-hover: #4f46e5; /* Indigo 600 */
   --primary-soft: rgba(99, 102, 241, 0.15);
-  
+
   /* Legacy Mapping (Dark) */
   --color-primary: var(--primary);
-  
+
   /* Backgrounds (Dark) */
   --background-dark: #0b1120;
   --background-glass: rgba(255, 255, 255, 0.03);
   --background-glass-hover: rgba(255, 255, 255, 0.08);
   --background-card: rgba(30, 41, 59, 0.4);
-  
+
   /* Legacy Backgrounds (Dark) */
   --bg-primary: #0b1120;
   --bg-secondary: rgba(30, 41, 59, 0.4);
   --bg-tertiary: rgba(255, 255, 255, 0.05);
-  
+
   /* Textos (Dark) */
   --text-light: #f8fafc;
   --text-main: #e2e8f0;
   --text-muted: #94a3b8;
   --text-dim: #64748b;
-  
+
   /* Legacy Text (Dark) */
   --text-primary: #e2e8f0;
   --text-secondary: #94a3b8;
-  
+  --text-title: #e0e7ff; /* Indigo 100 - High Contrast Light Color for Dark Mode */
+
   /* Bordas */
   --border-glass: rgba(255, 255, 255, 0.06);
 }
@@ -745,13 +752,22 @@ body.dark-mode {
 }
 
 body {
-  font-family: 'Inter', 'Noto Sans JP', sans-serif;
+  font-family: "Inter", "Noto Sans JP", sans-serif;
   background-color: var(--bg-primary);
   color: var(--text-primary);
   line-height: 1.5;
   overflow-x: hidden;
   min-height: 100vh;
-  transition: background-color var(--transition-base), color var(--transition-base);
+  transition:
+    background-color var(--transition-base),
+    color var(--transition-base);
+}
+
+h1, h2, h3, h4, h5, h6,
+.material-symbols-outlined,
+.material-icons {
+  color: var(--text-title);
+  transition: color var(--transition-base);
 }
 
 /* Scrollbar Customizada */
@@ -759,7 +775,9 @@ body {
   width: 6px;
   height: 6px;
 }
-::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-track {
+  background: transparent;
+}
 ::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 10px;
@@ -777,11 +795,18 @@ body {
 /* --- Background Blobs (Animação de Fundo) --- */
 .bg-ambient-container {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: -1;
   overflow: hidden;
   pointer-events: none;
-  background: radial-gradient(circle at 50% 50%, #0f172a, var(--background-dark));
+  background: radial-gradient(
+    circle at 50% 50%,
+    #0f172a,
+    var(--background-dark)
+  );
   display: none; /* Hidden mainly in Light Mode */
 }
 
@@ -798,16 +823,42 @@ body.dark-mode .bg-ambient-container {
 }
 
 @keyframes blob-float {
-  0% { transform: translate(0, 0); }
-  100% { transform: translate(20px, -20px); }
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(20px, -20px);
+  }
 }
 
-.blob-1 { width: 50vw; height: 50vw; background: var(--primary); top: -10%; left: -10%; }
-.blob-2 { width: 40vw; height: 40vw; background: var(--blue); bottom: 10%; right: -5%; }
-.blob-3 { width: 30vw; height: 30vw; background: var(--emerald); bottom: -10%; left: 20%; }
+.blob-1 {
+  width: 50vw;
+  height: 50vw;
+  background: var(--primary);
+  top: -10%;
+  left: -10%;
+}
+.blob-2 {
+  width: 40vw;
+  height: 40vw;
+  background: var(--blue);
+  bottom: 10%;
+  right: -5%;
+}
+.blob-3 {
+  width: 30vw;
+  height: 30vw;
+  background: var(--emerald);
+  bottom: -10%;
+  left: 20%;
+}
 
 /* --- Componentes Globais --- */
-button, a, input, select, textarea {
+button,
+a,
+input,
+select,
+textarea {
   font-family: inherit;
   border: none;
   outline: none;
@@ -825,10 +876,14 @@ button, a, input, select, textarea {
   align-items: center;
   gap: 0.5rem;
 }
-.btn-primary:hover { background: var(--primary-hover); box-shadow: 0 0 15px rgba(99, 102, 241, 0.3); }
+.btn-primary:hover {
+  background: var(--primary-hover);
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+}
 
 /* Ícones */
-.material-symbols-outlined, .material-icons-round {
+.material-symbols-outlined,
+.material-icons-round {
   display: inline-block;
   line-height: 1;
   vertical-align: middle;
@@ -922,8 +977,9 @@ button, a, input, select, textarea {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   z-index: var(--z-modal-backdrop);
   display: flex;
   align-items: center;
@@ -937,6 +993,11 @@ button, a, input, select, textarea {
 .modal-backdrop.active {
   opacity: 1;
   pointer-events: all;
+}
+
+/* Enhanced contrast for dark mode */
+body.dark-mode .modal-backdrop {
+  background: rgba(0, 0, 0, 0.85);
 }
 
 .modal {
@@ -2055,6 +2116,31 @@ body.dark-mode .toast {
   .show-desktop {
     display: block !important;
   }
+}
+
+/* ===== SIDEBAR OVERLAY ===== */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: calc(var(--z-fixed) - 1);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-base);
+}
+
+.sidebar-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+body.dark-mode .sidebar-overlay {
+  background: rgba(0, 0, 0, 0.7);
 }
 
 /* ===== PRINT STYLES ===== */

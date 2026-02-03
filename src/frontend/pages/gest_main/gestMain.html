@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CatchOrder - Gestão</title>
-  <link rel='icon' href='/public/img/icon.svg' type='image/svg+xml'>
+  <link rel='icon' href='../img/icon.svg' type='image/svg+xml'>
 
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet"
@@ -78,10 +78,54 @@
           <span class="material-symbols-outlined">insights</span>
           <span class="nav-text">Insights</span>
         </button>
+        <button class="nav-item" data-section="commissions">
+          <span class="material-symbols-outlined">payments</span>
+          <span class="nav-text">Comissões</span>
+        </button>
       </nav>
     </aside>
 
     <main class="main-content">
+
+      <section id="commissions-section" class="content-section">
+        <div class="section-header">
+          <h2 class="section-title">Comissões da Equipe</h2>
+        </div>
+        <div id="waiters-grid" class="waiters-grid">
+          <!-- Loaded by TS -->
+        </div>
+
+        <!-- Commission Details Modal (Specific to this view) -->
+        <div class="gest-modal" id="commissionModal">
+          <div class="gest-modal-content">
+            <div class="gest-modal-header">
+              <h3 id="modalWaiterName">Detalhes do Garçom</h3>
+              <button class="close-btn" onclick="closeCommissionModal()">
+                <span class="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="table-container">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>ID Pedido</th>
+                      <th>Data Fechamento</th>
+                      <th>Mesa</th>
+                      <th>Total</th>
+                      <th>Comissão</th>
+                    </tr>
+                  </thead>
+                  <tbody id="commissionTableBody"></tbody>
+                </table>
+              </div>
+              <div class="commission-total-display">
+                Total: <span id="modalTotalSales">R$ 0,00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <section id="dashboard-section" class="content-section active">
         <h2 class="section-title">Visão Geral</h2>

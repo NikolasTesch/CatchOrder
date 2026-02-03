@@ -15,13 +15,23 @@ router.use('/uploads', express.static(path.join(__dirname, '../../../public/uplo
 router.get('/pages/landingPage.html', (req, res) => {
   res.sendFile(path.join(__dirname, '../../../public/pages/landingPage.html'));
 });
+router.get('/pages/sellingPage.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../../public/pages/sellingPage.html'));
+});
+
 /* router.get('/pages/forgotPassword.html', (req, res) => {
   res.sendFile(path.join(__dirname, '../../../public/pages/forgotPassword.html'));
 }); */
 
-// 3. Root Redirect
+// 3. Root & App Redirects
 router.get('/', (req, res) => {
-  res.redirect('pages/landingPage.html');
+  res.sendFile(path.join(__dirname, '../../../public/pages/sellingPage.html'));
+});
+
+router.get('/app', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../../public/pages/landingPage.html'));
+  // Or redirect if you prefer canonical URL:
+  // res.redirect('/pages/landingPage.html');
 });
 
 // 4. Protected Pages (Rest of /pages)

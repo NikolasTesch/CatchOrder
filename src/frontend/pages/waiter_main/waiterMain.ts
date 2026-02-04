@@ -1,6 +1,7 @@
 import '../../styles/global.css';
 import './style.css';
 import { ApiService } from '../../services/apiService';
+import { initTheme } from '../../utils/themeManager';
 
 // Interfaces
 interface OrderItem {
@@ -46,14 +47,13 @@ let currentEditingOrderId: string | null = null;
 const sidebar = document.getElementById('sidebar');
 const menuBtn = document.getElementById('menuBtn');
 const logoutBtn = document.getElementById('logoutBtn');
-const darkModeToggle = document.getElementById('darkModeToggle');
 
 async function init() {
   // Check authentication and load user data
   const user = await loadCurrentUser();
   if (!user) return;
 
-  initDarkMode();
+  initTheme();
   setupEventListeners();
   updateDateDisplay();
   loadTables();
@@ -140,38 +140,10 @@ async function loadCurrentUser(): Promise<User | null> {
 }
 
 // Dark Mode
-function initDarkMode() {
-  const savedTheme = localStorage.getItem("theme");
-  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-  if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
-    document.body.classList.add("dark-mode");
-    updateDarkModeIcon(true);
-  } else {
-    updateDarkModeIcon(false);
-  }
-}
-
-function toggleDarkMode() {
-  const isDark = document.body.classList.toggle("dark-mode");
-  localStorage.setItem("theme", isDark ? "dark" : "light");
-  updateDarkModeIcon(isDark);
-}
-
-function updateDarkModeIcon(isDark: boolean) {
-  const icon = darkModeToggle?.querySelector(".material-symbols-outlined");
-  if (icon) {
-    icon.textContent = isDark ? "dark_mode" : "light_mode";
-  }
-}
-
 // Event Listeners
 function setupEventListeners() {
-  // Dark mode
-  if (darkModeToggle) {
-    darkModeToggle.addEventListener("click", toggleDarkMode);
-  }
-
+  // Dark mode is now handled by themeManager
+  
   // Sidebar Toggle
   if (menuBtn && sidebar) {
     menuBtn.addEventListener("click", () => {

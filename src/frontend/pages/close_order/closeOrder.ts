@@ -1,6 +1,7 @@
 import './style.css';
 import { ApiService } from '../../services/apiService';
 import { formatCurrency, centsToReais } from '../../utils/currency';
+import { initTheme } from '../../utils/themeManager';
 
 // Interfaces
 interface OrderItem {
@@ -50,7 +51,7 @@ const observationsText = document.getElementById("observations-text");
 document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
-  initDarkMode();
+  initTheme();
   setupHeaderListeners();
 
   // Get URL parameters
@@ -211,39 +212,10 @@ function closeOrder() {
   );
 }
 
-function initDarkMode() {
-  const savedTheme = localStorage.getItem('theme');
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-  if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-    document.body.classList.add('dark-mode');
-    updateDarkModeIcon(true);
-  } else {
-    updateDarkModeIcon(false);
-  }
-}
-
-function updateDarkModeIcon(isDark: boolean) {
-  const darkModeToggle = document.getElementById('darkModeToggle');
-  if (darkModeToggle) {
-    const icon = darkModeToggle.querySelector('.material-symbols-outlined');
-    if (icon) {
-      icon.textContent = isDark ? 'dark_mode' : 'light_mode';
-    }
-  }
-}
-
-function toggleDarkMode() {
-  const isDark = document.body.classList.toggle('dark-mode');
-  localStorage.setItem('theme', isDark ? 'dark' : 'light');
-  updateDarkModeIcon(isDark);
-}
-
 // Header Listeners
 function setupHeaderListeners() {
-  const darkModeToggle = document.getElementById('darkModeToggle');
-  if (darkModeToggle) darkModeToggle.addEventListener('click', toggleDarkMode);
-
+  // Dark mode is now handled by themeManager
+  
   const menuBtn = document.getElementById('menuBtn');
   if (menuBtn) {
     menuBtn.addEventListener('click', () => {

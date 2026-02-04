@@ -1,6 +1,7 @@
 import '../../styles/global.css';
 import './style.css';
 import { ApiService } from '../../services/apiService';
+import { initTheme } from '../../utils/themeManager';
 
 console.log('Landing Page Script Loaded'); // Debug 1
 
@@ -12,44 +13,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const togglePasswordBtn = document.querySelector('.password-toggle') as HTMLElement | null;
     const loginButton = document.querySelector('.btn-primary') as HTMLElement | null;
     const errorContainer = document.getElementById('login-error') as HTMLElement | null;
-    const darkModeToggle = document.getElementById('darkModeToggle');
 
     init();
 
     function init(): void {
-        initDarkMode();
+        initTheme();
         setupEventListeners();
     }
 
-    function initDarkMode() {
-        const savedTheme = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-        if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-            document.body.classList.add('dark-mode');
-            updateDarkModeIcon(true);
-        } else {
-            updateDarkModeIcon(false);
-        }
-    }
-
-    function toggleDarkMode() {
-        const isDark = document.body.classList.toggle('dark-mode');
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        updateDarkModeIcon(isDark);
-    }
-
-    function updateDarkModeIcon(isDark: boolean) {
-        if (darkModeToggle) {
-            const icon = darkModeToggle.querySelector('.material-symbols-outlined');
-            if (icon) icon.textContent = isDark ? 'dark_mode' : 'light_mode';
-        }
-    }
-
     function setupEventListeners(): void {
-        if (darkModeToggle) {
-            darkModeToggle.addEventListener('click', toggleDarkMode);
-        }
+        // Dark mode is now handled by themeManager
 
         if (togglePasswordBtn && passwordInput) {
             togglePasswordBtn.addEventListener('click', handlePasswordToggle);

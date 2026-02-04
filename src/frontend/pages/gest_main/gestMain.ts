@@ -6,6 +6,7 @@ import {
   reaisToCents,
   parseInputToCents,
 } from '../../utils/currency';
+import { initTheme } from '../../utils/themeManager';
 // ========================================
 // INTERFACES
 // ========================================
@@ -100,35 +101,6 @@ const modalTitle = document.getElementById("modalTitle");
 const modalBody = document.getElementById("modalBody");
 const closeModalBtn = document.getElementById("closeModal");
 const logoutBtn = document.getElementById("logoutBtn");
-const darkModeToggle = document.getElementById("darkModeToggle");
-
-// ========================================
-// DARK MODE
-// ========================================
-function initDarkMode() {
-  const savedTheme = localStorage.getItem("theme");
-  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-  if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
-    document.body.classList.add("dark-mode");
-    updateDarkModeIcon(true);
-  } else {
-    updateDarkModeIcon(false);
-  }
-}
-
-function toggleDarkMode() {
-  const isDark = document.body.classList.toggle("dark-mode");
-  localStorage.setItem("theme", isDark ? "dark" : "light");
-  updateDarkModeIcon(isDark);
-}
-
-function updateDarkModeIcon(isDark: boolean) {
-  const icon = darkModeToggle?.querySelector(".material-symbols-outlined");
-  if (icon) {
-    icon.textContent = isDark ? "dark_mode" : "light_mode";
-  }
-}
 
 // ========================================
 // API HELPERS
@@ -1425,7 +1397,7 @@ function applyProductFilters() {
 // INITIALIZATION
 // ========================================
 document.addEventListener("DOMContentLoaded", () => {
-  initDarkMode();
+  initTheme();
 
   // Event Listeners
   if (menuBtn && sidebar) {
@@ -1476,9 +1448,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  if (darkModeToggle) {
-    darkModeToggle.addEventListener("click", toggleDarkMode);
-  }
+  // Dark mode is now handled by themeManager
 
   // Filter Listeners
   document.getElementById("searchUsers")?.addEventListener("input", (e) => {

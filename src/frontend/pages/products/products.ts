@@ -3,6 +3,7 @@ export { };
 
 import { ApiService } from '../../services/apiService';
 import "./style.css";
+import { initTheme } from '../../utils/themeManager';
 
 // API Configuration
 // Using ApiService.getBaseUrl()
@@ -157,42 +158,14 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    initDarkMode();
+    initTheme();
     setupEventListeners();
     fetchProducts();
   }
 
-  function initDarkMode() {
-    const savedTheme = localStorage.getItem("theme");
-    const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)",
-    ).matches;
-
-    if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
-      document.body.classList.add("dark-mode");
-      updateDarkModeIcon(true);
-    } else {
-      updateDarkModeIcon(false);
-    }
-  }
-
-  function toggleDarkMode() {
-    const isDark = document.body.classList.toggle("dark-mode");
-    localStorage.setItem("theme", isDark ? "dark" : "light");
-    updateDarkModeIcon(isDark);
-  }
-
-  function updateDarkModeIcon(isDark: boolean) {
-    const darkModeToggle = document.getElementById("darkModeToggle");
-    if (darkModeToggle) {
-      const icon = darkModeToggle.querySelector(".material-symbols-outlined");
-      if (icon) {
-        icon.textContent = isDark ? "dark_mode" : "light_mode";
-      }
-    }
-  }
-
   function setupEventListeners(): void {
+    // Dark mode is now handled by themeManager
+    
     // Search & Products
     if (searchInput) {
       searchInput.addEventListener("input", handleSearch);
@@ -202,12 +175,7 @@ document.addEventListener("DOMContentLoaded", () => {
       btnAddProduct.addEventListener("click", navigateToCreate);
     }
 
-    // Header & Navigation
-    const darkModeToggle = document.getElementById("darkModeToggle");
-    if (darkModeToggle) {
-      darkModeToggle.addEventListener("click", toggleDarkMode);
-    }
-
+    // Header & Navigation (dark mode handled by themeManager)
     const menuBtn = document.getElementById("menuBtn");
     if (menuBtn) {
       menuBtn.addEventListener("click", toggleSidebar);

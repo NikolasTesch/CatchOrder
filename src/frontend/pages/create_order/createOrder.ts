@@ -2,6 +2,7 @@ import './style.css';
 import { ApiService } from '../../services/apiService';
 import { centsToReais, formatCurrency } from '../../utils/currency';
 import { ModalService } from '../../utils/modalService';
+import { initTheme } from '../../utils/themeManager';
 
 // Interfaces
 interface Category {
@@ -75,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function init() {
-  initDarkMode();
+  initTheme();
   setupEventListeners();
 
   // Standard Auth Check
@@ -158,16 +159,6 @@ async function checkAuth(): Promise<boolean> {
     // console.error('Auth check failed:', error);
     window.location.href = 'landingPage.html';
     return false;
-  }
-}
-
-function initDarkMode() {
-  // Basic Dark Mode Logic if needed, usually global.js handles this
-  const darkModeToggle = document.getElementById('darkModeToggle');
-  if (darkModeToggle) {
-    darkModeToggle.onclick = () => {
-      document.body.classList.toggle('dark-mode');
-    };
   }
 }
 

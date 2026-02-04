@@ -1,6 +1,7 @@
 import './style.css';
 import { ApiService } from '../../services/apiService';
 import { formatCurrency } from '../../utils/currency';
+import { initTheme } from '../../utils/themeManager';
 
 // Interfaces based on API responses
 interface OrderItem {
@@ -57,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function init() {
-  initDarkMode();
+  initTheme();
   setupHeaderListeners();
   setupEventListeners();
 
@@ -244,43 +245,9 @@ function getStatusLabel(status: string): string {
 
 // --- Initialization & UI ---
 
-function initDarkMode() {
-  const savedTheme = localStorage.getItem('theme');
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-  // console.log('Init Dark Mode:', { savedTheme, prefersDark });
-
-  if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-    document.body.classList.add('dark-mode');
-    updateDarkModeIcon(true);
-  } else {
-    document.body.classList.remove('dark-mode');
-    updateDarkModeIcon(false);
-  }
-}
-
-function updateDarkModeIcon(isDark: boolean) {
-  const darkModeToggle = document.getElementById('darkModeToggle');
-  if (darkModeToggle) {
-    const icon = darkModeToggle.querySelector('.material-symbols-outlined');
-    if (icon) {
-      icon.textContent = isDark ? 'dark_mode' : 'light_mode';
-    }
-  }
-}
-
-function toggleDarkMode() {
-  // console.log('Toggling Dark Mode');
-  const isDark = document.body.classList.toggle('dark-mode');
-  localStorage.setItem('theme', isDark ? 'dark' : 'light');
-  updateDarkModeIcon(isDark);
-  // console.log('Dark Mode is now:', isDark);
-}
-
 function setupHeaderListeners() {
-  const darkModeToggle = document.getElementById('darkModeToggle');
-  if (darkModeToggle) darkModeToggle.addEventListener('click', toggleDarkMode);
-
+  // Dark mode is now handled by themeManager
+  
   const menuBtn = document.getElementById('menuBtn');
   const sidebar = document.getElementById('sidebar');
   if (menuBtn && sidebar) {

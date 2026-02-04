@@ -21,6 +21,37 @@ const initNavbarScroll = (): void => {
     });
 };
 
+const initMobileMenu = (): void => {
+    const menuToggle = document.getElementById('menuToggle') as HTMLButtonElement;
+    const navLinks = document.getElementById('navLinks') as HTMLElement;
+
+    if (!menuToggle || !navLinks) return;
+
+    // Toggle menu quando clicar no botão
+    menuToggle.addEventListener('click', () => {
+        menuToggle.classList.toggle('active');
+        navLinks.classList.toggle('active');
+    });
+
+    // Fechar menu quando clicar em um link
+    const links = navLinks.querySelectorAll('a');
+    links.forEach(link => {
+        link.addEventListener('click', () => {
+            menuToggle.classList.remove('active');
+            navLinks.classList.remove('active');
+        });
+    });
+
+    // Fechar menu ao clicar fora dele
+    document.addEventListener('click', (e: MouseEvent) => {
+        const target = e.target as HTMLElement;
+        if (!menuToggle.contains(target) && !navLinks.contains(target)) {
+            menuToggle.classList.remove('active');
+            navLinks.classList.remove('active');
+        }
+    });
+};
+
 const initScrollAnimations = (): void => {
     const observerOptions: IntersectionObserverInit = {
         root: null, // viewport
@@ -148,6 +179,7 @@ const initContactModal = (): void => {
 
 document.addEventListener('DOMContentLoaded', () => {
     initNavbarScroll();
+    initMobileMenu();
     initScrollAnimations();
     initSmoothScrollAnchor();
     initContactModal();

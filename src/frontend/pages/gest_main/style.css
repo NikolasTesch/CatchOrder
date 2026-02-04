@@ -1660,3 +1660,37 @@ body.dark-mode .data-table tbody tr:hover {
     grid-template-columns: 1fr;
   }
 }
+
+/* ===== MOBILE HEADER RESPONSIVE ===== */
+@media (max-width: 767px) {
+  .main-header {
+    padding: 0 0.75rem;
+    height: 56px;
+  }
+
+  .logo-text {
+    font-size: 0.95rem;
+  }
+
+  .logo-image {
+    height: 40px;
+  }
+
+  .page-title {
+    font-size: 0.85rem;
+  }
+
+  .header-left,
+  .header-right {
+    gap: 0.5rem;
+  }
+
+  .icon-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .icon-btn .material-symbols-outlined {
+    font-size: 1.25rem;
+  }
+}

@@ -1,4 +1,4 @@
-export { };
+export {};
 import './style.css';
 import {
   centsToReais,
@@ -6,6 +6,7 @@ import {
   reaisToCents,
   parseInputToCents,
 } from '../../utils/currency';
+import { resolveImagePath } from '../../utils/assets';
 // ========================================
 // INTERFACES
 // ========================================
@@ -29,6 +30,7 @@ interface Product {
   description?: string;
   price: number;
   category_id: string;
+  image_path?: string;
   is_active: number | boolean; // API might return 0/1, treating as boolean or number
 }
 
@@ -42,7 +44,7 @@ interface Order {
   id: string;
   table_id: number; // or string depending on API, script calls it table_id but renders table_id directly
   user_id?: string;
-  status: "OPEN" | "CLOSED" | "CANCELLED";
+  status: 'OPEN' | 'CLOSED' | 'CANCELLED';
   total: number;
   tip?: number; // Added tip property
   opened_at: string;
@@ -80,7 +82,7 @@ declare global {
 // ========================================
 // STATE MANAGEMENT
 // ========================================
-let currentSection = "dashboard";
+let currentSection = 'dashboard';
 let categories: Category[] = [];
 let users: User[] = [];
 let products: Product[] = [];
@@ -93,24 +95,24 @@ let currentUser: User | null = null;
 // ========================================
 // Elements are fetched dynamically where possible to avoid null checks on init if elements are missing from partial views,
 // but for the main shell, we can fetch them.
-const sidebar = document.getElementById("sidebar");
-const menuBtn = document.getElementById("menuBtn");
-const modal = document.getElementById("formModal");
-const modalTitle = document.getElementById("modalTitle");
-const modalBody = document.getElementById("modalBody");
-const closeModalBtn = document.getElementById("closeModal");
-const logoutBtn = document.getElementById("logoutBtn");
-const darkModeToggle = document.getElementById("darkModeToggle");
+const sidebar = document.getElementById('sidebar');
+const menuBtn = document.getElementById('menuBtn');
+const modal = document.getElementById('formModal');
+const modalTitle = document.getElementById('modalTitle');
+const modalBody = document.getElementById('modalBody');
+const closeModalBtn = document.getElementById('closeModal');
+const logoutBtn = document.getElementById('logoutBtn');
+const darkModeToggle = document.getElementById('darkModeToggle');
 
 // ========================================
 // DARK MODE
 // ========================================
 function initDarkMode() {
-  const savedTheme = localStorage.getItem("theme");
-  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const savedTheme = localStorage.getItem('theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-  if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
-    document.body.classList.add("dark-mode");
+  if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+    document.body.classList.add('dark-mode');
     updateDarkModeIcon(true);
   } else {
     updateDarkModeIcon(false);
@@ -118,15 +120,15 @@ function initDarkMode() {
 }
 
 function toggleDarkMode() {
-  const isDark = document.body.classList.toggle("dark-mode");
-  localStorage.setItem("theme", isDark ? "dark" : "light");
+  const isDark = document.body.classList.toggle('dark-mode');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
   updateDarkModeIcon(isDark);
 }
 
 function updateDarkModeIcon(isDark: boolean) {
-  const icon = darkModeToggle?.querySelector(".material-symbols-outlined");
+  const icon = darkModeToggle?.querySelector('.material-symbols-outlined');
   if (icon) {
-    icon.textContent = isDark ? "dark_mode" : "light_mode";
+    icon.textContent = isDark ? 'dark_mode' : 'light_mode';
   }
 }
 
@@ -134,29 +136,29 @@ function updateDarkModeIcon(isDark: boolean) {
 // API HELPERS
 // ========================================
 // Using ApiService from services folder
-import { ApiService } from "../../services/apiService";
+import { ApiService } from '../../services/apiService';
 
 async function apiCall<T>(
   endpoint: string,
   options: RequestInit = {},
 ): Promise<T> {
   try {
-    const method = options.method || "GET";
+    const method = options.method || 'GET';
     let response: any;
 
-    if (method === "GET") {
+    if (method === 'GET') {
       response = await ApiService.get(endpoint);
-    } else if (method === "POST") {
+    } else if (method === 'POST') {
       response = await ApiService.post(
         endpoint,
         options.body ? JSON.parse(options.body as string) : {},
       );
-    } else if (method === "PUT") {
+    } else if (method === 'PUT') {
       response = await ApiService.put(
         endpoint,
         options.body ? JSON.parse(options.body as string) : {},
       );
-    } else if (method === "DELETE") {
+    } else if (method === 'DELETE') {
       response = await ApiService.delete(endpoint);
     }
 
@@ -164,7 +166,7 @@ async function apiCall<T>(
     return response as T;
   } catch (error: any) {
     // console.error("API Error:", error);
-    showToast(error.message || "Erro na requisição", "error");
+    showToast(error.message || 'Erro na requisição', 'error');
     throw error;
   }
 }
@@ -174,29 +176,29 @@ async function apiCall<T>(
 // ========================================
 function showToast(
   message: string,
-  type: "info" | "success" | "error" = "info",
+  type: 'info' | 'success' | 'error' = 'info',
 ) {
-  const toast = document.getElementById("toast");
+  const toast = document.getElementById('toast');
   if (!toast) return;
 
-  const toastMessage = toast.querySelector(".toast-message");
-  const toastIcon = toast.querySelector(".toast-icon");
+  const toastMessage = toast.querySelector('.toast-message');
+  const toastIcon = toast.querySelector('.toast-icon');
 
   toast.className = `toast ${type} active`;
   if (toastMessage) toastMessage.textContent = message;
 
   if (toastIcon) {
-    if (type === "success") {
-      toastIcon.textContent = "check_circle";
-    } else if (type === "error") {
-      toastIcon.textContent = "error";
+    if (type === 'success') {
+      toastIcon.textContent = 'check_circle';
+    } else if (type === 'error') {
+      toastIcon.textContent = 'error';
     } else {
-      toastIcon.textContent = "info";
+      toastIcon.textContent = 'info';
     }
   }
 
   setTimeout(() => {
-    toast.classList.remove("active");
+    toast.classList.remove('active');
   }, 4000);
 }
 
@@ -204,24 +206,24 @@ function showToast(
 // NAVIGATION
 // ========================================
 function switchSection(sectionName: string) {
-  const navItems = document.querySelectorAll(".nav-item");
-  const sections = document.querySelectorAll(".content-section");
+  const navItems = document.querySelectorAll('.nav-item');
+  const sections = document.querySelectorAll('.content-section');
 
   // Update navigation
   navItems.forEach((item) => {
     if ((item as HTMLElement).dataset.section === sectionName) {
-      item.classList.add("active");
+      item.classList.add('active');
     } else {
-      item.classList.remove("active");
+      item.classList.remove('active');
     }
   });
 
   // Update sections
   sections.forEach((section) => {
     if (section.id === `${sectionName}-section`) {
-      section.classList.add("active");
+      section.classList.add('active');
     } else {
-      section.classList.remove("active");
+      section.classList.remove('active');
     }
   });
 
@@ -232,34 +234,34 @@ function switchSection(sectionName: string) {
 
   // Close sidebar on mobile
   if (window.innerWidth <= 1024 && sidebar) {
-    sidebar.classList.remove("active");
+    sidebar.classList.remove('active');
   }
 }
 
 function loadSectionData(sectionName: string) {
   switch (sectionName) {
-    case "dashboard":
+    case 'dashboard':
       loadDashboard();
       break;
-    case "users":
+    case 'users':
       loadUsers();
       break;
-    case "products":
+    case 'products':
       loadProducts();
       break;
-    case "tables":
+    case 'tables':
       loadTables();
       break;
-    case "orders":
+    case 'orders':
       loadOrders();
       break;
-    case "categories":
+    case 'categories':
       loadCategories();
       break;
     case 'insights':
       loadInsights();
       break;
-    case "commissions":
+    case 'commissions':
       loadCommissions();
       break;
   }
@@ -273,10 +275,10 @@ async function loadDashboard() {
     // Load metrics in parallel
     const [usersData, productsData, tablesData, ordersData] = await Promise.all(
       [
-        apiCall<ApiResponse<User[]>>("/users"),
-        apiCall<ApiResponse<Product[]>>("/products"),
-        apiCall<ApiResponse<Table[]>>("/tables"),
-        apiCall<ApiResponse<Order[]>>("/orders"),
+        apiCall<ApiResponse<User[]>>('/users'),
+        apiCall<ApiResponse<Product[]>>('/products'),
+        apiCall<ApiResponse<Table[]>>('/tables'),
+        apiCall<ApiResponse<Order[]>>('/orders'),
       ],
     );
 
@@ -287,44 +289,44 @@ async function loadDashboard() {
     orders = ordersData.data || [];
 
     // Update metrics
-    const totalUsersEl = document.getElementById("totalUsers");
+    const totalUsersEl = document.getElementById('totalUsers');
     if (totalUsersEl)
       totalUsersEl.textContent = (usersData.data?.length || 0).toString();
 
-    const totalProductsEl = document.getElementById("totalProducts");
+    const totalProductsEl = document.getElementById('totalProducts');
     if (totalProductsEl)
       totalProductsEl.textContent = (productsData.data?.length || 0).toString();
 
-    const totalTablesEl = document.getElementById("totalTables");
+    const totalTablesEl = document.getElementById('totalTables');
     if (totalTablesEl)
       totalTablesEl.textContent = (tablesData.data?.length || 0).toString();
 
     const openOrders =
-      ordersData.data?.filter((o) => o.status === "OPEN") || [];
-    const totalOrdersEl = document.getElementById("totalOrders");
+      ordersData.data?.filter((o) => o.status === 'OPEN') || [];
+    const totalOrdersEl = document.getElementById('totalOrders');
     if (totalOrdersEl) totalOrdersEl.textContent = openOrders.length.toString();
 
     // Tables by status
     const allTables = tablesData.data || [];
     const availableTables = allTables.filter(
-      (t) => t.status === "AVAILABLE",
+      (t) => t.status === 'AVAILABLE',
     ).length;
     const occupiedTables = allTables.filter(
-      (t) => t.status === "OCCUPIED",
+      (t) => t.status === 'OCCUPIED',
     ).length;
     const reservedTables = allTables.filter(
-      (t) => t.status === "RESERVED",
+      (t) => t.status === 'RESERVED',
     ).length;
 
-    const availableTablesEl = document.getElementById("availableTables");
+    const availableTablesEl = document.getElementById('availableTables');
     if (availableTablesEl)
       availableTablesEl.textContent = availableTables.toString();
 
-    const occupiedTablesEl = document.getElementById("occupiedTables");
+    const occupiedTablesEl = document.getElementById('occupiedTables');
     if (occupiedTablesEl)
       occupiedTablesEl.textContent = occupiedTables.toString();
 
-    const reservedTablesEl = document.getElementById("reservedTables");
+    const reservedTablesEl = document.getElementById('reservedTables');
     if (reservedTablesEl)
       reservedTablesEl.textContent = reservedTables.toString();
 
@@ -346,7 +348,7 @@ async function loadDashboard() {
       ordersData.data
         ?.filter((o) => {
           const isClosed =
-            o.status === "CLOSED" || (o.status as any) === "COMPLETED";
+            o.status === 'CLOSED' || (o.status as any) === 'COMPLETED';
           if (!isClosed || !o.closed_at) return false;
 
           const closeTime = new Date(o.closed_at).getTime();
@@ -354,7 +356,7 @@ async function loadDashboard() {
         })
         .reduce((acc, curr) => acc + (curr.total || 0), 0) || 0;
 
-    const dailySalesEl = document.getElementById("dailySales");
+    const dailySalesEl = document.getElementById('dailySales');
     if (dailySalesEl) dailySalesEl.textContent = formatCurrency(salesToday);
 
     // Recent orders
@@ -367,7 +369,7 @@ async function loadDashboard() {
 }
 
 function renderRecentOrders(ordersData: Order[]) {
-  const container = document.getElementById("recentOrders");
+  const container = document.getElementById('recentOrders');
   if (!container) return;
 
   // Recent: Last 5 orders (assuming array is latest first? Or I should sort by opened_at desc)
@@ -397,11 +399,11 @@ function renderRecentOrders(ordersData: Order[]) {
       </div>
     `,
     )
-    .join("");
+    .join('');
 }
 
 function renderTopProducts(ordersData: Order[]) {
-  const container = document.getElementById("topProducts");
+  const container = document.getElementById('topProducts');
   if (!container) return;
 
   if (ordersData.length === 0) {
@@ -442,11 +444,11 @@ function renderTopProducts(ordersData: Order[]) {
         </div>
     `,
     )
-    .join("");
+    .join('');
 }
 
 function renderBiggestSales(ordersData: Order[]) {
-  const container = document.getElementById("biggestSales");
+  const container = document.getElementById('biggestSales');
   if (!container) return;
 
   if (ordersData.length === 0) {
@@ -467,12 +469,12 @@ function renderBiggestSales(ordersData: Order[]) {
                 <span class="recent-item-status">${formatCurrency(order.total || 0)}</span>
             </div>
              <div class="recent-item-info">
-                ${order.opened_at ? new Date(order.opened_at).toLocaleDateString("pt-BR") : "-"}
+                ${order.opened_at ? new Date(order.opened_at).toLocaleDateString('pt-BR') : '-'}
             </div>
         </div>
     `,
     )
-    .join("");
+    .join('');
 }
 
 // ========================================
@@ -480,7 +482,7 @@ function renderBiggestSales(ordersData: Order[]) {
 // ========================================
 async function loadCurrentUser() {
   try {
-    const response = await apiCall<{ user: User }>("/auth/me");
+    const response = await apiCall<{ user: User }>('/auth/me');
     currentUser = response.user;
     setupHeaderListeners();
   } catch (error) {
@@ -491,17 +493,17 @@ async function loadCurrentUser() {
 }
 
 function setupHeaderListeners() {
-  const profileBtn = document.getElementById("profileBtn");
-  const notificationsBtn = document.getElementById("notificationsBtn");
-  const headerRight = document.querySelector(".header-right") as HTMLElement;
+  const profileBtn = document.getElementById('profileBtn');
+  const notificationsBtn = document.getElementById('notificationsBtn');
+  const headerRight = document.querySelector('.header-right') as HTMLElement;
 
   if (headerRight) {
-    headerRight.style.position = "relative"; // Ensure positioning context
+    headerRight.style.position = 'relative'; // Ensure positioning context
   }
 
   // Profile Popover
   if (profileBtn) {
-    profileBtn.addEventListener("click", (e) => {
+    profileBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       toggleProfilePopover(profileBtn);
     });
@@ -509,21 +511,21 @@ function setupHeaderListeners() {
 
   // Notifications Popover
   if (notificationsBtn) {
-    notificationsBtn.addEventListener("click", (e) => {
+    notificationsBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       toggleNotificationPopover(notificationsBtn);
     });
   }
 
   // Close popovers on click outside
-  document.addEventListener("click", () => {
+  document.addEventListener('click', () => {
     closePopovers();
   });
 }
 
 function toggleProfilePopover(btn: HTMLElement) {
   closePopovers(); // Close others
-  let popover = document.getElementById("profilePopover");
+  let popover = document.getElementById('profilePopover');
 
   if (!popover) {
     popover = document.createElement('div');
@@ -533,8 +535,8 @@ function toggleProfilePopover(btn: HTMLElement) {
 
     if (currentUser) {
       const createdDate = currentUser.created_at
-        ? new Date(currentUser.created_at).toLocaleDateString("pt-BR")
-        : "-";
+        ? new Date(currentUser.created_at).toLocaleDateString('pt-BR')
+        : '-';
 
       popover.innerHTML = `
         <div class="popover-header">Perfil de Usuário</div>
@@ -556,16 +558,16 @@ function toggleProfilePopover(btn: HTMLElement) {
     }
 
     // Append to header-right to use its positioning
-    const headerRight = document.querySelector(".header-right");
+    const headerRight = document.querySelector('.header-right');
     if (headerRight) headerRight.appendChild(popover);
   }
 
-  popover.classList.toggle("active");
+  popover.classList.toggle('active');
 }
 
 function toggleNotificationPopover(btn: HTMLElement) {
   closePopovers(); // Close others
-  let popover = document.getElementById("notificationPopover");
+  let popover = document.getElementById('notificationPopover');
 
   if (!popover) {
     popover = document.createElement('div');
@@ -582,22 +584,22 @@ function toggleNotificationPopover(btn: HTMLElement) {
       </div>
     `;
 
-    const headerRight = document.querySelector(".header-right");
+    const headerRight = document.querySelector('.header-right');
     if (headerRight) headerRight.appendChild(popover);
   }
 
-  popover.classList.toggle("active");
+  popover.classList.toggle('active');
 }
 
 function closePopovers() {
   document
-    .querySelectorAll(".popover")
-    .forEach((p) => p.classList.remove("active"));
+    .querySelectorAll('.popover')
+    .forEach((p) => p.classList.remove('active'));
 }
 
 async function loadUsers() {
   try {
-    const response = await apiCall<ApiResponse<User[]>>("/users");
+    const response = await apiCall<ApiResponse<User[]>>('/users');
     users = response.data || [];
     renderUsers(users);
   } catch (error) {
@@ -606,7 +608,7 @@ async function loadUsers() {
 }
 
 function renderUsers(usersData: User[]) {
-  const tbody = document.getElementById("usersTableBody");
+  const tbody = document.getElementById('usersTableBody');
   if (!tbody) return;
 
   if (usersData.length === 0) {
@@ -622,7 +624,7 @@ function renderUsers(usersData: User[]) {
         <td>${user.name}</td>
         <td>${user.username}</td>
         <td><span class="role-badge ${user.role.toLowerCase()}">${user.role}</span></td>
-        <td>${user.created_at ? new Date(user.created_at).toLocaleDateString("pt-BR") : "-"}</td>
+        <td>${user.created_at ? new Date(user.created_at).toLocaleDateString('pt-BR') : '-'}</td>
         <td>
           <div class="action-btns">
             <button class="btn-icon" onclick="editUser('${user.id}')" title="Editar">
@@ -636,7 +638,7 @@ function renderUsers(usersData: User[]) {
       </tr>
     `,
     )
-    .join("");
+    .join('');
 }
 
 function showUserForm(userId: string | null = null) {
@@ -644,62 +646,63 @@ function showUserForm(userId: string | null = null) {
   const isEdit = !!userId;
 
   if (modalTitle)
-    modalTitle.textContent = isEdit ? "Editar Usuário" : "Novo Usuário";
+    modalTitle.textContent = isEdit ? 'Editar Usuário' : 'Novo Usuário';
   if (modalBody) {
     modalBody.innerHTML = `
-    <form id="userForm" onsubmit="submitUserForm(event, ${isEdit ? `'${userId}'` : "null"})">
+    <form id="userForm" onsubmit="submitUserForm(event, ${isEdit ? `'${userId}'` : 'null'})">
       <div class="form-group">
         <label class="form-label">Nome</label>
-        <input type="text" class="form-input" name="name" value="${user?.name || ""}" placeholder=" " required>
+        <input type="text" class="form-input" name="name" value="${user?.name || ''}" placeholder=" " required>
       </div>
       <div class="form-group">
         <label class="form-label">Username</label>
-        <input type="text" class="form-input" name="username" value="${user?.username || ""}" placeholder=" " required>
+        <input type="text" class="form-input" name="username" value="${user?.username || ''}" placeholder=" " required>
       </div>
-      ${!isEdit
-        ? `
+      ${
+        !isEdit
+          ? `
       <div class="form-group">
         <label class="form-label">Senha</label>
         <input type="password" class="form-input" name="password" placeholder=" " required>
       </div>
       `
-        : ''
+          : ''
       }
       <div class="form-group">
         <label class="form-label">Função</label>
         <select class="form-select" name="role" required>
-          <option value="manager" ${user?.role === "manager" ? "selected" : ""}>Manager</option>
-          <option value="waiter" ${user?.role === "waiter" ? "selected" : ""}>Waiter</option>
+          <option value="manager" ${user?.role === 'manager' ? 'selected' : ''}>Manager</option>
+          <option value="waiter" ${user?.role === 'waiter' ? 'selected' : ''}>Waiter</option>
         </select>
       </div>
       <div class="form-actions">
         <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
-        <button type="submit" class="btn-primary">${isEdit ? "Atualizar" : "Criar"}</button>
+        <button type="submit" class="btn-primary">${isEdit ? 'Atualizar' : 'Criar'}</button>
       </div>
     </form>
   `;
   }
 
-  modal?.classList.add("active");
+  modal?.classList.add('active');
   setupUserFormValidation(isEdit);
 }
 
 function setupUserFormValidation(isEdit: boolean) {
-  const form = document.getElementById("userForm") as HTMLFormElement;
+  const form = document.getElementById('userForm') as HTMLFormElement;
   if (!form) return;
 
-  const nameInput = form.elements.namedItem("name") as HTMLInputElement;
-  const usernameInput = form.elements.namedItem("username") as HTMLInputElement;
-  const passwordInput = form.elements.namedItem("password") as HTMLInputElement;
+  const nameInput = form.elements.namedItem('name') as HTMLInputElement;
+  const usernameInput = form.elements.namedItem('username') as HTMLInputElement;
+  const passwordInput = form.elements.namedItem('password') as HTMLInputElement;
 
   const validateName = () => {
     const value = nameInput.value.trim();
     if (value.length === 0) {
-      nameInput.setCustomValidity("Nome é obrigatório");
+      nameInput.setCustomValidity('Nome é obrigatório');
     } else if (value.length < 4) {
-      nameInput.setCustomValidity("Nome deve ter pelo menos 4 caracteres");
+      nameInput.setCustomValidity('Nome deve ter pelo menos 4 caracteres');
     } else {
-      nameInput.setCustomValidity("");
+      nameInput.setCustomValidity('');
     }
     nameInput.reportValidity();
   };
@@ -707,13 +710,13 @@ function setupUserFormValidation(isEdit: boolean) {
   const validateUsername = () => {
     const value = usernameInput.value.trim();
     if (value.length === 0) {
-      usernameInput.setCustomValidity("Username é obrigatório");
+      usernameInput.setCustomValidity('Username é obrigatório');
     } else if (value.length < 4) {
       usernameInput.setCustomValidity(
-        "Username deve ter pelo menos 4 caracteres",
+        'Username deve ter pelo menos 4 caracteres',
       );
     } else {
-      usernameInput.setCustomValidity("");
+      usernameInput.setCustomValidity('');
     }
     usernameInput.reportValidity();
   };
@@ -727,45 +730,45 @@ function setupUserFormValidation(isEdit: boolean) {
     // If it *did* exist and was optional, we'd handle it.
     // The current template only renders password input if !isEdit.
     if (!value) {
-      passwordInput.setCustomValidity("Senha é obrigatória");
+      passwordInput.setCustomValidity('Senha é obrigatória');
       passwordInput.reportValidity();
       return;
     }
 
     if (value.length < 8) {
-      passwordInput.setCustomValidity("Senha deve ter pelo menos 8 caracteres");
+      passwordInput.setCustomValidity('Senha deve ter pelo menos 8 caracteres');
     } else if (!/[A-Z]/.test(value)) {
       passwordInput.setCustomValidity(
-        "Senha deve conter pelo menos uma letra maiúscula",
+        'Senha deve conter pelo menos uma letra maiúscula',
       );
     } else if (!/[a-z]/.test(value)) {
       passwordInput.setCustomValidity(
-        "Senha deve conter pelo menos uma letra minúscula",
+        'Senha deve conter pelo menos uma letra minúscula',
       );
     } else if (!/[0-9]/.test(value)) {
-      passwordInput.setCustomValidity("Senha deve conter pelo menos um número");
+      passwordInput.setCustomValidity('Senha deve conter pelo menos um número');
     } else if (!/[\W_]/.test(value)) {
       passwordInput.setCustomValidity(
-        "Senha deve conter pelo menos um caractere especial",
+        'Senha deve conter pelo menos um caractere especial',
       );
     } else {
-      passwordInput.setCustomValidity("");
+      passwordInput.setCustomValidity('');
     }
     passwordInput.reportValidity();
   };
 
   if (nameInput) {
-    nameInput.addEventListener("input", validateName);
+    nameInput.addEventListener('input', validateName);
     // Trigger immediately to set initial state if needed, or wait for interaction
     // validateName();
   }
 
   if (usernameInput) {
-    usernameInput.addEventListener("input", validateUsername);
+    usernameInput.addEventListener('input', validateUsername);
   }
 
   if (!isEdit && passwordInput) {
-    passwordInput.addEventListener("input", validatePassword);
+    passwordInput.addEventListener('input', validatePassword);
   }
 }
 
@@ -778,16 +781,16 @@ async function submitUserForm(event: Event, userId: string | null) {
   try {
     if (userId) {
       await apiCall(`/users/${userId}`, {
-        method: "PUT",
+        method: 'PUT',
         body: JSON.stringify(data),
       });
-      showToast("Usuário atualizado com sucesso", "success");
+      showToast('Usuário atualizado com sucesso', 'success');
     } else {
-      await apiCall("/users", {
-        method: "POST",
+      await apiCall('/users', {
+        method: 'POST',
         body: JSON.stringify(data),
       });
-      showToast("Usuário criado com sucesso", "success");
+      showToast('Usuário criado com sucesso', 'success');
     }
 
     closeModal();
@@ -798,11 +801,11 @@ async function submitUserForm(event: Event, userId: string | null) {
 }
 
 async function deleteUser(userId: string) {
-  if (!confirm("Tem certeza que deseja deletar este usuário?")) return;
+  if (!confirm('Tem certeza que deseja deletar este usuário?')) return;
 
   try {
-    await apiCall(`/users/${userId}`, { method: "DELETE" });
-    showToast("Usuário deletado com sucesso", "success");
+    await apiCall(`/users/${userId}`, { method: 'DELETE' });
+    showToast('Usuário deletado com sucesso', 'success');
     loadUsers();
   } catch (error) {
     // console.error("Error deleting user:", error);
@@ -815,21 +818,21 @@ async function deleteUser(userId: string) {
 async function loadProducts() {
   try {
     const [productsRes, categoriesRes] = await Promise.all([
-      apiCall<ApiResponse<Product[]>>("/products"),
-      apiCall<ApiResponse<Category[]>>("/categories"),
+      apiCall<ApiResponse<Product[]>>('/products'),
+      apiCall<ApiResponse<Category[]>>('/categories'),
     ]);
 
     products = productsRes.data || [];
     categories = categoriesRes.data || [];
 
     // Populate category filter
-    const categoryFilter = document.getElementById("categoryFilter");
+    const categoryFilter = document.getElementById('categoryFilter');
     if (categoryFilter) {
       categoryFilter.innerHTML =
         '<option value="">Todas Categorias</option>' +
         categories
           .map((cat) => `<option value="${cat.id}">${cat.name}</option>`)
-          .join("");
+          .join('');
     }
 
     renderProducts(products);
@@ -839,7 +842,7 @@ async function loadProducts() {
 }
 
 function renderProducts(productsData: Product[]) {
-  const grid = document.getElementById("productsGrid");
+  const grid = document.getElementById('productsGrid');
   if (!grid) return;
 
   if (productsData.length === 0) {
@@ -853,15 +856,18 @@ function renderProducts(productsData: Product[]) {
       return `
       <div class="product-card">
         <div class="product-header">
+          <div class="product-icon" style="background-image: url('${product.image_path ? resolveImagePath(product.image_path) : ''}'); background-size: cover; background-position: center;">
+            ${!product.image_path ? '<span class="material-symbols-outlined">restaurant</span>' : ''}
+          </div>
           <div>
             <div class="product-title">${product.name}</div>
-            <div class="product-category">${category?.name || "Sem categoria"}</div>
+            <div class="product-category">${category?.name || 'Sem categoria'}</div>
           </div>
-          <span class="active-badge ${userIsActive(product) ? "active" : "inactive"}">
-            ${userIsActive(product) ? "Ativo" : "Inativo"}
+          <span class="active-badge ${userIsActive(product) ? 'active' : 'inactive'}">
+            ${userIsActive(product) ? 'Ativo' : 'Inativo'}
           </span>
         </div>
-        <p class="product-description">${product.description || "Sem descrição"}</p>
+        <p class="product-description">${product.description || 'Sem descrição'}</p>
         <div class="product-footer">
           <span class="product-price">R$ ${centsToReais(product.price)}</span>
            <div class="product-actions">
@@ -876,7 +882,7 @@ function renderProducts(productsData: Product[]) {
       </div>
     `;
     })
-    .join("");
+    .join('');
 }
 
 function userIsActive(product: Product): boolean {
@@ -889,53 +895,53 @@ function showProductForm(productId: string | null = null) {
   const isEdit = !!productId;
 
   if (modalTitle)
-    modalTitle.textContent = isEdit ? "Editar Produto" : "Novo Produto";
+    modalTitle.textContent = isEdit ? 'Editar Produto' : 'Novo Produto';
   if (modalBody) {
     modalBody.innerHTML = `
-    <form id="productForm" onsubmit="submitProductForm(event, ${isEdit ? `'${productId}'` : "null"})">
+    <form id="productForm" onsubmit="submitProductForm(event, ${isEdit ? `'${productId}'` : 'null'})">
       <div class="form-group">
         <label class="form-label">Nome</label>
-        <input type="text" class="form-input" name="name" value="${product?.name || ""}" required maxlength="50">
+        <input type="text" class="form-input" name="name" value="${product?.name || ''}" required maxlength="50">
       </div>
       <div class="form-group">
         <label class="form-label">Categoria</label>
         <select class="form-select" name="category_id" required>
           <option value="">Selecione...</option>
           ${categories
-        .map(
-          (cat) => `
-            <option value="${cat.id}" ${product?.category_id === cat.id ? "selected" : ""}>
+            .map(
+              (cat) => `
+            <option value="${cat.id}" ${product?.category_id === cat.id ? 'selected' : ''}>
               ${cat.name}
             </option>
           `,
-        )
-        .join("")}
+            )
+            .join('')}
         </select>
       </div>
       <div class="form-group">
         <label class="form-label">Descrição</label>
-        <textarea class="form-textarea" name="description" maxlength="200" rows="3">${product?.description || ""}</textarea>
+        <textarea class="form-textarea" name="description" maxlength="200" rows="3">${product?.description || ''}</textarea>
       </div>
       <div class="form-group">
         <label class="form-label">Preço (R$)</label>
-        <input type="number" step="0.01" min="0" class="form-input" name="price" value="${product ? centsToReais(product.price) : ""}" required>
+        <input type="number" step="0.01" min="0" class="form-input" name="price" value="${product ? centsToReais(product.price) : ''}" required>
       </div>
       <div class="form-group">
         <label class="form-label">Status</label>
         <select class="form-select" name="is_active">
-          <option value="1" ${userIsActive(product || ({ is_active: 1 } as Product)) ? "selected" : ""}>Ativo</option>
-          <option value="0" ${!userIsActive(product || ({ is_active: 1 } as Product)) ? "selected" : ""}>Inativo</option>
+          <option value="1" ${userIsActive(product || ({ is_active: 1 } as Product)) ? 'selected' : ''}>Ativo</option>
+          <option value="0" ${!userIsActive(product || ({ is_active: 1 } as Product)) ? 'selected' : ''}>Inativo</option>
         </select>
       </div>
       <div class="form-actions">
         <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
-        <button type="submit" class="btn-primary">${isEdit ? "Atualizar" : "Criar"}</button>
+        <button type="submit" class="btn-primary">${isEdit ? 'Atualizar' : 'Criar'}</button>
       </div>
     </form>
   `;
   }
 
-  modal?.classList.add("active");
+  modal?.classList.add('active');
 }
 
 async function submitProductForm(event: Event, productId: string | null) {
@@ -949,34 +955,34 @@ async function submitProductForm(event: Event, productId: string | null) {
   try {
     if (productId) {
       await apiCall(`/products/${productId}`, {
-        method: "PUT",
+        method: 'PUT',
         body: JSON.stringify(data),
       });
-      showToast("Produto atualizado com sucesso", "success");
+      showToast('Produto atualizado com sucesso', 'success');
     } else {
-      await apiCall("/products", {
-        method: "POST",
+      await apiCall('/products', {
+        method: 'POST',
         body: JSON.stringify(data),
       });
-      showToast("Produto criado com sucesso", "success");
+      showToast('Produto criado com sucesso', 'success');
     }
 
     closeModal();
     loadProducts();
   } catch (error) {
-    console.error("Error submitting product:", error);
+    console.error('Error submitting product:', error);
   }
 }
 
 async function deleteProduct(productId: string) {
-  if (!confirm("Tem certeza que deseja deletar este produto?")) return;
+  if (!confirm('Tem certeza que deseja deletar este produto?')) return;
 
   try {
-    await apiCall(`/products/${productId}`, { method: "DELETE" });
-    showToast("Produto deletado com sucesso", "success");
+    await apiCall(`/products/${productId}`, { method: 'DELETE' });
+    showToast('Produto deletado com sucesso', 'success');
     loadProducts();
   } catch (error) {
-    console.error("Error deleting product:", error);
+    console.error('Error deleting product:', error);
   }
 }
 
@@ -985,16 +991,16 @@ async function deleteProduct(productId: string) {
 // ========================================
 async function loadTables() {
   try {
-    const response = await apiCall<ApiResponse<Table[]>>("/tables");
+    const response = await apiCall<ApiResponse<Table[]>>('/tables');
     tables = response.data || [];
     renderTables(tables);
   } catch (error) {
-    console.error("Error loading tables:", error);
+    console.error('Error loading tables:', error);
   }
 }
 
 function renderTables(tablesData: Table[]) {
-  const grid = document.getElementById("tablesGrid");
+  const grid = document.getElementById('tablesGrid');
   if (!grid) return;
 
   if (tablesData.length === 0) {
@@ -1019,24 +1025,24 @@ function renderTables(tablesData: Table[]) {
       </div>
     `,
     )
-    .join("");
+    .join('');
 }
 
 function translateStatus(status: string) {
   const translations: { [key: string]: string } = {
-    AVAILABLE: "Disponível",
-    OCCUPIED: "Ocupada",
-    RESERVED: "Reservada",
-    OPEN: "Aberto",
-    CLOSED: "Fechado",
-    CANCELLED: "Cancelado",
-    COMPLETED: "Concluído",
+    AVAILABLE: 'Disponível',
+    OCCUPIED: 'Ocupada',
+    RESERVED: 'Reservada',
+    OPEN: 'Aberto',
+    CLOSED: 'Fechado',
+    CANCELLED: 'Cancelado',
+    COMPLETED: 'Concluído',
   };
   return translations[status] || status;
 }
 
 function getTableNumber(tableId: string | number): string {
-  if (!tableId) return "-";
+  if (!tableId) return '-';
   // The order might have table_id as number or string. Global tables has 'id' as string (UUID) and 'number' as number.
   // We need to match order.table_id (which might be the ID) to table.id
   // Or sometimes the backend might actually send the table NUMBER if it was joined?
@@ -1045,40 +1051,40 @@ function getTableNumber(tableId: string | number): string {
   const table = tables.find((t) => t.id == tableId); // loose equality handles string/number mismatch
   return table
     ? `Mesa ${table.number}`
-    : typeof tableId === "number"
+    : typeof tableId === 'number'
       ? `Mesa ${tableId}`
-      : "-";
+      : '-';
 }
 
 function showTableForm(tableId: string | null = null) {
   const table = tableId ? tables.find((t) => t.id === tableId) : null;
   const isEdit = !!tableId;
 
-  if (modalTitle) modalTitle.textContent = isEdit ? "Editar Mesa" : "Nova Mesa";
+  if (modalTitle) modalTitle.textContent = isEdit ? 'Editar Mesa' : 'Nova Mesa';
   if (modalBody) {
     modalBody.innerHTML = `
-    <form id="tableForm" onsubmit="submitTableForm(event, ${isEdit ? `'${tableId}'` : "null"})">
+    <form id="tableForm" onsubmit="submitTableForm(event, ${isEdit ? `'${tableId}'` : 'null'})">
       <div class="form-group">
         <label class="form-label">Número da Mesa</label>
-        <input type="number" class="form-input" name="number" value="${table?.number || ""}" required min="1" max="99" step="1">
+        <input type="number" class="form-input" name="number" value="${table?.number || ''}" required min="1" max="99" step="1">
       </div>
       <div class="form-group">
         <label class="form-label">Status</label>
         <select class="form-select" name="status" required>
-          <option value="AVAILABLE" ${table?.status === "AVAILABLE" ? "selected" : ""}>Disponível</option>
-          <option value="OCCUPIED" ${table?.status === "OCCUPIED" ? "selected" : ""}>Ocupada</option>
-          <option value="RESERVED" ${table?.status === "RESERVED" ? "selected" : ""}>Reservada</option>
+          <option value="AVAILABLE" ${table?.status === 'AVAILABLE' ? 'selected' : ''}>Disponível</option>
+          <option value="OCCUPIED" ${table?.status === 'OCCUPIED' ? 'selected' : ''}>Ocupada</option>
+          <option value="RESERVED" ${table?.status === 'RESERVED' ? 'selected' : ''}>Reservada</option>
         </select>
       </div>
       <div class="form-actions">
         <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
-        <button type="submit" class="btn-primary">${isEdit ? "Atualizar" : "Criar"}</button>
+        <button type="submit" class="btn-primary">${isEdit ? 'Atualizar' : 'Criar'}</button>
       </div>
     </form>
   `;
   }
 
-  modal?.classList.add("active");
+  modal?.classList.add('active');
 }
 
 async function submitTableForm(event: Event, tableId: string | null) {
@@ -1091,34 +1097,34 @@ async function submitTableForm(event: Event, tableId: string | null) {
   try {
     if (tableId) {
       await apiCall(`/tables/${tableId}`, {
-        method: "PUT",
+        method: 'PUT',
         body: JSON.stringify(data),
       });
-      showToast("Mesa atualizada com sucesso", "success");
+      showToast('Mesa atualizada com sucesso', 'success');
     } else {
-      await apiCall("/tables", {
-        method: "POST",
+      await apiCall('/tables', {
+        method: 'POST',
         body: JSON.stringify(data),
       });
-      showToast("Mesa criada com sucesso", "success");
+      showToast('Mesa criada com sucesso', 'success');
     }
 
     closeModal();
     loadTables();
   } catch (error) {
-    console.error("Error submitting table:", error);
+    console.error('Error submitting table:', error);
   }
 }
 
 async function deleteTable(tableId: string) {
-  if (!confirm("Tem certeza que deseja deletar esta mesa?")) return;
+  if (!confirm('Tem certeza que deseja deletar esta mesa?')) return;
 
   try {
-    await apiCall(`/tables/${tableId}`, { method: "DELETE" });
-    showToast("Mesa deletada com sucesso", "success");
+    await apiCall(`/tables/${tableId}`, { method: 'DELETE' });
+    showToast('Mesa deletada com sucesso', 'success');
     loadTables();
   } catch (error) {
-    console.error("Error deleting table:", error);
+    console.error('Error deleting table:', error);
   }
 }
 
@@ -1126,23 +1132,23 @@ async function deleteTable(tableId: string) {
 // ORDERS MANAGEMENT
 // ========================================
 function getOrderUserLabel(userId?: string): string {
-  if (!userId) return "-";
+  if (!userId) return '-';
   const u = users.find((x) => x.id === userId);
-  return u ? u.name : "-";
+  return u ? u.name : '-';
 }
 
 async function loadOrders() {
   try {
-    const response = await apiCall<ApiResponse<Order[]>>("/orders");
+    const response = await apiCall<ApiResponse<Order[]>>('/orders');
     orders = response.data || [];
     renderOrders(orders);
   } catch (error) {
-    console.error("Error loading orders:", error);
+    console.error('Error loading orders:', error);
   }
 }
 
 function renderOrders(ordersData: Order[]) {
-  const tbody = document.getElementById("ordersTableBody");
+  const tbody = document.getElementById('ordersTableBody');
   if (!tbody) return;
 
   if (ordersData.length === 0) {
@@ -1161,8 +1167,8 @@ function renderOrders(ordersData: Order[]) {
         <td>${formatCurrency(order.total || 0)}</td>
         <td>${getOrderUserLabel(order.user_id)}</td>
         <td>${formatCurrency(order.tip || 0)}</td>
-        <td>${order.closed_at ? new Date(order.closed_at).toLocaleString("pt-BR") : "-"}</td>
-        <td>${order.opened_at ? new Date(order.opened_at).toLocaleDateString("pt-BR") : "-"}</td>
+        <td>${order.closed_at ? new Date(order.closed_at).toLocaleString('pt-BR') : '-'}</td>
+        <td>${order.opened_at ? new Date(order.opened_at).toLocaleDateString('pt-BR') : '-'}</td>
         <td>
           <div class="action-btns">
             <button class="btn-icon" onclick="viewOrder('${order.id}')" title="Visualizar">
@@ -1173,7 +1179,7 @@ function renderOrders(ordersData: Order[]) {
       </tr>
     `,
     )
-    .join("");
+    .join('');
 }
 
 async function viewOrder(orderId: string) {
@@ -1198,27 +1204,27 @@ async function viewOrder(orderId: string) {
             </thead>
             <tbody>
               ${order.items
-            .map(
-              (item: any) => `
+                .map(
+                  (item: any) => `
                 <tr>
-                  <td>${item.product_name || "Produto Removido"}</td>
+                  <td>${item.product_name || 'Produto Removido'}</td>
                   <td>${item.quantity}</td>
                   <td>${formatCurrency(item.unit_price)}</td>
                   <td>${formatCurrency(item.total_item || item.quantity * item.unit_price)}</td>
                 </tr>
               `,
-            )
-            .join("")}
+                )
+                .join('')}
             </tbody>
           </table>
         `
-          : "<p>Nenhum item neste pedido.</p>";
+          : '<p>Nenhum item neste pedido.</p>';
 
       modalBody.innerHTML = `
       <div style="margin-bottom: 20px;">
         <p><strong>Mesa:</strong> ${getTableNumber(order.table_id)}</p>
         <p><strong>Status:</strong> <span class="status-pill ${order.status.toLowerCase()}">${translateStatus(order.status)}</span></p>
-        <p><strong>Data:</strong> ${order.opened_at ? new Date(order.opened_at).toLocaleString("pt-BR") : "-"}</p>
+        <p><strong>Data:</strong> ${order.opened_at ? new Date(order.opened_at).toLocaleString('pt-BR') : '-'}</p>
         <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
         <h4 style="margin-bottom: 10px;">Itens do Pedido</h4>
         ${itemsHtml}
@@ -1232,9 +1238,9 @@ async function viewOrder(orderId: string) {
     `;
     }
 
-    modal?.classList.add("active");
+    modal?.classList.add('active');
   } catch (error) {
-    console.error("Error viewing order:", error);
+    console.error('Error viewing order:', error);
   }
 }
 
@@ -1243,16 +1249,16 @@ async function viewOrder(orderId: string) {
 // ========================================
 async function loadCategories() {
   try {
-    const response = await apiCall<ApiResponse<Category[]>>("/categories");
+    const response = await apiCall<ApiResponse<Category[]>>('/categories');
     categories = response.data || [];
     renderCategories(categories);
   } catch (error) {
-    console.error("Error loading categories:", error);
+    console.error('Error loading categories:', error);
   }
 }
 
 function renderCategories(categoriesData: Category[]) {
-  const grid = document.getElementById("categoriesGrid");
+  const grid = document.getElementById('categoriesGrid');
   if (!grid) return;
 
   if (categoriesData.length === 0) {
@@ -1284,7 +1290,7 @@ function renderCategories(categoriesData: Category[]) {
       </div>
     `,
     )
-    .join("");
+    .join('');
 }
 
 function showCategoryForm(categoryId: string | null = null) {
@@ -1294,27 +1300,27 @@ function showCategoryForm(categoryId: string | null = null) {
   const isEdit = !!categoryId;
 
   if (modalTitle)
-    modalTitle.textContent = isEdit ? "Editar Categoria" : "Nova Categoria";
+    modalTitle.textContent = isEdit ? 'Editar Categoria' : 'Nova Categoria';
   if (modalBody) {
     modalBody.innerHTML = `
-    <form id="categoryForm" onsubmit="submitCategoryForm(event, ${isEdit ? `'${categoryId}'` : "null"})">
+    <form id="categoryForm" onsubmit="submitCategoryForm(event, ${isEdit ? `'${categoryId}'` : 'null'})">
       <div class="form-group">
         <label class="form-label">Nome</label>
-        <input type="text" class="form-input" name="name" value="${category?.name || ""}" required maxlength="30">
+        <input type="text" class="form-input" name="name" value="${category?.name || ''}" required maxlength="30">
       </div>
       <div class="form-group">
         <label class="form-label">Slug</label>
-        <input type="text" class="form-input" name="slug" value="${category?.slug || ""}" maxlength="30" pattern="[a-z0-9-]+" title="Apenas letras minúsculas, números e hifens.">
+        <input type="text" class="form-input" name="slug" value="${category?.slug || ''}" maxlength="30" pattern="[a-z0-9-]+" title="Apenas letras minúsculas, números e hifens.">
       </div>
       <div class="form-actions">
         <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
-        <button type="submit" class="btn-primary">${isEdit ? "Atualizar" : "Criar"}</button>
+        <button type="submit" class="btn-primary">${isEdit ? 'Atualizar' : 'Criar'}</button>
       </div>
     </form>
   `;
   }
 
-  modal?.classList.add("active");
+  modal?.classList.add('active');
 }
 
 async function submitCategoryForm(event: Event, categoryId: string | null) {
@@ -1326,34 +1332,34 @@ async function submitCategoryForm(event: Event, categoryId: string | null) {
   try {
     if (categoryId) {
       await apiCall(`/categories/${categoryId}`, {
-        method: "PUT",
+        method: 'PUT',
         body: JSON.stringify(data),
       });
-      showToast("Categoria atualizada com sucesso", "success");
+      showToast('Categoria atualizada com sucesso', 'success');
     } else {
-      await apiCall("/categories", {
-        method: "POST",
+      await apiCall('/categories', {
+        method: 'POST',
         body: JSON.stringify(data),
       });
-      showToast("Categoria criada com sucesso", "success");
+      showToast('Categoria criada com sucesso', 'success');
     }
 
     closeModal();
     loadCategories();
   } catch (error) {
-    console.error("Error submitting category:", error);
+    console.error('Error submitting category:', error);
   }
 }
 
 async function deleteCategory(categoryId: string) {
-  if (!confirm("Tem certeza que deseja deletar esta categoria?")) return;
+  if (!confirm('Tem certeza que deseja deletar esta categoria?')) return;
 
   try {
-    await apiCall(`/categories/${categoryId}`, { method: "DELETE" });
-    showToast("Categoria deletada com sucesso", "success");
+    await apiCall(`/categories/${categoryId}`, { method: 'DELETE' });
+    showToast('Categoria deletada com sucesso', 'success');
     loadCategories();
   } catch (error) {
-    console.error("Error deleting category:", error);
+    console.error('Error deleting category:', error);
   }
 }
 
@@ -1361,7 +1367,7 @@ async function deleteCategory(categoryId: string) {
 // MODAL CONTROL
 // ========================================
 function closeModal() {
-  modal?.classList.remove("active");
+  modal?.classList.remove('active');
 }
 
 // ========================================
@@ -1388,18 +1394,18 @@ window.closeModal = closeModal;
 
 function applyProductFilters() {
   const searchInput = document.getElementById(
-    "searchProducts",
+    'searchProducts',
   ) as HTMLInputElement;
   const categoryInput = document.getElementById(
-    "categoryFilter",
+    'categoryFilter',
   ) as HTMLSelectElement;
   const statusInput = document.getElementById(
-    "statusFilter",
+    'statusFilter',
   ) as HTMLSelectElement;
 
-  const searchQuery = searchInput?.value.toLowerCase() || "";
-  const categoryId = categoryInput?.value || "";
-  const status = statusInput?.value || "";
+  const searchQuery = searchInput?.value.toLowerCase() || '';
+  const categoryId = categoryInput?.value || '';
+  const status = statusInput?.value || '';
 
   let filtered = [...products];
 
@@ -1415,7 +1421,7 @@ function applyProductFilters() {
     filtered = filtered.filter((p) => p.category_id === categoryId);
   }
 
-  if (status !== "") {
+  if (status !== '') {
     const isActive = parseInt(status);
     filtered = filtered.filter((p) => {
       // Safe integer conversion handled by userIsActive logic if needed,
@@ -1432,28 +1438,28 @@ function applyProductFilters() {
 // ========================================
 // INITIALIZATION
 // ========================================
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener('DOMContentLoaded', () => {
   initDarkMode();
 
   // Event Listeners
   if (menuBtn && sidebar) {
-    menuBtn.addEventListener("click", () => {
-      sidebar.classList.toggle("active");
+    menuBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('active');
     });
   }
 
-  const navItems = document.querySelectorAll(".nav-item");
+  const navItems = document.querySelectorAll('.nav-item');
   navItems.forEach((item) => {
-    item.addEventListener("click", () => {
+    item.addEventListener('click', () => {
       const section = (item as HTMLElement).dataset.section;
       if (section) switchSection(section);
     });
   });
 
-  if (closeModalBtn) closeModalBtn.addEventListener("click", closeModal);
+  if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
 
   if (modal) {
-    modal.addEventListener("click", (e) => {
+    modal.addEventListener('click', (e) => {
       if (e.target === modal) {
         closeModal();
       }
@@ -1461,35 +1467,35 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   document
-    .getElementById("addUserBtn")
-    ?.addEventListener("click", () => showUserForm());
+    .getElementById('addUserBtn')
+    ?.addEventListener('click', () => showUserForm());
   document
-    .getElementById("addProductBtn")
-    ?.addEventListener("click", () => showProductForm());
+    .getElementById('addProductBtn')
+    ?.addEventListener('click', () => showProductForm());
   document
-    .getElementById("addTableBtn")
-    ?.addEventListener("click", () => showTableForm());
+    .getElementById('addTableBtn')
+    ?.addEventListener('click', () => showTableForm());
   document
-    .getElementById("addCategoryBtn")
-    ?.addEventListener("click", () => showCategoryForm());
+    .getElementById('addCategoryBtn')
+    ?.addEventListener('click', () => showCategoryForm());
 
   if (logoutBtn) {
-    logoutBtn.addEventListener("click", async () => {
+    logoutBtn.addEventListener('click', async () => {
       try {
-        await apiCall("/auth/logout", { method: "POST" });
-        window.location.href = "landingPage.html";
+        await apiCall('/auth/logout', { method: 'POST' });
+        window.location.href = 'landingPage.html';
       } catch (error) {
-        console.error("Logout error:", error);
+        console.error('Logout error:', error);
       }
     });
   }
 
   if (darkModeToggle) {
-    darkModeToggle.addEventListener("click", toggleDarkMode);
+    darkModeToggle.addEventListener('click', toggleDarkMode);
   }
 
   // Filter Listeners
-  document.getElementById("searchUsers")?.addEventListener("input", (e) => {
+  document.getElementById('searchUsers')?.addEventListener('input', (e) => {
     const query = (e.target as HTMLInputElement).value.toLowerCase();
     const filtered = users.filter(
       (u) =>
@@ -1500,18 +1506,18 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document
-    .getElementById("searchProducts")
-    ?.addEventListener("input", applyProductFilters);
+    .getElementById('searchProducts')
+    ?.addEventListener('input', applyProductFilters);
   document
-    .getElementById("categoryFilter")
-    ?.addEventListener("change", applyProductFilters);
+    .getElementById('categoryFilter')
+    ?.addEventListener('change', applyProductFilters);
   document
-    .getElementById("statusFilter")
-    ?.addEventListener("change", applyProductFilters);
+    .getElementById('statusFilter')
+    ?.addEventListener('change', applyProductFilters);
 
   document
-    .getElementById("tableStatusFilter")
-    ?.addEventListener("change", (e) => {
+    .getElementById('tableStatusFilter')
+    ?.addEventListener('change', (e) => {
       const status = (e.target as HTMLInputElement).value;
       const filtered = status
         ? tables.filter((t) => t.status === status)
@@ -1520,8 +1526,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
   document
-    .getElementById("orderStatusFilter")
-    ?.addEventListener("change", (e) => {
+    .getElementById('orderStatusFilter')
+    ?.addEventListener('change', (e) => {
       const status = (e.target as HTMLInputElement).value;
       const filtered = status
         ? orders.filter((o) => o.status === status)
@@ -1530,7 +1536,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
   // Filter Listeners
-  document.getElementById("searchUsers")?.addEventListener("input", (e) => {
+  document.getElementById('searchUsers')?.addEventListener('input', (e) => {
     const query = (e.target as HTMLInputElement).value.toLowerCase();
     const filtered = users.filter(
       (u) =>
@@ -1563,7 +1569,9 @@ async function loadInsights() {
 
 async function fetchInsightsData() {
   try {
-    const startDateInput = document.getElementById('startDate') as HTMLInputElement;
+    const startDateInput = document.getElementById(
+      'startDate',
+    ) as HTMLInputElement;
     const endDateInput = document.getElementById('endDate') as HTMLInputElement;
 
     // Default to last 30 days if empty
@@ -1583,24 +1591,28 @@ async function fetchInsightsData() {
     const endISO = new Date(end + 'T23:59:59').toISOString();
 
     // Use apiCall wrapper
-    const result = await apiCall<{ data: any }>(`/metrics/insights?startDate=${startISO}&endDate=${endISO}`);
+    const result = await apiCall<{ data: any }>(
+      `/metrics/insights?startDate=${startISO}&endDate=${endISO}`,
+    );
 
     renderInsights(result.data);
-
   } catch (error: any) {
     console.error('Error fetching insights:', error);
     showToast(`Erro ao carregar insights: ${error.message}`, 'error');
 
     // Update UI placeholders to show error state
-    const loadingTexts = document.querySelectorAll('#insights-section .loading-text');
-    loadingTexts.forEach(el => el.textContent = 'Erro ao carregar dados.');
+    const loadingTexts = document.querySelectorAll(
+      '#insights-section .loading-text',
+    );
+    loadingTexts.forEach((el) => (el.textContent = 'Erro ao carregar dados.'));
   }
 }
 
 function renderInsights(data: any) {
   // 1. Summary Cards
   const avgTicketEl = document.getElementById('insightAvgTicket');
-  if (avgTicketEl) avgTicketEl.textContent = formatCurrency(data.summary.average_ticket);
+  if (avgTicketEl)
+    avgTicketEl.textContent = formatCurrency(data.summary.average_ticket);
 
   const revEl = document.getElementById('insightTotalRevenue');
   if (revEl) revEl.textContent = formatCurrency(data.summary.total_revenue);
@@ -1628,11 +1640,13 @@ function renderHourlyChart(hourlyData: any[]) {
   const maxRevenue = Math.max(...hourlyData.map((h: any) => h.revenue), 1);
 
   // Create bars for 00-23 hours
-  const fullDayData = Array(24).fill(0).map((_, i) => {
-    const hourStr = i.toString().padStart(2, '0');
-    const found = hourlyData.find((h: any) => h.hour === hourStr);
-    return found ? found.revenue : 0;
-  });
+  const fullDayData = Array(24)
+    .fill(0)
+    .map((_, i) => {
+      const hourStr = i.toString().padStart(2, '0');
+      const found = hourlyData.find((h: any) => h.hour === hourStr);
+      return found ? found.revenue : 0;
+    });
 
   fullDayData.forEach((revenue, hour) => {
     const heightPercent = (revenue / maxRevenue) * 100;
@@ -1661,7 +1675,12 @@ function renderABCList(products: any[]) {
     const item = document.createElement('div');
     item.className = 'abc-item';
 
-    const badgeClass = p.classification === 'A' ? 'badge-a' : p.classification === 'B' ? 'badge-b' : 'badge-c';
+    const badgeClass =
+      p.classification === 'A'
+        ? 'badge-a'
+        : p.classification === 'B'
+          ? 'badge-b'
+          : 'badge-c';
 
     item.innerHTML = `
             <div class="abc-info">
@@ -1687,7 +1706,8 @@ function renderWaiterTable(waiters: any[]) {
   tbody.innerHTML = '';
 
   if (waiters.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="4" class="empty-text">Nenhum dado no período.</td></tr>';
+    tbody.innerHTML =
+      '<tr><td colspan="4" class="empty-text">Nenhum dado no período.</td></tr>';
     return;
   }
 
@@ -1710,8 +1730,8 @@ async function loadCommissions() {
     // Ensure users and orders are loaded
     if (users.length === 0 || orders.length === 0) {
       const [usersData, ordersData] = await Promise.all([
-        apiCall<ApiResponse<User[]>>("/users"),
-        apiCall<ApiResponse<Order[]>>("/orders"),
+        apiCall<ApiResponse<User[]>>('/users'),
+        apiCall<ApiResponse<Order[]>>('/orders'),
       ]);
       users = usersData.data || [];
       orders = ordersData.data || [];
@@ -1723,11 +1743,11 @@ async function loadCommissions() {
 }
 
 function renderCommissionWaiters() {
-  const grid = document.getElementById("waiters-grid");
+  const grid = document.getElementById('waiters-grid');
   if (!grid) return;
 
   const waiters = users.filter(
-    (u) => u.role && u.role.toUpperCase() === "WAITER",
+    (u) => u.role && u.role.toUpperCase() === 'WAITER',
   );
 
   if (waiters.length === 0) {
@@ -1737,10 +1757,10 @@ function renderCommissionWaiters() {
   }
 
   const now = new Date();
-  const todayStr = now.toLocaleDateString("pt-BR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
+  const todayStr = now.toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
   });
   const currentMonth = now.getMonth();
   const currentYear = now.getFullYear();
@@ -1752,16 +1772,16 @@ function renderCommissionWaiters() {
         (o) =>
           o.user_id &&
           o.user_id.toString() === waiter.id.toString() &&
-          o.status === "CLOSED",
+          o.status === 'CLOSED',
       );
 
       const dailyTotal = waiterOrders.reduce((sum, order) => {
         const orderDate = order.closed_at ? new Date(order.closed_at) : null;
         if (!orderDate) return sum;
-        const dateStr = orderDate.toLocaleDateString("pt-BR", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
+        const dateStr = orderDate.toLocaleDateString('pt-BR', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
         });
 
         if (dateStr === todayStr) {
@@ -1806,15 +1826,15 @@ function renderCommissionWaiters() {
     </div>
   `;
     })
-    .join("");
+    .join('');
 }
 
 // Global scope for onclick access
 (window as any).openCommissionDetails = (userId: string, userName: string) => {
-  const modal = document.getElementById("commissionModal");
-  const title = document.getElementById("modalWaiterName");
-  const tbody = document.getElementById("commissionTableBody");
-  const totalEl = document.getElementById("modalTotalSales");
+  const modal = document.getElementById('commissionModal');
+  const title = document.getElementById('modalWaiterName');
+  const tbody = document.getElementById('commissionTableBody');
+  const totalEl = document.getElementById('modalTotalSales');
 
   if (!modal || !tbody || !totalEl) return;
 
@@ -1825,7 +1845,7 @@ function renderCommissionWaiters() {
     (o) =>
       o.user_id &&
       o.user_id.toString() === userId.toString() &&
-      o.status === "CLOSED",
+      o.status === 'CLOSED',
   );
 
   waiterOrders.sort((a, b) => {
@@ -1836,10 +1856,10 @@ function renderCommissionWaiters() {
 
   // Calculate Stats for Modal Footer
   const now = new Date();
-  const todayStr = now.toLocaleDateString("pt-BR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
+  const todayStr = now.toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
   });
   const currentMonth = now.getMonth();
   const currentYear = now.getFullYear();
@@ -1856,10 +1876,10 @@ function renderCommissionWaiters() {
     const orderDate = order.closed_at ? new Date(order.closed_at) : null;
 
     if (orderDate) {
-      const dateStr = orderDate.toLocaleDateString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
+      const dateStr = orderDate.toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
       });
 
       if (dateStr === todayStr) {
@@ -1881,23 +1901,23 @@ function renderCommissionWaiters() {
     tbody.innerHTML = waiterOrders
       .map((order) => {
         const dateStr = order.closed_at
-          ? new Date(order.closed_at).toLocaleDateString("pt-BR", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-          })
-          : "-";
+          ? new Date(order.closed_at).toLocaleDateString('pt-BR', {
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+            })
+          : '-';
 
         const orderTotal = Number(order.total) || 0;
         const tipVal = order.tip ? Number(order.tip) : 0;
-        const commissionDisplay = tipVal > 0 ? formatCurrency(tipVal) : "---";
+        const commissionDisplay = tipVal > 0 ? formatCurrency(tipVal) : '---';
 
         // Resolve Table Number
         const tableObj = tables.find((t) => t.id === String(order.table_id));
 
-        let tableDisplay = "Mesa ?";
+        let tableDisplay = 'Mesa ?';
         if (tableObj) {
           tableDisplay = `Mesa ${tableObj.number}`;
         }
@@ -1908,11 +1928,11 @@ function renderCommissionWaiters() {
               <td>${dateStr}</td>
               <td>${tableDisplay}</td>
               <td style="color: var(--text-muted);">${formatCurrency(orderTotal)}</td>
-              <td style="color: ${tipVal > 0 ? "var(--emerald)" : "var(--text-dim)"}; font-weight: 600;">${commissionDisplay}</td>
+              <td style="color: ${tipVal > 0 ? 'var(--emerald)' : 'var(--text-dim)'}; font-weight: 600;">${commissionDisplay}</td>
           </tr>
           `;
       })
-      .join("");
+      .join('');
   }
 
   // Update Footer with Green Stats
@@ -1925,11 +1945,10 @@ function renderCommissionWaiters() {
           </div>
       </div>
     `;
-  modal.classList.add("active");
-};;
-
-(window as any).closeCommissionModal = () => {
-  const modal = document.getElementById("commissionModal");
-  if (modal) modal.classList.remove("active");
+  modal.classList.add('active');
 };
 
+(window as any).closeCommissionModal = () => {
+  const modal = document.getElementById('commissionModal');
+  if (modal) modal.classList.remove('active');
+};

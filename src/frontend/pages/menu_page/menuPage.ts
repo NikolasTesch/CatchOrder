@@ -1,5 +1,6 @@
 import './style.css';
 import { ApiService } from '../../services/apiService';
+import { resolveImagePath } from '../../utils/assets';
 
 interface Category {
   id: string;
@@ -24,7 +25,7 @@ interface CartItem {
 const STORAGE_KEYS = {
   TABLE: 'catchorder_table_id',
   TABLE_NUMBER: 'catchorder_table_number',
-  SESSION_STATUS: 'catchorder_session_active'
+  SESSION_STATUS: 'catchorder_session_active',
 };
 
 class MenuController {
@@ -70,38 +71,70 @@ class MenuController {
   private darkModeToggle: HTMLElement | null = null; // New Property
 
   constructor() {
-    this.categoryListEl = document.getElementById('categoryList') as HTMLElement;
-    this.productsGridEl = document.getElementById('productsGrid') as HTMLElement;
+    this.categoryListEl = document.getElementById(
+      'categoryList',
+    ) as HTMLElement;
+    this.productsGridEl = document.getElementById(
+      'productsGrid',
+    ) as HTMLElement;
     this.tableNumberEl = document.getElementById('tableNumber') as HTMLElement;
-    this.searchInput = document.getElementById('searchInput') as HTMLInputElement;
+    this.searchInput = document.getElementById(
+      'searchInput',
+    ) as HTMLInputElement;
 
     // Cart Elements Initialization
-    this.floatingCartBtn = document.getElementById('floatingCartBtn') as HTMLElement;
+    this.floatingCartBtn = document.getElementById(
+      'floatingCartBtn',
+    ) as HTMLElement;
     this.cartModal = document.getElementById('cartModal') as HTMLElement;
     this.closeCartBtn = document.getElementById('closeCartBtn') as HTMLElement;
-    this.cartItemsListEl = document.getElementById('cartItemsList') as HTMLElement;
+    this.cartItemsListEl = document.getElementById(
+      'cartItemsList',
+    ) as HTMLElement;
     this.cartCountEl = document.getElementById('cartCount') as HTMLElement;
     this.cartTotalEl = document.getElementById('cartTotal') as HTMLElement;
     this.modalTotalEl = document.getElementById('modalTotal') as HTMLElement;
-    this.confirmOrderBtn = document.getElementById('confirmOrderBtn') as HTMLButtonElement;
+    this.confirmOrderBtn = document.getElementById(
+      'confirmOrderBtn',
+    ) as HTMLButtonElement;
 
     // Sent Orders Elements
-    this.sentOrdersFooter = document.getElementById('sentOrdersFooter') as HTMLElement;
-    this.sentOrdersHeader = document.getElementById('sentOrdersHeader') as HTMLElement;
-    this.sentOrdersBody = document.getElementById('sentOrdersBody') as HTMLElement;
-    this.sentOrdersCount = document.getElementById('sentOrdersCount') as HTMLElement;
+    this.sentOrdersFooter = document.getElementById(
+      'sentOrdersFooter',
+    ) as HTMLElement;
+    this.sentOrdersHeader = document.getElementById(
+      'sentOrdersHeader',
+    ) as HTMLElement;
+    this.sentOrdersBody = document.getElementById(
+      'sentOrdersBody',
+    ) as HTMLElement;
+    this.sentOrdersCount = document.getElementById(
+      'sentOrdersCount',
+    ) as HTMLElement;
 
     // Payment Elements
-    this.btnCloseOrder = document.getElementById('btnCloseOrder') as HTMLElement;
+    this.btnCloseOrder = document.getElementById(
+      'btnCloseOrder',
+    ) as HTMLElement;
     this.paymentModal = document.getElementById('paymentModal') as HTMLElement;
-    this.closePaymentBtn = document.getElementById('closePaymentBtn') as HTMLElement;
+    this.closePaymentBtn = document.getElementById(
+      'closePaymentBtn',
+    ) as HTMLElement;
     this.billSummary = document.getElementById('billSummary') as HTMLElement;
-    this.billSubtotalEl = document.getElementById('billSubtotal') as HTMLElement;
-    this.billServiceFeeEl = document.getElementById('billServiceFee') as HTMLElement;
+    this.billSubtotalEl = document.getElementById(
+      'billSubtotal',
+    ) as HTMLElement;
+    this.billServiceFeeEl = document.getElementById(
+      'billServiceFee',
+    ) as HTMLElement;
     this.billTotalEl = document.getElementById('billTotal') as HTMLElement;
     this.btnPayPix = document.getElementById('btnPayPix') as HTMLElement;
-    this.btnConfirmPix = document.getElementById('btnConfirmPix') as HTMLElement;
-    this.btnCallWaiter = document.getElementById('btnCallWaiter') as HTMLElement;
+    this.btnConfirmPix = document.getElementById(
+      'btnConfirmPix',
+    ) as HTMLElement;
+    this.btnCallWaiter = document.getElementById(
+      'btnCallWaiter',
+    ) as HTMLElement;
 
     // Dark Mode
     this.darkModeToggle = document.getElementById('darkModeToggle');
@@ -119,13 +152,10 @@ class MenuController {
     this.updateCartUI(); // Initial hidden state
 
     try {
-      await Promise.all([
-        this.fetchCategories(),
-        this.fetchProducts(),
-      ]);
+      await Promise.all([this.fetchCategories(), this.fetchProducts()]);
 
       // Fetch open orders after products are loaded so we can map names if needed (though API returns them usually?)
-      // Actually backend order includes product info usually? let's check. 
+      // Actually backend order includes product info usually? let's check.
       // If not, we have `this.products` to lookup.
       await this.fetchOpenOrder();
 
@@ -140,7 +170,9 @@ class MenuController {
   /* Dark Mode Methods */
   private initDarkMode() {
     const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const prefersDark = window.matchMedia(
+      '(prefers-color-scheme: dark)',
+    ).matches;
 
     // Consistency check
     if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
@@ -159,7 +191,9 @@ class MenuController {
 
   private updateDarkModeIcon(isDark: boolean) {
     if (!this.darkModeToggle) return;
-    const icon = this.darkModeToggle.querySelector('span') || this.darkModeToggle.querySelector('i');
+    const icon =
+      this.darkModeToggle.querySelector('span') ||
+      this.darkModeToggle.querySelector('i');
     if (icon) {
       // Use Lightbulb as requested
       // Use far (Regular) and fas (Solid) aliases which are robust
@@ -196,7 +230,9 @@ class MenuController {
   private setupEventListeners() {
     // Dark Mode Toggle
     if (this.darkModeToggle) {
-      this.darkModeToggle.addEventListener('click', () => this.toggleDarkMode());
+      this.darkModeToggle.addEventListener('click', () =>
+        this.toggleDarkMode(),
+      );
     }
 
     if (this.searchInput) {
@@ -215,7 +251,7 @@ class MenuController {
         if (card) {
           const productId = card.dataset.id;
           if (productId) {
-            const product = this.products.find(p => p.id === productId);
+            const product = this.products.find((p) => p.id === productId);
             if (product) {
               this.addToCart(product);
 
@@ -228,7 +264,7 @@ class MenuController {
 
               // Optional: Feedback on card
               card.style.transform = 'scale(0.98)';
-              setTimeout(() => card.style.transform = '', 150);
+              setTimeout(() => (card.style.transform = ''), 150);
             }
           }
         }
@@ -274,7 +310,9 @@ class MenuController {
       });
     }
     if (this.closePaymentBtn) {
-      this.closePaymentBtn.addEventListener('click', () => this.closePaymentModal());
+      this.closePaymentBtn.addEventListener('click', () =>
+        this.closePaymentModal(),
+      );
     }
     if (this.paymentModal) {
       this.paymentModal.addEventListener('click', (e) => {
@@ -285,15 +323,18 @@ class MenuController {
       this.btnPayPix.addEventListener('click', () => this.handlePayPix());
     }
     if (this.btnConfirmPix) {
-      this.btnConfirmPix.addEventListener('click', () => this.handleConfirmPix());
+      this.btnConfirmPix.addEventListener('click', () =>
+        this.handleConfirmPix(),
+      );
     }
     if (this.btnCallWaiter) {
-      this.btnCallWaiter.addEventListener('click', () => this.handleCallWaiter());
+      this.btnCallWaiter.addEventListener('click', () =>
+        this.handleCallWaiter(),
+      );
     }
   }
 
   /* Payment Logic */
-
 
   private closePaymentModal() {
     if (this.paymentModal) this.paymentModal.classList.remove('open');
@@ -306,32 +347,35 @@ class MenuController {
     this.billSummary.innerHTML = '';
 
     if (this.sentOrders.length === 0) {
-      this.billSummary.innerHTML = '<p class="empty-state">Nenhum item consumido.</p>';
+      this.billSummary.innerHTML =
+        '<p class="empty-state">Nenhum item consumido.</p>';
       this.updateBillTotals(0);
       return;
     }
 
     // Group identical items? Or just list them.
     // Usually bills group by product.
-    const billItems: { [id: string]: { name: string, quantity: number, total: number } } = {};
+    const billItems: {
+      [id: string]: { name: string; quantity: number; total: number };
+    } = {};
 
-    this.sentOrders.forEach(item => {
+    this.sentOrders.forEach((item) => {
       // Use product_id or name as key
       const key = item.product_id || item.name;
       if (!billItems[key]) {
         billItems[key] = {
           name: item.product_name || item.name || 'Produto',
           quantity: 0,
-          total: 0
+          total: 0,
         };
       }
       billItems[key].quantity += item.quantity;
-      billItems[key].total += (item.unit_price * item.quantity);
+      billItems[key].total += item.unit_price * item.quantity;
     });
 
     let subtotal = 0;
 
-    Object.values(billItems).forEach(item => {
+    Object.values(billItems).forEach((item) => {
       subtotal += item.total;
 
       const row = document.createElement('div');
@@ -349,17 +393,18 @@ class MenuController {
   }
 
   private updateBillTotals(subtotal: number) {
-    if (this.billSubtotalEl) this.billSubtotalEl.textContent = this.formatPrice(subtotal);
+    if (this.billSubtotalEl)
+      this.billSubtotalEl.textContent = this.formatPrice(subtotal);
 
     // Create separate var for service fee in case we toggle it later
     const serviceFee = subtotal * 0.1;
-    if (this.billServiceFeeEl) this.billServiceFeeEl.textContent = this.formatPrice(serviceFee);
+    if (this.billServiceFeeEl)
+      this.billServiceFeeEl.textContent = this.formatPrice(serviceFee);
 
     const total = subtotal + serviceFee;
-    if (this.billTotalEl) this.billTotalEl.textContent = this.formatPrice(total);
+    if (this.billTotalEl)
+      this.billTotalEl.textContent = this.formatPrice(total);
   }
-
-
 
   private async fetchOpenOrder() {
     const tableId = sessionStorage.getItem(STORAGE_KEYS.TABLE);
@@ -371,13 +416,17 @@ class MenuController {
       const response = await ApiService.get<{ data: any[] }>('/orders');
       // We need to find the specific order that IS OPEN
       // The backend returns an array of orders.
-      const openOrder = response.data.find((o: any) => o.table_id === tableId && o.status === 'OPEN');
+      const openOrder = response.data.find(
+        (o: any) => o.table_id === tableId && o.status === 'OPEN',
+      );
 
       if (openOrder) {
         // Now we need items. Does `findAll` return items? Using `debug_db.ts` or controllers show:
         // OrderController.index -> OrderModel.findAll -> basic select * from orders.
         // We need `GET /orders/:id`.
-        const fullOrderRes = await ApiService.get<{ data: any }>(`/orders/${openOrder.id}`);
+        const fullOrderRes = await ApiService.get<{ data: any }>(
+          `/orders/${openOrder.id}`,
+        );
         const fullOrder = fullOrderRes.data;
 
         if (fullOrder && fullOrder.items) {
@@ -391,7 +440,8 @@ class MenuController {
   }
 
   private renderSentOrders() {
-    if (!this.sentOrdersFooter || !this.sentOrdersCount || !this.sentOrdersBody) return;
+    if (!this.sentOrdersFooter || !this.sentOrdersCount || !this.sentOrdersBody)
+      return;
 
     const count = this.sentOrders.reduce((sum, item) => sum + item.quantity, 0);
     this.sentOrdersCount.textContent = `${count} itens`;
@@ -410,7 +460,7 @@ class MenuController {
     // Date string format: "2026-02-03 21:05:45"
     const groups: { [key: string]: any[] } = {};
 
-    this.sentOrders.forEach(item => {
+    this.sentOrders.forEach((item) => {
       // Robust grouping: use full timestamp or just HH:mm?
       // Let's use HH:mm for display, but full timestamp for grouping key to avoid merging different batches in same minute?
       // Let's use the raw string as key.
@@ -420,9 +470,11 @@ class MenuController {
     });
 
     // Sort groups by time desc (newest first)
-    const sortedKeys = Object.keys(groups).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+    const sortedKeys = Object.keys(groups).sort(
+      (a, b) => new Date(b).getTime() - new Date(a).getTime(),
+    );
 
-    sortedKeys.forEach(key => {
+    sortedKeys.forEach((key) => {
       const items = groups[key];
 
       // Fix Timestamp: Assume UTC if string 'YYYY-MM-DD HH:MM:SS', convert to local
@@ -430,10 +482,14 @@ class MenuController {
       if (key !== 'Recentes') {
         try {
           // Append Z if missing to force UTC interpretation
-          const dateStr = key.replace(' ', 'T') + (key.includes('Z') ? '' : 'Z');
+          const dateStr =
+            key.replace(' ', 'T') + (key.includes('Z') ? '' : 'Z');
           const date = new Date(dateStr);
           if (!isNaN(date.getTime())) {
-            timeStr = date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            timeStr = date.toLocaleTimeString('pt-BR', {
+              hour: '2-digit',
+              minute: '2-digit',
+            });
           } else {
             timeStr = key.split(' ')[1]?.substring(0, 5) || key;
           }
@@ -446,7 +502,7 @@ class MenuController {
       groupEl.className = 'sent-order-group';
 
       let itemsHtml = '';
-      items.forEach(item => {
+      items.forEach((item) => {
         // Find product name if not populated (assuming backend might join it, but if not locallookup)
         // The backend `OrderModel.findById` likely joins products.
         const name = item.product_name || item.name || 'Produto'; // Check backend response structure if poss
@@ -494,7 +550,9 @@ class MenuController {
       // Try to find open order for this table
       try {
         const allOrders = await ApiService.get<{ data: any[] }>('/orders');
-        const openOrder = allOrders.data.find((o: any) => o.table_id === tableId && o.status === 'OPEN');
+        const openOrder = allOrders.data.find(
+          (o: any) => o.table_id === tableId && o.status === 'OPEN',
+        );
         if (openOrder) {
           orderId = openOrder.id;
         } else {
@@ -502,7 +560,7 @@ class MenuController {
           const defaultUserId = '140e6988-51f7-418b-96c2-05452d3999e5';
           const newOrder = await ApiService.post<{ data: any }>('/orders', {
             table_id: tableId,
-            user_id: defaultUserId
+            user_id: defaultUserId,
           });
           orderId = newOrder.data.id;
         }
@@ -510,7 +568,7 @@ class MenuController {
         const defaultUserId = '140e6988-51f7-418b-96c2-05452d3999e5';
         const newOrder = await ApiService.post<{ data: any }>('/orders', {
           table_id: tableId,
-          user_id: defaultUserId
+          user_id: defaultUserId,
         });
         orderId = newOrder.data.id;
       }
@@ -519,7 +577,7 @@ class MenuController {
       for (const item of this.cart) {
         await ApiService.post(`/orders/${orderId}/items`, {
           product_id: item.product.id,
-          quantity: item.quantity
+          quantity: item.quantity,
         });
       }
 
@@ -536,13 +594,13 @@ class MenuController {
       if (this.sentOrdersFooter) {
         // Optionally wiggle or highlight
       }
-
     } catch (error) {
       console.error('Error submitting order', error);
       this.showToast('Erro ao enviar pedido. Tente novamente.', 'error');
     } finally {
       this.confirmOrderBtn.disabled = false;
-      this.confirmOrderBtn.innerHTML = '<i class="fa-solid fa-check"></i> Confirmar Pedido';
+      this.confirmOrderBtn.innerHTML =
+        '<i class="fa-solid fa-check"></i> Confirmar Pedido';
     }
   }
 
@@ -558,7 +616,9 @@ class MenuController {
 
   private async fetchCategories() {
     try {
-      const response = await ApiService.get<{ data: Category[] }>('/categories');
+      const response = await ApiService.get<{ data: Category[] }>(
+        '/categories',
+      );
       this.categories = response.data || [];
     } catch (error) {
       console.warn('Could not load categories', error);
@@ -567,7 +627,9 @@ class MenuController {
 
   private async fetchProducts() {
     try {
-      const response = await ApiService.get<{ data: any[] }>('/products/active');
+      const response = await ApiService.get<{ data: any[] }>(
+        '/products/active',
+      );
       const data = response.data || [];
 
       if (Array.isArray(data)) {
@@ -578,7 +640,7 @@ class MenuController {
           price: p.price,
           imageUrl: p.image_path,
           categoryId: p.category_id,
-          active: p.is_active === 1 || p.is_active === true
+          active: p.is_active === 1 || p.is_active === true,
         }));
       }
     } catch (error) {
@@ -587,7 +649,9 @@ class MenuController {
   }
 
   private addToCart(product: Product) {
-    const existingItem = this.cart.find(item => item.product.id === product.id);
+    const existingItem = this.cart.find(
+      (item) => item.product.id === product.id,
+    );
 
     if (existingItem) {
       existingItem.quantity++;
@@ -599,7 +663,9 @@ class MenuController {
   }
 
   private updateQuantity(productId: string, change: number) {
-    const itemIndex = this.cart.findIndex(item => item.product.id === productId);
+    const itemIndex = this.cart.findIndex(
+      (item) => item.product.id === productId,
+    );
     if (itemIndex === -1) return;
 
     const item = this.cart[itemIndex];
@@ -619,7 +685,10 @@ class MenuController {
 
   private updateCartUI() {
     const totalCount = this.cart.reduce((sum, item) => sum + item.quantity, 0);
-    const totalPrice = this.cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+    const totalPrice = this.cart.reduce(
+      (sum, item) => sum + item.product.price * item.quantity,
+      0,
+    );
 
     if (this.floatingCartBtn) {
       this.floatingCartBtn.style.display = totalCount > 0 ? 'block' : 'none';
@@ -654,7 +723,7 @@ class MenuController {
       return;
     }
 
-    this.cart.forEach(item => {
+    this.cart.forEach((item) => {
       const el = document.createElement('div');
       el.className = 'cart-item';
 
@@ -670,8 +739,12 @@ class MenuController {
         </div>
       `;
 
-      el.querySelector('.btn-minus')?.addEventListener('click', () => this.updateQuantity(item.product.id, -1));
-      el.querySelector('.btn-plus')?.addEventListener('click', () => this.updateQuantity(item.product.id, 1));
+      el.querySelector('.btn-minus')?.addEventListener('click', () =>
+        this.updateQuantity(item.product.id, -1),
+      );
+      el.querySelector('.btn-plus')?.addEventListener('click', () =>
+        this.updateQuantity(item.product.id, 1),
+      );
 
       this.cartItemsListEl.appendChild(el);
     });
@@ -699,14 +772,19 @@ class MenuController {
     }, 3000);
   }
 
-
   private handlePayPix() {
     const billSummary = document.getElementById('billSummary');
-    const paymentTotals = document.querySelector('.payment-totals') as HTMLElement;
+    const paymentTotals = document.querySelector(
+      '.payment-totals',
+    ) as HTMLElement;
     const pixQrContainer = document.getElementById('pixQrContainer');
     const btnPayPix = document.getElementById('btnPayPix') as HTMLElement;
-    const btnCallWaiter = document.getElementById('btnCallWaiter') as HTMLElement;
-    const btnConfirmPix = document.getElementById('btnConfirmPix') as HTMLElement;
+    const btnCallWaiter = document.getElementById(
+      'btnCallWaiter',
+    ) as HTMLElement;
+    const btnConfirmPix = document.getElementById(
+      'btnConfirmPix',
+    ) as HTMLElement;
 
     if (billSummary && paymentTotals && pixQrContainer && btnPayPix) {
       // Toggle view
@@ -742,19 +820,23 @@ class MenuController {
 
     // Loading state
     if (this.btnConfirmPix) {
-      this.btnConfirmPix.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processando...';
+      this.btnConfirmPix.innerHTML =
+        '<i class="fa-solid fa-spinner fa-spin"></i> Processando...';
       (this.btnConfirmPix as HTMLButtonElement).disabled = true;
     }
 
     try {
       // 1. Find Open Order ID
       const allOrders = await ApiService.get<{ data: any[] }>('/orders');
-      const openOrder = allOrders.data.find((o: any) => o.table_id === tableId && o.status === 'OPEN');
+      const openOrder = allOrders.data.find(
+        (o: any) => o.table_id === tableId && o.status === 'OPEN',
+      );
 
       if (!openOrder) {
         this.showToast('Nenhum pedido aberto encontrado.', 'error');
         if (this.btnConfirmPix) {
-          this.btnConfirmPix.innerHTML = '<i class="fa-solid fa-check-double"></i> Confirmar Pagamento';
+          this.btnConfirmPix.innerHTML =
+            '<i class="fa-solid fa-check-double"></i> Confirmar Pagamento';
           (this.btnConfirmPix as HTMLButtonElement).disabled = false;
         }
         return;
@@ -762,15 +844,15 @@ class MenuController {
 
       // 2. Calculate Tip (10%)
       const subtotal = openOrder.total || 0;
-      // If openOrder.total isn't updated with items, we might need to sum items locally or trust backend logic. 
+      // If openOrder.total isn't updated with items, we might need to sum items locally or trust backend logic.
       // Assuming openOrder.total is correct or calculating from items if available.
       // Better to calculate from items if we have them to be safe, but OrderModel updates total on add item.
 
-      const tip = subtotal * 0.10;
+      const tip = subtotal * 0.1;
 
       // 3. Close Order (closes Table automatically on backend)
       await ApiService.patch(`/orders/${openOrder.id}/close`, {
-        tip: Math.round(tip) // Ensure integer cents
+        tip: Math.round(tip), // Ensure integer cents
       });
 
       this.showToast('Pagamento confirmado e mesa liberada!', 'success');
@@ -782,13 +864,13 @@ class MenuController {
       setTimeout(() => {
         this.redirectToTablePage();
       }, 2000);
-
     } catch (error) {
       console.error('Error closing order:', error);
       this.showToast('Erro ao confirmar pagamento.', 'error');
 
       if (this.btnConfirmPix) {
-        this.btnConfirmPix.innerHTML = '<i class="fa-solid fa-check-double"></i> Confirmar Pagamento';
+        this.btnConfirmPix.innerHTML =
+          '<i class="fa-solid fa-check-double"></i> Confirmar Pagamento';
         (this.btnConfirmPix as HTMLButtonElement).disabled = false;
       }
     }
@@ -798,20 +880,26 @@ class MenuController {
     const tableId = sessionStorage.getItem(STORAGE_KEYS.TABLE);
     const tableNumber = sessionStorage.getItem(STORAGE_KEYS.TABLE_NUMBER);
 
-    this.showToast(`Garçom chamado para a mesa ${tableNumber || ''}!`, 'success');
+    this.showToast(
+      `Garçom chamado para a mesa ${tableNumber || ''}!`,
+      'success',
+    );
 
     if (!tableId) return;
 
     if (this.btnCallWaiter) {
       // Save original text?
-      this.btnCallWaiter.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Encerrando...';
+      this.btnCallWaiter.innerHTML =
+        '<i class="fa-solid fa-spinner fa-spin"></i> Encerrando...';
       (this.btnCallWaiter as HTMLButtonElement).disabled = true;
     }
 
     try {
       // Find Open Order
       const allOrders = await ApiService.get<{ data: any[] }>('/orders');
-      const openOrder = allOrders.data.find((o: any) => o.table_id === tableId && o.status === 'OPEN');
+      const openOrder = allOrders.data.find(
+        (o: any) => o.table_id === tableId && o.status === 'OPEN',
+      );
 
       if (openOrder) {
         await ApiService.patch(`/orders/${openOrder.id}/close`, { tip: 0 });
@@ -827,13 +915,13 @@ class MenuController {
       setTimeout(() => {
         this.redirectToTablePage();
       }, 2000);
-
     } catch (error) {
       console.error('Error closing table via waiter:', error);
       this.showToast('Erro ao liberar mesa.', 'error');
 
       if (this.btnCallWaiter) {
-        this.btnCallWaiter.innerHTML = '<i class="fa-solid fa-hand-holding-dollar"></i> Chamar Garçom';
+        this.btnCallWaiter.innerHTML =
+          '<i class="fa-solid fa-hand-holding-dollar"></i> Chamar Garçom';
         (this.btnCallWaiter as HTMLButtonElement).disabled = false;
       }
     }
@@ -844,14 +932,17 @@ class MenuController {
 
     // Reset view when opening
     const billSummary = document.getElementById('billSummary');
-    const paymentTotals = document.querySelector('.payment-totals') as HTMLElement;
+    const paymentTotals = document.querySelector(
+      '.payment-totals',
+    ) as HTMLElement;
     const pixQrContainer = document.getElementById('pixQrContainer');
     const btnPayPix = document.getElementById('btnPayPix') as HTMLElement; // Ensure we have reference
 
     if (billSummary) billSummary.style.display = 'block';
     if (paymentTotals) paymentTotals.style.display = 'block';
     if (pixQrContainer) pixQrContainer.style.display = 'none';
-    if (btnPayPix) btnPayPix.innerHTML = '<i class="fa-brands fa-pix"></i> Pagar com Pix';
+    if (btnPayPix)
+      btnPayPix.innerHTML = '<i class="fa-brands fa-pix"></i> Pagar com Pix';
 
     // Reset buttons visibility
     const btnCallWaiter = document.getElementById('btnCallWaiter');
@@ -863,20 +954,27 @@ class MenuController {
     this.renderBill();
   }
 
-
   private formatPrice(cents: number): string {
-    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(cents / 100);
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(cents / 100);
   }
 
   /* Rendering Logic */
   private renderCategories() {
     if (!this.categoryListEl) return;
 
-    const allBtn = this.createCategoryButton('all', 'Todos', 'fa-layer-group', true);
+    const allBtn = this.createCategoryButton(
+      'all',
+      'Todos',
+      'fa-layer-group',
+      true,
+    );
     this.categoryListEl.innerHTML = '';
     this.categoryListEl.appendChild(allBtn);
 
-    this.categories.forEach(cat => {
+    this.categories.forEach((cat) => {
       const iconClass = this.getCategoryIcon(cat.name);
       const btn = this.createCategoryButton(cat.id, cat.name, iconClass, false);
       this.categoryListEl.appendChild(btn);
@@ -886,14 +984,21 @@ class MenuController {
   private getCategoryIcon(name: string): string {
     const lower = name.toLowerCase();
     if (lower.includes('bebi')) return 'fa-wine-bottle';
-    if (lower.includes('lanche') || lower.includes('burger')) return 'fa-hamburger';
+    if (lower.includes('lanche') || lower.includes('burger'))
+      return 'fa-hamburger';
     if (lower.includes('pizza')) return 'fa-pizza-slice';
-    if (lower.includes('sobrev') || lower.includes('doce')) return 'fa-ice-cream';
+    if (lower.includes('sobrev') || lower.includes('doce'))
+      return 'fa-ice-cream';
     if (lower.includes('prato')) return 'fa-utensils';
     return 'fa-tag';
   }
 
-  private createCategoryButton(id: string | 'all', name: string, icon: string, isActive: boolean): HTMLButtonElement {
+  private createCategoryButton(
+    id: string | 'all',
+    name: string,
+    icon: string,
+    isActive: boolean,
+  ): HTMLButtonElement {
     const btn = document.createElement('button');
     btn.className = `category-item ${isActive ? 'active' : ''}`;
     btn.dataset.id = id;
@@ -902,7 +1007,9 @@ class MenuController {
     btn.addEventListener('click', () => {
       this.activeCategoryId = id;
       this.updateActiveCategory(btn);
-      this.renderProducts(this.searchInput ? this.searchInput.value.toLowerCase() : '');
+      this.renderProducts(
+        this.searchInput ? this.searchInput.value.toLowerCase() : '',
+      );
     });
 
     return btn;
@@ -910,7 +1017,7 @@ class MenuController {
 
   private updateActiveCategory(activeBtn: HTMLButtonElement) {
     const buttons = this.categoryListEl.querySelectorAll('.category-item');
-    buttons.forEach(b => b.classList.remove('active'));
+    buttons.forEach((b) => b.classList.remove('active'));
     activeBtn.classList.add('active');
   }
 
@@ -921,11 +1028,13 @@ class MenuController {
     let filtered = this.products;
 
     if (this.activeCategoryId !== 'all') {
-      filtered = filtered.filter(p => p.categoryId === this.activeCategoryId);
+      filtered = filtered.filter((p) => p.categoryId === this.activeCategoryId);
     }
 
     if (searchTerm) {
-      filtered = filtered.filter(p => p.name.toLowerCase().includes(searchTerm));
+      filtered = filtered.filter((p) =>
+        p.name.toLowerCase().includes(searchTerm),
+      );
     }
 
     if (filtered.length === 0) {
@@ -938,13 +1047,17 @@ class MenuController {
       return;
     }
 
-    filtered.forEach(product => {
+    filtered.forEach((product) => {
       const card = document.createElement('div');
       card.className = 'product-card';
       card.dataset.id = product.id;
 
-      const imageUrl = product.imageUrl || 'https://placehold.co/400x300/1e1e1e/FFF?text=No+Image';
-      const categoryObj = this.categories.find(c => c.id === product.categoryId);
+      const imageUrl =
+        product.imageUrl ||
+        'https://placehold.co/400x300/1e1e1e/FFF?text=No+Image';
+      const categoryObj = this.categories.find(
+        (c) => c.id === product.categoryId,
+      );
       const categoryName = categoryObj ? categoryObj.name : 'Geral';
 
       card.innerHTML = `
@@ -971,8 +1084,6 @@ class MenuController {
   private filterProducts(term: string) {
     this.renderProducts(term);
   }
-
-
 
   private isRedirecting = false;
 

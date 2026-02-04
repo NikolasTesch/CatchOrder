@@ -264,7 +264,7 @@ a {
     box-shadow: var(--shadow-xl);
     width: 90%;
     height: 100%;
-    padding: 1rem;
+    padding: 0;
     border: 1px solid var(--border-light);
     position: relative;
     z-index: 1;
@@ -272,30 +272,14 @@ a {
     animation: float 6s ease-in-out infinite;
 }
 
-.mockup-header {
-    height: 12px;
-    width: 60px;
-    background: var(--border-medium);
-    border-radius: 10px;
-    margin-bottom: 20px;
-}
-
-.skeleton-row {
-    height: 40px;
+.mockup-img {
     width: 100%;
-    background: var(--bg-secondary);
-    border-radius: 8px;
-    margin-bottom: 15px;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
-.skeleton-card {
-    height: 100px;
-    width: 48%;
-    background: var(--bg-secondary);
-    border-radius: 8px;
-    display: inline-block;
-    margin-right: 2%;
-}
+
 
 .floating-card {
     position: absolute;

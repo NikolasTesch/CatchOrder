@@ -303,9 +303,18 @@ body.dark-mode .page-wrapper {
   background: var(--bg-primary);
 }
 
+body.dark-mode .main-header {
+  background-color: #182233;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .logo-image {
+  filter: brightness(0) invert(1);
+}
+
 body.dark-mode .bill-header {
-  background-color: var(--bg-secondary);
-  border-bottom: 1px solid var(--border-dark);
+  background-color: #1E293B;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 body.dark-mode .bill-title {
@@ -313,7 +322,7 @@ body.dark-mode .bill-title {
 }
 
 body.dark-mode .bill-body {
-  background-color: var(--bg-card);
+  background-color: #1E293B;
 }
 
 body.dark-mode .bill-item-name,
@@ -324,12 +333,12 @@ body.dark-mode .total-value-sm {
 }
 
 body.dark-mode .bill-divider {
-  background-color: var(--border-dark);
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 body.dark-mode .bill-footer {
-  background-color: var(--bg-secondary);
-  border-top: 1px solid var(--border-dark);
+  background-color: #1E293B;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 body.dark-mode .total-label-lg,

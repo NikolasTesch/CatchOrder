@@ -439,11 +439,17 @@ function updateTotals() {
 
 // --- API Actions ---
 
-async function removeOrderItem(orderId: string, itemId: string) {
-  showConfirmationModal('Cancelar Item', 'Tem certeza que deseja cancelar este item?', async () => {
+async function removeOrderItem(orderId: string, itemId: string, quantity?: number) {
+  const confirmMessage = quantity ? `Tem certeza que deseja cancelar ${quantity} item(s)?` : 'Tem certeza que deseja cancelar este item?';
+
+  showConfirmationModal('Cancelar Item', confirmMessage, async () => {
     try {
-      await ApiService.delete(`/orders/${orderId}/items/${itemId}`);
-      showSuccess('Item removido com sucesso!');
+      let url = `/orders/${orderId}/items/${itemId}`;
+      if (quantity) {
+        url += `?quantity=${quantity}`;
+      }
+      await ApiService.delete(url);
+      showSuccess('Item cancelado com sucesso!');
       await loadOrderDetails(orderId);
       renderOrderSummary(); // Re-render sidebar
       renderProductsByCategory(); // Re-render main area to update pending list
@@ -454,6 +460,8 @@ async function removeOrderItem(orderId: string, itemId: string) {
     }
   });
 }
+//...
+
 
 async function deliverItem(orderId: string, itemId: string, quantity?: number) {
   try {
@@ -817,7 +825,13 @@ function renderPendingItemsInMainArea() {
     });
 
     card.querySelector('.btn-cancel-main')?.addEventListener('click', () => {
-      removeOrderItem(currentOrderId!, item.id);
+      if (item.quantity > 1) {
+        showCancelQuantityModal(item, (qty) => {
+          removeOrderItem(currentOrderId!, item.id, qty);
+        });
+      } else {
+        removeOrderItem(currentOrderId!, item.id);
+      }
     });
 
     grid.appendChild(card);
@@ -878,6 +892,58 @@ function showQuantityModal(item: OrderItem, onConfirm: (qty: number) => void) {
   });
 }
 
+
+// Helper Modal for Quantity (Generic or Specific)
+function showCancelQuantityModal(item: OrderItem, onConfirm: (qty: number) => void) {
+  const modal = document.createElement('div');
+  modal.className = 'quantity-modal-overlay active';
+  modal.innerHTML = `
+        <div class="quantity-modal-content glass">
+            <h3 class="modal-title">Cancelar Item</h3>
+            <p class="modal-desc">
+               Quantos <strong>${item.product_name}</strong> deseja cancelar?
+            </p>
+            <div class="modal-controls">
+                <button id="qty-minus" class="btn-icon modal-qty-btn">-</button>
+                <span id="qty-display" class="modal-qty-display">1</span>
+                <button id="qty-plus" class="btn-icon modal-qty-btn">+</button>
+            </div>
+            
+            <div class="modal-actions">
+                <button id="cancel-qty" class="btn btn-cancel-modal">Voltar</button>
+                <button id="confirm-qty" class="btn btn-primary btn-cancel-main" style="flex: 1; background-color: #ef4444;">Cancelar</button>
+            </div>
+        </div>
+    `;
+
+  document.body.appendChild(modal);
+
+  let currentQty = 1;
+  const display = modal.querySelector('#qty-display')!;
+
+  modal.querySelector('#qty-minus')?.addEventListener('click', () => {
+    if (currentQty > 1) {
+      currentQty--;
+      display.textContent = currentQty.toString();
+    }
+  });
+
+  modal.querySelector('#qty-plus')?.addEventListener('click', () => {
+    if (currentQty < item.quantity) {
+      currentQty++;
+      display.textContent = currentQty.toString();
+    }
+  });
+
+  modal.querySelector('#confirm-qty')?.addEventListener('click', () => {
+    onConfirm(currentQty);
+    document.body.removeChild(modal);
+  });
+
+  modal.querySelector('#cancel-qty')?.addEventListener('click', () => {
+    document.body.removeChild(modal);
+  });
+}
 
 // Helper Modal for Confirmation
 function showConfirmationModal(title: string, message: string, onConfirm: () => void) {

@@ -191,9 +191,8 @@ export class OrderModel {
     };
   }
 
-  static async removeItem(orderId: string, itemId: string): Promise<boolean> {
+  static async removeItem(orderId: string, itemId: string, quantityToRemove?: number): Promise<boolean> {
     const db = await getDb();
-
 
     const item = await db.get<{
       quantity: number;
@@ -206,17 +205,39 @@ export class OrderModel {
 
     if (!item || item.order_id !== orderId) return false;
 
-    const totalToDelete = item.quantity * item.unit_price;
+    // Default to full removal if no quantity specified
+    const qtyToRemove = quantityToRemove !== undefined ? quantityToRemove : item.quantity;
 
-    // Delete item
-    await db.run('DELETE FROM order_items WHERE id = ?', [itemId]);
+    if (qtyToRemove <= 0) return false;
 
-    // Update total (subtract) ONLY if it was delivered
-    if (item.delivered_at) {
-      await db.run('UPDATE orders SET total = total - ? WHERE id = ?', [
-        totalToDelete,
-        orderId,
+    if (qtyToRemove < item.quantity) {
+      // PARTIAL REMOVAL
+      // Update quantity
+      await db.run('UPDATE order_items SET quantity = quantity - ? WHERE id = ?', [
+        qtyToRemove,
+        itemId,
       ]);
+
+      // If item was delivered, we need to reduce the order total
+      if (item.delivered_at) {
+        const totalToSubtract = qtyToRemove * item.unit_price;
+        await db.run('UPDATE orders SET total = total - ? WHERE id = ?', [
+          totalToSubtract,
+          orderId,
+        ]);
+      }
+    } else {
+      // FULL REMOVAL (Delete item)
+      await db.run('DELETE FROM order_items WHERE id = ?', [itemId]);
+
+      // If item was delivered, subtract its full value from total
+      if (item.delivered_at) {
+        const totalToDelete = item.quantity * item.unit_price;
+        await db.run('UPDATE orders SET total = total - ? WHERE id = ?', [
+          totalToDelete,
+          orderId,
+        ]);
+      }
     }
 
     return true;

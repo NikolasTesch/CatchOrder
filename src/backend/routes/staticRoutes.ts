@@ -6,7 +6,6 @@ import { authenticatePage } from '../middlewares/jwtAuth';
 const router = Router();
 
 // 1. Static Assets (Public)
-// 1. Static Assets (Public)
 const assetTypes = ['css', 'js', 'img', 'uploads'];
 assetTypes.forEach(type => {
   const assetPath = path.join(__dirname, `../../../public/${type}`);
@@ -29,7 +28,6 @@ router.get('/pages/sellingPage.html', serveSellingPage);
 router.get('/server09/pages/sellingPage.html', serveSellingPage);
 
 // 3. Root & App Redirects
-// 3. Root & App Redirects
 router.get('/', (req, res) => {
   res.redirect('pages/sellingPage.html');
 });
@@ -50,7 +48,6 @@ const appHandler = (req: express.Request, res: express.Response) => {
 router.get('/app', appHandler);
 router.get('/server09/app', appHandler);
 
-// 4. Protected Pages (Rest of /pages)
 // 4. Protected Pages (Rest of /pages)
 router.use('/pages', authenticatePage, express.static(path.join(__dirname, '../../../public/pages')));
 router.use('/server09/pages', authenticatePage, express.static(path.join(__dirname, '../../../public/pages')));

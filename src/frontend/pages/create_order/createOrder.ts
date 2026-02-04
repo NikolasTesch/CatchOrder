@@ -16,6 +16,7 @@ interface Product {
   price: number;
   category_id: string;
   image_url?: string;
+  image_path?: string;
   active: boolean;
 }
 
@@ -63,12 +64,20 @@ let existingOrderItems: OrderItem[] = [];
 let existingObservation: string = '';
 
 // DOM Elements
-const productsContainer = document.getElementById('products-container') as HTMLElement;
-const orderItemsList = document.getElementById('order-items-list') as HTMLElement;
-const observationsTextarea = document.querySelector('.obs-textarea') as HTMLTextAreaElement;
+const productsContainer = document.getElementById(
+  'products-container',
+) as HTMLElement;
+const orderItemsList = document.getElementById(
+  'order-items-list',
+) as HTMLElement;
+const observationsTextarea = document.querySelector(
+  '.obs-textarea',
+) as HTMLTextAreaElement;
 const subtotalEl = document.getElementById('summary-subtotal') as HTMLElement;
 const totalEl = document.getElementById('summary-total') as HTMLElement;
-const tableNameDisplay = document.getElementById('table-name-display') as HTMLElement;
+const tableNameDisplay = document.getElementById(
+  'table-name-display',
+) as HTMLElement;
 
 document.addEventListener('DOMContentLoaded', () => {
   init();
@@ -98,8 +107,8 @@ async function init() {
   if (!currentOrderId) {
     try {
       const allOrdersResp = await ApiService.get<{ data: Order[] }>('/orders');
-      const openOrder = (allOrdersResp.data || []).find(o =>
-        o.table_id === currentTableId && o.status === 'OPEN'
+      const openOrder = (allOrdersResp.data || []).find(
+        (o) => o.table_id === currentTableId && o.status === 'OPEN',
       );
 
       if (openOrder) {
@@ -176,7 +185,9 @@ function initDarkMode() {
 async function loadTableDetails(tableId: string) {
   try {
     try {
-      const response = await ApiService.get<{ data: Table }>(`/tables/${tableId}`);
+      const response = await ApiService.get<{ data: Table }>(
+        `/tables/${tableId}`,
+      );
       if (response.data) currentTableNumber = response.data.number;
     } catch (e) {
       const allTabs = await ApiService.get<{ data: Table[] }>('/tables');
@@ -191,13 +202,17 @@ async function loadTableDetails(tableId: string) {
 
 function updateTableDisplay() {
   if (tableNameDisplay) {
-    tableNameDisplay.textContent = currentTableNumber ? `Mesa ${currentTableNumber}` : 'Mesa ?';
+    tableNameDisplay.textContent = currentTableNumber
+      ? `Mesa ${currentTableNumber}`
+      : 'Mesa ?';
   }
 }
 
 async function loadOrderDetails(orderId: string) {
   try {
-    const response = await ApiService.get<{ data: Order }>(`/orders/${orderId}`);
+    const response = await ApiService.get<{ data: Order }>(
+      `/orders/${orderId}`,
+    );
     if (response.data) {
       existingOrderItems = response.data.items || [];
       currentOrderStatus = response.data.status;
@@ -230,9 +245,13 @@ async function loadCategories() {
 
 async function loadProducts() {
   try {
-    const response = await ApiService.get<{ data: Product[] }>('/products/active');
+    const response = await ApiService.get<{ data: Product[] }>(
+      '/products/active',
+    );
     if (!response.data) {
-      const allProdResponse = await ApiService.get<{ data: Product[] }>('/products');
+      const allProdResponse = await ApiService.get<{ data: Product[] }>(
+        '/products',
+      );
       products = (allProdResponse.data || []).filter((p) => p.active);
     } else {
       products = response.data || [];
@@ -240,7 +259,9 @@ async function loadProducts() {
   } catch (error) {
     try {
       // Fallback
-      const allProdResponse = await ApiService.get<{ data: Product[] }>('/products');
+      const allProdResponse = await ApiService.get<{ data: Product[] }>(
+        '/products',
+      );
       products = (allProdResponse.data || []).filter((p) => p.active);
     } catch (e) {
       showError('Erro ao carregar produtos');
@@ -256,12 +277,15 @@ function renderProductsByCategory() {
   renderPendingItemsInMainArea();
 
   if (categories.length === 0 || products.length === 0) {
-    productsContainer.innerHTML = '<div class="empty-message">Nenhum produto disponível.</div>';
+    productsContainer.innerHTML =
+      '<div class="empty-message">Nenhum produto disponível.</div>';
     return;
   }
 
   categories.forEach((category) => {
-    const categoryProducts = products.filter((p) => p.category_id === category.id);
+    const categoryProducts = products.filter(
+      (p) => p.category_id === category.id,
+    );
     if (categoryProducts.length === 0) return;
 
     const section = document.createElement('section');
@@ -286,7 +310,10 @@ function createProductCard(product: Product): HTMLElement {
   card.className = 'product-card';
   card.dataset.productId = product.id;
 
-  const imageUrl = product.image_url || 'https://placehold.co/300x200/png?text=Product';
+  const imageUrl =
+    product.image_path ||
+    product.image_url ||
+    'https://placehold.co/300x200/png?text=Product';
 
   card.innerHTML = `
         <div class="card-image" style="background-image: url('${imageUrl}');"></div>
@@ -316,7 +343,7 @@ function createProductCard(product: Product): HTMLElement {
 
       // Visual feedback
       addBtn.style.transform = 'scale(0.95)';
-      setTimeout(() => addBtn.style.transform = '', 150);
+      setTimeout(() => (addBtn.style.transform = ''), 150);
     });
   }
 
@@ -325,7 +352,7 @@ function createProductCard(product: Product): HTMLElement {
 
 function addToCart(product: Product) {
   if (currentOrderStatus === 'CLOSED') {
-    showError("Pedido fechado. Não é possível adicionar itens.");
+    showError('Pedido fechado. Não é possível adicionar itens.');
     return;
   }
   const existingItem = cart.find((item) => item.product_id === product.id);
@@ -335,7 +362,10 @@ function addToCart(product: Product) {
     cart.push({
       product_id: product.id,
       name: product.name,
-      price: typeof product.price === 'string' ? parseFloat(product.price) : product.price,
+      price:
+        typeof product.price === 'string'
+          ? parseFloat(product.price)
+          : product.price,
       quantity: 1,
     });
   }
@@ -360,8 +390,14 @@ function renderOrderSummary() {
   orderItemsList.innerHTML = '';
 
   // Filter existing items
-  const pendingItems = existingOrderItems.filter(i => !i.delivered_at); // Removed sort by created_at
-  const deliveredItems = existingOrderItems.filter(i => i.delivered_at).sort((a, b) => new Date(b.delivered_at || 0).getTime() - new Date(a.delivered_at || 0).getTime());
+  const pendingItems = existingOrderItems.filter((i) => !i.delivered_at); // Removed sort by created_at
+  const deliveredItems = existingOrderItems
+    .filter((i) => i.delivered_at)
+    .sort(
+      (a, b) =>
+        new Date(b.delivered_at || 0).getTime() -
+        new Date(a.delivered_at || 0).getTime(),
+    );
 
   // 1. Section: A Entregar (Pending) moved to main area
   // See renderPendingItemsInMainArea function below
@@ -375,8 +411,8 @@ function renderOrderSummary() {
     cart.forEach((item, index) => {
       const el = document.createElement('div');
       el.className = 'cart-item-row';
-      el.style.borderLeft = "3px solid #3b82f6";
-      el.style.paddingLeft = "8px";
+      el.style.borderLeft = '3px solid #3b82f6';
+      el.style.paddingLeft = '8px';
       el.innerHTML = `
                 <div class="item-details">
                     <span class="item-title">${item.name}</span>
@@ -388,13 +424,20 @@ function renderOrderSummary() {
                      <button class="qty-btn btn-plus" data-index="${index}">+</button>
                 </div>
             `;
-      el.querySelector('.btn-minus')?.addEventListener('click', (e) => { e.stopPropagation(); updateCartQuantity(index, -1); });
-      el.querySelector('.btn-plus')?.addEventListener('click', (e) => { e.stopPropagation(); updateCartQuantity(index, 1); });
+      el.querySelector('.btn-minus')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        updateCartQuantity(index, -1);
+      });
+      el.querySelector('.btn-plus')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        updateCartQuantity(index, 1);
+      });
       orderItemsList.appendChild(el);
     });
   } else {
     const emptyEl = document.createElement('div');
-    emptyEl.innerHTML = '<div style="font-style:italic; color:#9ca3af; padding: 0.5rem; font-size: 0.9rem;">Selecione produtos...</div>';
+    emptyEl.innerHTML =
+      '<div style="font-style:italic; color:#9ca3af; padding: 0.5rem; font-size: 0.9rem;">Selecione produtos...</div>';
     orderItemsList.appendChild(emptyEl);
   }
 
@@ -404,10 +447,10 @@ function renderOrderSummary() {
     dHeader.innerHTML = `<h4 style="margin: 1.5rem 0 0.5rem 0; font-size: 0.9rem; color: #10b981; display:flex; align-items:center; gap:5px;"><span class="material-symbols-outlined" style="font-size:16px">done_all</span> Entregues</h4>`;
     orderItemsList.appendChild(dHeader);
 
-    deliveredItems.forEach(item => {
+    deliveredItems.forEach((item) => {
       const el = document.createElement('div');
       el.className = 'cart-item-row';
-      el.style.opacity = "0.8";
+      el.style.opacity = '0.8';
       el.innerHTML = `
             <div class="item-details">
                 <span class="item-title" style="color:#374151;">${item.product_name || 'Produto'}</span>
@@ -423,13 +466,12 @@ function renderOrderSummary() {
 }
 
 function updateTotals() {
-
-
   const deliveredTotal = existingOrderItems
-    .filter(i => i.delivered_at)
-    .reduce((acc, item) => acc + (item.total_item || item.unit_price * item.quantity), 0);
-
-
+    .filter((i) => i.delivered_at)
+    .reduce(
+      (acc, item) => acc + (item.total_item || item.unit_price * item.quantity),
+      0,
+    );
 
   const grandTotal = deliveredTotal; // + cartTotal? No, keep strictly to delivered.
 
@@ -465,7 +507,9 @@ async function removeOrderItem(orderId: string, itemId: string, quantity?: numbe
 
 async function deliverItem(orderId: string, itemId: string, quantity?: number) {
   try {
-    await ApiService.put(`/orders/${orderId}/items/${itemId}/deliver`, { quantity });
+    await ApiService.put(`/orders/${orderId}/items/${itemId}/deliver`, {
+      quantity,
+    });
     showSuccess('Item entregue!');
     await loadOrderDetails(orderId);
     renderOrderSummary();
@@ -482,7 +526,9 @@ async function saveItems() {
     return;
   }
 
-  const sendBtn = document.querySelector('.btn-send') as HTMLButtonElement | null;
+  const sendBtn = document.querySelector(
+    '.btn-send',
+  ) as HTMLButtonElement | null;
   if (sendBtn) {
     sendBtn.disabled = true;
     sendBtn.textContent = 'Processando...';
@@ -514,14 +560,16 @@ async function saveItems() {
     if (observationsTextarea) {
       const obs = observationsTextarea.value.trim();
       const existingObs = existingObservation || '';
-      // Simple logic: if obs changed, update. 
+      // Simple logic: if obs changed, update.
       // Note: If reusing same text field, this logic assumes the user edited it.
       if (obs !== existingObs) {
         await ApiService.put(`/orders/${orderId}`, { observations: obs });
       }
     }
 
-    showSuccess(currentOrderId ? 'Pedido atualizado!' : 'Pedido criado com sucesso!');
+    showSuccess(
+      currentOrderId ? 'Pedido atualizado!' : 'Pedido criado com sucesso!',
+    );
     cart = [];
 
     // Stay on page logic
@@ -544,7 +592,6 @@ async function saveItems() {
       sendBtn.disabled = false;
       sendBtn.textContent = 'Salvar / Adicionar';
     }
-
   } catch (error: any) {
     // console.error('Erro ao salvar:', error);
     showError(error.message || 'Erro ao processar pedido.');
@@ -562,20 +609,23 @@ async function finalizeOrder() {
   }
 
   // Validation: Check for pending items (not delivered)
-  const pendingItems = existingOrderItems.filter(i => !i.delivered_at);
+  const pendingItems = existingOrderItems.filter((i) => !i.delivered_at);
   if (pendingItems.length > 0) {
     showError('Não é possível finalizar: Existem itens pendentes de entrega.');
     return;
   }
 
   if (cart.length > 0) {
-    if (!confirm("Existem itens no carrinho não enviados. Deseja descartá-los e finalizar?")) return;
+    if (
+      !confirm(
+        'Existem itens no carrinho não enviados. Deseja descartá-los e finalizar?',
+      )
+    )
+      return;
   }
-
 
   window.location.href = `closeOrder.html?order_id=${currentOrderId}&table_id=${currentTableId}`;
 }
-
 
 // --- Utils & Events ---
 
@@ -601,9 +651,9 @@ function setupEventListeners() {
   if (logoutBtn) {
     logoutBtn.addEventListener('click', async () => {
       try {
-        await ApiService.post("/auth/logout", {});
+        await ApiService.post('/auth/logout', {});
       } catch (e) {
-        console.error("Logout error", e);
+        console.error('Logout error', e);
       } finally {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
@@ -613,32 +663,37 @@ function setupEventListeners() {
   }
 
   // User Profile Click
-  const userBtn = document.getElementById("userBtn");
-  const headerActions = document.querySelector(".header-actions") as HTMLElement;
+  const userBtn = document.getElementById('userBtn');
+  const headerActions = document.querySelector(
+    '.header-actions',
+  ) as HTMLElement;
 
   if (headerActions) {
-    headerActions.style.position = "relative";
+    headerActions.style.position = 'relative';
   }
 
   if (userBtn) {
-    userBtn.addEventListener("click", (e) => {
+    userBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       toggleProfilePopover(userBtn);
     });
   }
 
   // Close popovers on click outside
-  document.addEventListener("click", () => {
+  document.addEventListener('click', () => {
     closePopovers();
   });
 
-
   // Primary Action (Send/Save)
-  const sendBtn = document.querySelector('.btn-send') as HTMLButtonElement | null;
+  const sendBtn = document.querySelector(
+    '.btn-send',
+  ) as HTMLButtonElement | null;
   if (sendBtn) sendBtn.onclick = saveItems;
 
   // Finalize
-  const finalizeBtn = document.querySelector('.btn-finalize') as HTMLButtonElement | null;
+  const finalizeBtn = document.querySelector(
+    '.btn-finalize',
+  ) as HTMLButtonElement | null;
   if (finalizeBtn) finalizeBtn.onclick = finalizeOrder;
 
   // Toggle Summary
@@ -668,19 +723,23 @@ function setupEventListeners() {
 }
 
 function updateUIVisibility() {
-  const sendBtn = document.querySelector('.btn-send') as HTMLButtonElement | null;
-  const finalizeBtn = document.querySelector('.btn-finalize') as HTMLButtonElement | null;
+  const sendBtn = document.querySelector(
+    '.btn-send',
+  ) as HTMLButtonElement | null;
+  const finalizeBtn = document.querySelector(
+    '.btn-finalize',
+  ) as HTMLButtonElement | null;
 
   if (currentOrderId && currentOrderStatus !== 'CLOSED') {
     if (finalizeBtn) finalizeBtn.style.display = 'block';
-    if (sendBtn) sendBtn.textContent = "Salvar / Adicionar";
+    if (sendBtn) sendBtn.textContent = 'Salvar / Adicionar';
   }
 
   if (currentOrderStatus === 'CLOSED') {
     if (sendBtn) sendBtn.style.display = 'none';
     if (finalizeBtn) finalizeBtn.style.display = 'none';
     const products = document.querySelectorAll('.product-card');
-    products.forEach(p => (p as HTMLElement).style.pointerEvents = 'none');
+    products.forEach((p) => ((p as HTMLElement).style.pointerEvents = 'none'));
     if (observationsTextarea) observationsTextarea.disabled = true;
   }
 }
@@ -691,7 +750,7 @@ function getUserIdFromSession() {
     try {
       const user = JSON.parse(userStr);
       return user.id;
-    } catch (e) { }
+    } catch (e) {}
   }
   return '140e6988-51f7-418b-96c2-05452d3999e5';
 }
@@ -716,18 +775,19 @@ function showError(message: string) {
 
 function toggleProfilePopover(btn: HTMLElement) {
   closePopovers(); // Close others
-  let popover = document.getElementById("profilePopover");
+  let popover = document.getElementById('profilePopover');
 
   if (!popover) {
-    popover = document.createElement("div");
-    popover.id = "profilePopover";
-    popover.className = "popover";
-
+    popover = document.createElement('div');
+    popover.id = 'profilePopover';
+    popover.className = 'popover';
 
     let user: User | null = null;
     const userStr = localStorage.getItem('user');
     if (userStr) {
-      try { user = JSON.parse(userStr); } catch (e) { }
+      try {
+        user = JSON.parse(userStr);
+      } catch (e) {}
     }
 
     if (user) {
@@ -748,7 +808,7 @@ function toggleProfilePopover(btn: HTMLElement) {
     }
 
     // Append to header-actions
-    const headerActions = document.querySelector(".header-actions");
+    const headerActions = document.querySelector('.header-actions');
     if (headerActions) headerActions.appendChild(popover);
 
     // Prevent close on click inside
@@ -757,25 +817,30 @@ function toggleProfilePopover(btn: HTMLElement) {
     });
   }
 
-  popover.classList.toggle("active");
+  popover.classList.toggle('active');
 }
 
 function closePopovers() {
   document
-    .querySelectorAll(".popover")
-    .forEach((p) => p.classList.remove("active"));
+    .querySelectorAll('.popover')
+    .forEach((p) => p.classList.remove('active'));
 }
-
 
 function renderPendingItemsInMainArea() {
   // Filter existing items
-  const pendingItems = existingOrderItems.filter(i => !i.delivered_at).sort((a, b) => new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime());
+  const pendingItems = existingOrderItems
+    .filter((i) => !i.delivered_at)
+    .sort(
+      (a, b) =>
+        new Date(a.created_at || 0).getTime() -
+        new Date(b.created_at || 0).getTime(),
+    );
 
   if (pendingItems.length === 0) return;
 
   const section = document.createElement('section');
   section.className = 'category-section';
-  section.style.marginBottom = "2rem";
+  section.style.marginBottom = '2rem';
   section.innerHTML = `
         <h2 class="category-title delivery-section-header">
             <span class="material-symbols-outlined">schedule</span> 
@@ -786,7 +851,7 @@ function renderPendingItemsInMainArea() {
 
   const grid = section.querySelector('.products-grid') as HTMLElement;
 
-  pendingItems.forEach(item => {
+  pendingItems.forEach((item) => {
     const card = document.createElement('div');
     card.className = 'product-card product-card-pending';
     card.innerHTML = `
@@ -946,7 +1011,11 @@ function showCancelQuantityModal(item: OrderItem, onConfirm: (qty: number) => vo
 }
 
 // Helper Modal for Confirmation
-function showConfirmationModal(title: string, message: string, onConfirm: () => void) {
+function showConfirmationModal(
+  title: string,
+  message: string,
+  onConfirm: () => void,
+) {
   const modal = document.createElement('div');
   modal.className = 'quantity-modal-overlay active'; // Confirm reuse of same overlay style
   modal.innerHTML = `
@@ -981,4 +1050,3 @@ interface User {
   username: string;
   role: string;
 }
-

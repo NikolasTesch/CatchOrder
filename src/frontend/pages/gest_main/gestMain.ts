@@ -1126,6 +1126,12 @@ async function deleteTable(tableId: string) {
 // ========================================
 // ORDERS MANAGEMENT
 // ========================================
+function getOrderUserLabel(userId?: string): string {
+  if (!userId) return "-";
+  const u = users.find((x) => x.id === userId);
+  return u ? u.name : "-";
+}
+
 async function loadOrders() {
   try {
     const response = await apiCall<ApiResponse<Order[]>>("/orders");

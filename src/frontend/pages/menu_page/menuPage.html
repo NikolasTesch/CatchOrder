@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CatchOrder - Cardápio</title>
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="menu-header">
+      <div class="header-top">
+        <div class="brand">
+          <img src="../img/logoName.svg" alt="CatchOrder Logo" class="logo">
+        </div>
+        <div class="table-info" id="tableInfo">
+          <span class="table-label">Mesa</span>
+          <span class="table-number" id="tableNumber">--</span>
+        </div>
+      </div>
+
+      <div class="search-bar-container">
+        <div class="search-input-wrapper">
+          <i class="fa-solid fa-search"></i>
+          <input type="text" id="searchInput" placeholder="Buscar produtos...">
+        </div>
+        <button class="icon-btn-small" id="darkModeToggle" aria-label="Alternar modo escuro">
+          <span class="far fa-lightbulb"></span>
+        </button>
+      </div>
+
+      <!-- Category Filter -->
+      <div class="category-scroll-container">
+        <div class="category-list" id="categoryList">
+          <!-- Categories will be injected here -->
+          <button class="category-item active" data-id="all">
+            <i class="fa-solid fa-layer-group"></i>
+            <span>Todos</span>
+          </button>
+          <!-- Example of dynamic category:
+                    <button class="category-item" data-id="1">
+                        <i class="fa-solid fa-hamburger"></i>
+                        <span>Lanches</span>
+                    </button> 
+                    -->
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content (Products) -->
+    <main class="menu-content">
+      <div class="products-grid" id="productsGrid">
+        <!-- Products will be injected here -->
+        <div class="loading-spinner">
+          <i class="fa-solid fa-circle-notch fa-spin"></i>
+          <span>Carregando cardápio...</span>
+        </div>
+      </div>
+    </main>
+
+    <!-- Floating Action Bar -->
+    <div class="floating-action-bar">
+      <button id="floatingCartBtn" class="btn-view-cart">
+        <span class="cart-count" id="cartCount">0</span>
+        <span>Ver Pedido</span>
+        <span class="cart-total" id="cartTotal">R$ 0,00</span>
+      </button>
+    </div>
+
+    <!-- Cart Modal -->
+    <div class="cart-modal" id="cartModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Seu Pedido</h2>
+          <button id="closeCartBtn">
+            <i class="fa-solid fa-times"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div id="cartItemsList">
+            <!-- Items injected by TS -->
+            <div class="empty-cart-message">
+              <i class="fa-solid fa-basket-shopping"></i>
+              <p>Seu carrinho está vazio</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <div class="total-row">
+            <span>Total:</span>
+            <span id="modalTotal">R$ 0,00</span>
+          </div>
+          <button id="confirmOrderBtn" class="btn-confirm" disabled>
+            <i class="fa-solid fa-check"></i>
+            Confirmar Pedido
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Sent Orders Footer (New) -->
+  <!-- Sent Orders Footer (New) -->
+  <div class="sent-orders-footer" id="sentOrdersFooter">
+    <div class="sent-orders-header" id="sentOrdersHeader">
+      <div class="sent-orders-info">
+        <div class="sent-orders-title">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          <span>Meus Pedidos</span>
+        </div>
+        <span class="sent-count" id="sentOrdersCount">0 itens</span>
+      </div>
+
+      <div class="sent-orders-actions">
+        <button id="btnCloseOrder" class="btn-close-order">
+          <i class="fa-solid fa-file-invoice-dollar"></i>
+          <span>Fechar Conta</span>
+        </button>
+        <div class="toggle-icon">
+          <i class="fa-solid fa-chevron-up" id="sentOrdersIcon"></i>
+        </div>
+      </div>
+    </div>
+    <div class="sent-orders-body" id="sentOrdersBody">
+      <!-- Sent items groups will be injected here -->
+      <div class="empty-sent-state">
+        <p>Nenhum pedido enviado ainda.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Sidebar / Modal -->
+  <div class="cart-modal" id="paymentModal">
+    <div class="modal-content payment-content">
+      <div class="modal-header">
+        <h2>Conta da Mesa</h2>
+        <button id="closePaymentBtn">
+          <i class="fa-solid fa-times"></i>
+        </button>
+      </div>
+
+      <div class="modal-body payment-body">
+        <div class="bill-summary" id="billSummary">
+          <!-- Bill items injected here -->
+          <div class="loading-spinner"><i class="fa-solid fa-circle-notch fa-spin"></i></div>
+        </div>
+
+        <div class="payment-totals">
+          <div class="bill-row">
+            <span>Subtotal</span>
+            <span id="billSubtotal">R$ 0,00</span>
+          </div>
+          <div class="bill-row">
+            <span>Taxa de Serviço (10%)</span>
+            <span id="billServiceFee">R$ 0,00</span>
+          </div>
+          <div class="bill-row total">
+            <span>Total</span>
+            <span id="billTotal">R$ 0,00</span>
+          </div>
+        </div>
+
+        <!-- Pix QR Code Container (Hidden by default) -->
+        <div id="pixQrContainer" class="pix-qr-container" style="display: none; text-align: center; padding: 2rem;">
+          <h3 style="margin-bottom: 1rem; color: var(--color-primary-dark);">Escaneie para pagar</h3>
+          <!-- Assuming standard path, matching logo relative path -->
+          <img src="../img/qrcode-pix.png" alt="QR Code Pix"
+            style="width: 200px; max-width: 100%; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+          <p style="margin-top: 1rem; color: var(--text-secondary); font-size: 0.9rem;">Aguardando confirmação...</p>
+        </div>
+      </div>
+
+      <div class="modal-footer payment-footer">
+        <button id="btnPayPix" class="btn-payment btn-pix">
+          <i class="fa-brands fa-pix"></i>
+          Pagar com Pix
+        </button>
+        <button id="btnConfirmPix" class="btn-payment btn-confirm-pix" style="display: none;">
+          <i class="fa-solid fa-check-double"></i>
+          Confirmar Pagamento
+        </button>
+        <button id="btnCallWaiter" class="btn-payment btn-waiter">
+          <i class="fa-solid fa-hand-holding-dollar"></i>
+          Chamar Garçom
+        </button>
+      </div>
+    </div>
+  </div>
+  </div>
+</body>
+
+</html>

@@ -84,4 +84,21 @@ export class UserModel {
     const result = await db.run('DELETE FROM users WHERE id = ?', [id]);
     return (result.changes ?? 0) > 0;
   }
+
+  static async findLeastBusyWaiter(): Promise<User | undefined> {
+    const db = await getDb();
+    // Find waiter with least amount of OCCUPIED tables
+    // We join users with tables on waiter_id where table is occupied
+    // We count the tables for each waiter
+    // We order by count ascending to get the one with least tables
+    return db.get<User>(`
+      SELECT u.*, COUNT(t.id) as table_count
+      FROM users u
+      LEFT JOIN restaurant_tables t ON u.id = t.waiter_id AND t.status = 'OCCUPIED'
+      WHERE u.role = 'waiter'
+      GROUP BY u.id
+      ORDER BY table_count ASC, u.name ASC
+      LIMIT 1
+    `);
+  }
 }

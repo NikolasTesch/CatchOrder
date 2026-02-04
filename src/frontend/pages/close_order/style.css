@@ -1,23 +1,44 @@
-﻿/* ========================================
-   CLOSE ORDER PAGE - SPECIFIC STYLES
-   Using Global CSS Design System
-   ======================================== */
+﻿@import url('../../styles/global.css');
 
+/* Define Light Mode Glass Variables locally if missing in global :root */
+:root {
+  --background-glass: rgba(255, 255, 255, 0.7);
+  --glass-bg-light: rgba(255, 255, 255, 0.7);
+  --border-glass: rgba(21, 74, 87, 0.1);
+  --primary: var(--color-primary); /* Fix for btn-primary in light mode */
+}
+
+/* Ensure Dark Mode variables override correctly */
+body.dark-mode {
+  --background-glass: rgba(255, 255, 255, 0.03);
+  --border-glass: rgba(255, 255, 255, 0.06);
+}
+
+/* Layout Geral */
+/* Layout Geral */
 /* Layout Geral */
 .page-wrapper {
   padding: var(--space-md);
   padding-top: clamp(4rem, 12vw, 5rem);
   width: 100%;
   max-width: 600px;
-  /* Limit width for card look */
   margin: 0 auto;
-  /* background-color: var(--bg-secondary); Removed to let body bg show or use gradient */
-  background: linear-gradient(180deg, #fcfcfc 0%, #e0e0e0 100%);
-  /* Subtle gradient background */
+  background: transparent;
   min-height: 100vh;
   padding-bottom: clamp(5rem, 15vw, 6rem);
   display: flex;
   flex-direction: column;
+}
+
+/* Remove gradient in Dark Mode so ambient blobs show through */
+body.dark-mode .page-wrapper {
+  background: transparent;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  /* Add subtle gradient for light mode to avoid absolute white */
+  background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
 }
 
 .center-content {
@@ -35,6 +56,7 @@
   background-color: var(--bg-white);
   display: flex;
   align-items: center;
+  justify-content: center; /* Center content horizontally */
   box-sizing: border-box;
   padding: 0 clamp(0.75rem, 3vw, 1rem);
   z-index: var(--z-fixed);
@@ -76,7 +98,6 @@
 }
 
 .header-title {
-  font-family: var(--font-primary);
   font-weight: 600;
 }
 
@@ -89,27 +110,126 @@
    BILL CARD COMPONENT
    ======================================== */
 .bill-card {
-  background-color: transparent;
+  background: var(--background-glass);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid var(--border-glass);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   width: 100%;
-  /* box-shadow: var(--shadow-lg); Drop shadow handled by parts or container if needed */
   border-radius: 20px;
   overflow: hidden;
   margin-bottom: var(--space-xl);
-  font-family: 'Noto Sans JP', sans-serif;
+  font-family: 'Inter', sans-serif;
+  color: var(--text-primary);
 }
 
-/* Card Header */
-.bill-header {
-  background-color: #dbe4e6;
-  /* Light Grey/Blueish from image */
-  padding: 20px;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
+/* ========================================
+   POPOVER STYLES
+   ======================================== */
+.popover {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 10px;
+  width: 280px;
+  background-color: var(--bg-white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 0;
+  z-index: var(--z-popover);
+  display: none;
+  overflow: hidden;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.popover.active {
+  display: block;
+}
+
+.popover-header {
+  padding: var(--space-md);
+  background-color: var(--bg-primary);
+  border-bottom: 1px solid var(--border-light);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.popover-body {
+  padding: var(--space-md);
+}
+
+.user-info-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.user-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+
+.user-username {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.user-role-badge {
+  margin-top: 5px;
+}
+
+/* Badge Styles replicated for context */
+.role-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.role-badge.admin {
+  background-color: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+}
+
+.role-badge.manager {
+  background-color: rgba(255, 193, 7, 0.1);
+  color: #ffc107;
+}
+
+.role-badge.waiter,
+.role-badge.garcom {
+  background-color: rgba(40, 167, 69, 0.1);
+  color: #28a745;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Dark mode overrides for popover */
+body.dark-mode .popover {
+  background-color: var(--bg-card);
+  border-color: var(--border-glass);
+}
+
+body.dark-mode .popover-header {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: var(--border-glass);
 }
 
 .bill-title {
-  color: #154a57;
-  /* Dark Teal */
+  color: var(--text-primary);
   font-size: 1.25rem;
   font-weight: 700;
   margin: 0;
@@ -117,7 +237,7 @@
 
 /* Card Body */
 .bill-body {
-  background-color: #ffffff;
+  background-color: transparent;
   padding: 20px;
   padding-bottom: 10px;
 }
@@ -130,31 +250,31 @@
 }
 
 .bill-item-name {
-  color: #000000;
+  color: var(--text-primary);
   font-size: 1rem;
-  font-weight: 400;
+  font-weight: 500;
 }
 
 .bill-item-price {
-  color: #000000;
+  color: var(--text-primary);
   font-size: 1rem;
-  font-weight: 400;
+  font-weight: 600;
 }
 
 .bill-divider {
   height: 1px;
-  background-color: #e0e0e0;
+  background-color: var(--border-light);
   margin-bottom: 12px;
   width: 100%;
 }
 
 /* Card Footer */
 .bill-footer {
-  background-color: #e9ecef;
-  /* Slightly darker grey than header, matching image footer */
+  background: rgba(0, 0, 0, 0.03);
   padding: 20px;
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
+  border-top: 1px solid var(--border-glass);
 }
 
 .bill-total-row {
@@ -166,12 +286,12 @@
 
 .total-label-sm {
   font-size: 1rem;
-  color: #000000;
+  color: var(--text-secondary);
 }
 
 .total-value-sm {
   font-size: 1rem;
-  color: #000000;
+  color: var(--text-primary);
   font-weight: 500;
 }
 
@@ -182,71 +302,79 @@
 
 .total-label-lg {
   font-size: 1.5rem;
-  /* Larger "Total:" */
-  color: #154a57;
+  color: var(--color-primary);
   font-weight: 800;
 }
 
 .total-value-lg {
   font-size: 1.5rem;
-  color: #154a57;
+  color: var(--color-primary);
   font-weight: 800;
 }
 
-/* Checkbox specific styling to match image */
+/* Checkbox specific styling */
 .checkbox-label {
   display: flex;
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  color: #154a57;
-  /* Teal text for Service Fee label based on image? Or black? Image looks dark teal/black */
+  color: var(--text-primary);
   font-weight: 500;
+  user-select: none;
 }
 
 .checkbox-label input {
-  accent-color: #154a57;
-  width: 18px;
-  height: 18px;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--border-medium);
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  background-color: var(--bg-card);
+}
+
+/* Checked State */
+.checkbox-label input:checked {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.checkbox-label input:checked::after {
+  content: 'check';
+  font-family: 'Material Symbols Outlined';
+  font-size: 18px;
+  color: white;
+  font-weight: 700;
+}
+
+/* Unchecked State - Red X */
+.checkbox-label input:not(:checked) {
+  border-color: var(--color-danger);
+  background-color: rgba(239, 68, 68, 0.1); /* Subtle red bg */
+}
+
+.checkbox-label input:not(:checked)::after {
+  content: 'close';
+  font-family: 'Material Symbols Outlined';
+  font-size: 18px;
+  color: var(--color-danger);
+  font-weight: 700;
 }
 
 /* ========================================
    ACTIONS
    ======================================== */
+/* Actions handled by global classes */
 .bill-actions {
   display: flex;
   gap: 15px;
   justify-content: space-between;
   margin-top: 10px;
-}
-
-.btn {
-  flex: 1;
-  padding: 15px;
-  border-radius: 25px;
-  /* Pill shape */
-  border: none;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  text-align: center;
-  transition: transform 0.1s;
-}
-
-.btn:active {
-  transform: scale(0.98);
-}
-
-.btn-dark-grey {
-  background-color: #3b3b3b;
-  /* Dark Grey for Back button */
-  color: #ffffff;
-}
-
-.btn-teal {
-  background-color: #004d55;
-  /* Dark Teal for Close Bill */
-  color: #ffffff;
 }
 
 /* Helper for observations */
@@ -275,73 +403,24 @@
 }
 
 .table-badge {
-  background-color: #154a57;
-  color: #ffffff;
+  background: var(--color-primary);
+  color: var(--text-white);
   padding: 8px 16px;
   border-radius: 8px;
   /* Simple rounded box */
-  font-family: var(--font-primary);
+  font-family: 'Inter', sans-serif;
   font-size: 1.1rem;
   font-weight: 700;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   text-transform: capitalize;
   text-align: center;
-  border: 1px solid #3d8aa5;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 /* Update Bill Card top margin/padding to account for badge overlap if needed */
 .bill-card {
   padding-top: 25px;
   /* Add padding so content doesn't hit the overlap */
-  background-color: transparent;
 }
 
-/* ========================================
-   DARK MODE OVERRIDES
-   ======================================== */
-body.dark-mode .page-wrapper {
-  background: var(--bg-primary);
-}
-
-body.dark-mode .bill-header {
-  background-color: var(--bg-secondary);
-  border-bottom: 1px solid var(--border-dark);
-}
-
-body.dark-mode .bill-title {
-  color: var(--text-primary);
-}
-
-body.dark-mode .bill-body {
-  background-color: var(--bg-card);
-}
-
-body.dark-mode .bill-item-name,
-body.dark-mode .bill-item-price,
-body.dark-mode .total-label-sm,
-body.dark-mode .total-value-sm {
-  color: var(--text-primary);
-}
-
-body.dark-mode .bill-divider {
-  background-color: var(--border-dark);
-}
-
-body.dark-mode .bill-footer {
-  background-color: var(--bg-secondary);
-  border-top: 1px solid var(--border-dark);
-}
-
-body.dark-mode .total-label-lg,
-body.dark-mode .total-value-lg {
-  color: var(--color-primary-light);
-}
-
-body.dark-mode .checkbox-label {
-  color: var(--text-primary);
-}
-
-body.dark-mode .btn-dark-grey {
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border-light);
-}
+/* Dark mode overrides handled by global variables */

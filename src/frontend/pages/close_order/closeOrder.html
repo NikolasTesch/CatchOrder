@@ -6,24 +6,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CatchOrder - Fechar Comanda</title>
   <link rel='icon' href='/img/icon.svg' type='image/svg+xml'>
- 
-  <!-- Noto Sans JP Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap"
-    rel="stylesheet">
 
-  <!-- Material Icons -->
-  <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <!-- Noto Sans JP Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 
 <body>
-  <!-- Header Fixo -->
-  <header class="main-header">
-    <button class="icon-btn" aria-label="Menu de navegação" id="menuBtn">
-      <span class="material-symbols-outlined">menu</span>
-      <span class="header-title">Comanda</span>
-    </button>
+  <div class="bg-ambient-container">
+    <div class="neon-blob blob-1"></div>
+    <div class="neon-blob blob-2"></div>
+    <div class="neon-blob blob-3"></div>
+  </div>
 
+  <!-- Header Fixo -->
+  <header class="main-header glass">
     <div class="header-center">
       <img src="../img/logoName.svg" alt="CatchOrder Logo" class="logo-image" id="logoImage">
     </div>
@@ -96,8 +93,8 @@
 
     <!-- Actions -->
     <div class="bill-actions">
-      <button class="btn btn-dark-grey" id="btn-back">Voltar</button>
-      <button class="btn btn-teal" id="btn-close-order">Fechar conta</button>
+      <button class="btn btn-outline" id="btn-back">Voltar</button>
+      <button class="btn btn-primary" id="btn-close-order">Fechar conta</button>
     </div>
 
   </main>
@@ -118,4 +115,3 @@
 </body>
 
 </html>
-

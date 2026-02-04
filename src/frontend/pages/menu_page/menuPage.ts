@@ -1,6 +1,15 @@
 import './style.css';
+import '../../utils/utils';
 import { ApiService } from '../../services/apiService';
 import { resolveImagePath } from '../../utils/assets';
+
+declare global {
+  interface Window {
+    ThemeManager: {
+      init: () => void;
+    };
+  }
+}
 
 interface Category {
   id: string;
@@ -138,13 +147,13 @@ class MenuController {
     ) as HTMLElement;
 
     // Dark Mode
-    this.darkModeToggle = document.getElementById('darkModeToggle');
+    // Dark Mode handled by ThemeManager
 
     this.init();
   }
 
   private async init() {
-    this.initDarkMode(); // Init Theme
+    if (window.ThemeManager) window.ThemeManager.init();
 
     if (!this.checkSession()) return;
 
@@ -178,39 +187,7 @@ class MenuController {
     }
   }
 
-  /* Dark Mode Methods */
-  private initDarkMode() {
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia(
-      '(prefers-color-scheme: dark)',
-    ).matches;
-
-    // Consistency check
-    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-      document.body.classList.add('dark-mode');
-      this.updateDarkModeIcon(true);
-    } else {
-      this.updateDarkModeIcon(false);
-    }
-  }
-
-  private toggleDarkMode() {
-    const isDark = document.body.classList.toggle('dark-mode');
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
-    this.updateDarkModeIcon(isDark);
-  }
-
-  private updateDarkModeIcon(isDark: boolean) {
-    if (!this.darkModeToggle) return;
-    const icon =
-      this.darkModeToggle.querySelector('span') ||
-      this.darkModeToggle.querySelector('i');
-    if (icon) {
-      // Use Lightbulb as requested
-      // Use far (Regular) and fas (Solid) aliases which are robust
-      icon.className = isDark ? 'fas fa-lightbulb' : 'far fa-lightbulb';
-    }
-  }
+  /* Dark Mode Methods handled by ThemeManager */
 
   private checkSession(): boolean {
     const tableId = sessionStorage.getItem(STORAGE_KEYS.TABLE);
@@ -239,12 +216,7 @@ class MenuController {
   }
 
   private setupEventListeners() {
-    // Dark Mode Toggle
-    if (this.darkModeToggle) {
-      this.darkModeToggle.addEventListener('click', () =>
-        this.toggleDarkMode(),
-      );
-    }
+    // Dark Mode Toggle handled by ThemeManager
 
     if (this.searchInput) {
       this.searchInput.addEventListener('input', (e) => {

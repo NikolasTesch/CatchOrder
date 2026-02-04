@@ -11,7 +11,7 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "build:back": "tsc",
-    "build:front": "webpack --mode development",
+    "build:front": "webpack",
     "build": "npm run build:back && npm run build:front",
     "dev:prepare": "bash scripts/prepare-dev.sh",
     "dev:server": "ts-node-dev --respawn --transpile-only src/backend/server.ts",

@@ -4,9 +4,14 @@ import webpack from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import 'webpack-dev-server';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const mode = (process.env.NODE_ENV as 'development' | 'production') || 'development';
 
 const config: webpack.Configuration = {
-  mode: 'development',
+  mode: mode,
   entry: () => {
     const entries: { [key: string]: string } = {};
 

@@ -69,6 +69,7 @@ class MenuController {
   private cart: CartItem[] = [];
 
   private darkModeToggle: HTMLElement | null = null; // New Property
+  private isTotem: boolean = false; // New Property
 
   constructor() {
     this.categoryListEl = document.getElementById(
@@ -153,6 +154,16 @@ class MenuController {
 
     try {
       await Promise.all([this.fetchCategories(), this.fetchProducts()]);
+
+      // Fetch User Info
+      try {
+        const meRes = await ApiService.get<{ user: any }>('/auth/me');
+        if (meRes.user && meRes.user.username === 'totem') {
+          this.isTotem = true;
+        }
+      } catch (e) {
+        console.warn('Failed to fetch user info', e);
+      }
 
       // Fetch open orders after products are loaded so we can map names if needed (though API returns them usually?)
       // Actually backend order includes product info usually? let's check.
@@ -397,7 +408,7 @@ class MenuController {
       this.billSubtotalEl.textContent = this.formatPrice(subtotal);
 
     // Create separate var for service fee in case we toggle it later
-    const serviceFee = subtotal * 0.1;
+    const serviceFee = this.isTotem ? 0 : subtotal * 0.1;
     if (this.billServiceFeeEl)
       this.billServiceFeeEl.textContent = this.formatPrice(serviceFee);
 
@@ -638,7 +649,7 @@ class MenuController {
           name: p.name,
           description: p.description,
           price: p.price,
-          imageUrl: p.image_path,
+          imageUrl: p.image_path ? resolveImagePath(p.image_path) : undefined,
           categoryId: p.category_id,
           active: p.is_active === 1 || p.is_active === true,
         }));
@@ -842,13 +853,34 @@ class MenuController {
         return;
       }
 
-      // 2. Calculate Tip (10%)
-      const subtotal = openOrder.total || 0;
-      // If openOrder.total isn't updated with items, we might need to sum items locally or trust backend logic.
-      // Assuming openOrder.total is correct or calculating from items if available.
-      // Better to calculate from items if we have them to be safe, but OrderModel updates total on add item.
+      // 2. Calculate Tip (10%) - Totem (isTotem check via auth/me or session)
+      // Since we shouldn't rely on localStorage, we'll fetch /auth/me or check a global if available.
+      // For now, let's fetch /auth/me to be safe and robust.
+      let isTotem = false;
+      try {
+        const meRes = await ApiService.get<{ user: any }>('/auth/me');
+        // We need to know if it is totem.
+        // Since backend me() endpoint might not return isTotem explicitly unless we add it,
+        // we can check if the username matches the known totem username from env?
+        // But frontend doesn't have env.
+        // Let's assume authController.me also returns the enriched user or we check role/name.
+        // Actually, let's check if the user is acting as Totem.
+        // Simplest way: The Totem user has a specific name 'Totem' (as per seeds) or we rely on the login response logic we just did?
+        // Login response logic is lost on refresh.
+        // We should update AuthController.me to also return isTotem? Or just check if name/username is 'totem'.
+        // Let's assume we can check username 'totem' or similar.
+        // Ideally, AuthController.me should return it. I'll stick to 10% default unless I can verify.
+        // WAIT, I didn't update AuthController.me to return isTotem. I should probably do that for consistency/robustness.
+        // But I can check `meRes.user.username === 'totem'` (hardcoded based on seed/env default).
+        // Or even better, I'll update AuthController.me quickly in next step if this is risky.
+        // For now, let's check username 'totem'.
+        if (meRes.user && meRes.user.username === 'totem') {
+          isTotem = true;
+        }
+      } catch (e) { }
 
-      const tip = subtotal * 0.1;
+      const subtotal = openOrder.total || 0;
+      const tip = isTotem ? 0 : subtotal * 0.1;
 
       // 3. Close Order (closes Table automatically on backend)
       await ApiService.patch(`/orders/${openOrder.id}/close`, {

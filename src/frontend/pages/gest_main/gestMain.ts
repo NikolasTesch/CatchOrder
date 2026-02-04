@@ -377,19 +377,20 @@ function renderRecentOrders(ordersData: Order[]) {
   }
 
   container.innerHTML = recentOrders
-    .map(
-      (order) => `
-      <div class="recent-item">
-        <div class="recent-item-header">
-          <span class="recent-item-id">Pedido #${order.id.substring(0, 8)}</span>
-          <span class="recent-item-status">${translateStatus(order.status)}</span>
-        </div>
-        <div class="recent-item-info">
-          ${getTableNumber(order.table_id)} | Total: ${formatCurrency(order.total || 0)}
-        </div>
-      </div>
-    `,
-    )
+    .map((order) => {
+      const statusClass = order.status === "OPEN" ? "status-open" : "";
+      return `
+          <div class="recent-item">
+            <div class="recent-item-header">
+              <span class="recent-item-id">Pedido #${order.id.substring(0, 8)}</span>
+              <span class="recent-item-status ${statusClass}">${translateStatus(order.status)}</span>
+            </div>
+            <div class="recent-item-info">
+              ${getTableNumber(order.table_id)} | Total: <span class="dashboard-value">${formatCurrency(order.total || 0)}</span>
+            </div>
+          </div>
+        `;
+    })
     .join("");
 }
 
@@ -430,7 +431,7 @@ function renderTopProducts(ordersData: Order[]) {
         <div class="recent-item">
             <div class="recent-item-header">
                 <span class="recent-item-id">${name}</span>
-                <span class="recent-item-status">${qty} item(s)</span>
+                <span class="recent-item-status"><span class="dashboard-value">${qty}</span> item(s)</span>
             </div>
         </div>
     `,
@@ -457,7 +458,7 @@ function renderBiggestSales(ordersData: Order[]) {
         <div class="recent-item">
             <div class="recent-item-header">
                 <span class="recent-item-id">Pedido #${order.id.substring(0, 8)}</span>
-                <span class="recent-item-status">${formatCurrency(order.total || 0)}</span>
+                <span class="recent-item-status"><span class="dashboard-value">${formatCurrency(order.total || 0)}</span></span>
             </div>
              <div class="recent-item-info">
                 ${order.opened_at ? new Date(order.opened_at).toLocaleDateString("pt-BR") : "-"}

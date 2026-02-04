@@ -17,8 +17,14 @@
     <nav class="navbar">
         <div class="container nav-content">
             <img src="../img/logoName.svg" alt="CatchOrder Logo" class="logo">
-            <ul class="nav-links">
+            <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
                 <li><a href="#beneficios">Benefícios</a></li>
+                <li><a href="#tecnologia">Engenharia</a></li>
                 <li><a href="landingPage.html" class="btn-primary">Acesse o sistema</a></li>
             </ul>
         </div>
@@ -146,8 +152,56 @@
         </div>
     </section>
 
+    <section id="tecnologia" class="section tech-section">
+        <div class="container">
+            <div class="tech-grid">
+                <div class="tech-content">
+                    <span class="badge-tech">Arquitetura e Stack</span>
+                    <h2>Construído para Escalar</h2>
+                    <p>Priorizamos uma base sólida. No Back-end, usamos <strong>Node.js</strong> para alta
+                        performance em I/O e <strong>TypeScript</strong> para garantir a segurança da tipagem estática e uma
+                        arquitetura limpa.</p>
 
-        <section class="cta-section">
+                    <ul class="tech-list">
+                        <li>
+                            <strong>Monorepo Organizado:</strong> Frontend e Backend centralizados com Shared DTOs
+                            para consistência de dados.
+                        </li>
+                        <li>
+                            <strong>Arquitetura em Camadas:</strong> Separação clara entre Controllers, Services e
+                            Repositories. Fácil de manter e testar.
+                        </li>
+                        <li>
+                            <strong>Design System:</strong> Prototipado no Figma e padronizado para uma UI
+                            consistente.
+                        </li>
+                    </ul>
+                </div>
+                <div class="tech-visual">
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                        <pre><code>
+<span class="kwd">import</span> { <span class="cls">Controller</span> } <span class="kwd">from</span> '@catchorder/api';
+
+<span class="kwd">class</span> <span class="cls">OrderController</span> {
+  <span class="kwd">async</span> <span class="func">create</span>(req: <span class="type">Request</span>) {
+    <span class="cmt">// Segurança de tipos garantida</span>
+    <span class="kwd">const</span> payload = <span class="func">validate</span>(req.body);
+    <span class="kwd">return</span> <span class="this">this</span>.service.<span class="func">execute</span>(payload);
+  }
+}
+                        </code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
             <div class="container cta-content animate-on-scroll">
                 <h2>Pronto para modernizar seu restaurante?</h2>
                 <p>Junte-se aos estabelecimentos que já escolheram CatchOrder.</p>
@@ -165,6 +219,7 @@
                 <h4>Navegação</h4>
                 <ul>
                     <li><a href="#beneficios">Benefícios</a></li>
+                    <li><a href="#tecnologia">Engenharia</a></li>
                     <li><a href="landingPage.html">Acesse o sistema</a></li>
                 </ul>
             </div>

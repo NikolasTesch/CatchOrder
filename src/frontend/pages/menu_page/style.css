@@ -985,6 +985,52 @@ body {
   }
 }
 
+/* ===== MOBILE RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .app-container {
+    display: flex;
+    flex-direction: column;
+    padding: 0 1rem;
+    max-width: 100%;
+  }
+
+  .products-section {
+    padding: 1rem;
+  }
+
+  .products-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .product-card {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .category-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0 0.5rem;
+  }
+
+  .floating-action-bar {
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+  }
+
+  #floatingCartBtn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.875rem 1rem;
+  }
+}
+
 /* --- Sent Orders Footer Adjustments --- */
 .sent-orders-header {
   padding: 0.75rem 1.5rem;

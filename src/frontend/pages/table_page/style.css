@@ -259,3 +259,47 @@ body {
   transition: all 0.3s ease;
   margin-top: -30px;
 }
+
+/* ===== MOBILE RESPONSIVE ===== */
+@media (max-width: 768px) {
+  body {
+    padding: 0 1rem; /* Margens laterais para não colar nos limites */
+  }
+
+  .page-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 1rem;
+    max-width: 100%;
+  }
+
+  .tables-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .table-card {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .logo {
+    height: 180px;
+    margin-top: -20px;
+  }
+
+  .btn-primary {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .footer {
+    padding: 1rem 0.5rem;
+    text-align: center;
+  }
+}

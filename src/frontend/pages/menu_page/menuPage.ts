@@ -170,7 +170,7 @@ class MenuController {
   private checkSession(): boolean {
     const tableId = sessionStorage.getItem(STORAGE_KEYS.TABLE);
     if (!tableId) {
-      window.location.href = '/pages/tablePage.html';
+      window.location.href = 'tablePage.html';
       return false;
     }
     return true;

@@ -230,7 +230,7 @@ class TableSelector {
       sessionStorage.setItem(STORAGE_KEYS.SESSION_STATUS, 'true');
 
       // 3. Redirect
-      window.location.href = '/pages/menuPage.html';
+      window.location.href = 'menuPage.html';
 
     } catch (error) {
       console.error('Error occupying table:', error);

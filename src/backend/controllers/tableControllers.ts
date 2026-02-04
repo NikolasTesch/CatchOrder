@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { TableModel } from '../models/tableModel';
 import { TableStatus } from '../../shared/types/table';
 import { OrderModel } from '../models/order';
+import { UserModel } from '../models/userModel';
 
 class TablesController {
   /**
@@ -205,7 +206,29 @@ class TablesController {
       const id = req.params.id as string;
       const { status } = req.body;
 
-      const table = await TableModel.updateStatus(id, status);
+      let waiterIdToAssign = undefined;
+
+      // If opening the table, find a waiter to assign
+      if (status === TableStatus.OCCUPIED) {
+        console.log(`[DEBUG] Opening table ${id}, looking for waiter...`);
+        const waiter = await UserModel.findLeastBusyWaiter();
+        console.log(`[DEBUG] Found waiter:`, waiter ? waiter.name : 'None');
+
+        if (waiter) {
+          waiterIdToAssign = waiter.id;
+        } else {
+          // Fallback: Try to find ANY waiter
+          const allUsers = await UserModel.findAll();
+          const anyWaiter = allUsers.find(u => u.role === 'waiter');
+          console.log('[DEBUG] Fallback waiter:', anyWaiter ? anyWaiter.name : 'None');
+          if (anyWaiter) {
+            waiterIdToAssign = anyWaiter.id;
+          }
+        }
+      }
+
+      console.log(`[DEBUG] Updating table ${id} status to ${status} with waiter ${waiterIdToAssign}`);
+      const table = await TableModel.updateStatus(id, status, waiterIdToAssign);
 
       if (!table) {
         return res.status(404).json({

@@ -870,8 +870,32 @@ body.dark-mode .btn-cancel-modal {
 }
 
 .modal-qty-btn {
-  width: 36px;
-  height: 36px;
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  background: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  transition: all 0.2s;
+}
+
+.modal-qty-btn:hover {
+  background: var(--bg-secondary);
+  border-color: var(--border-medium);
+}
+
+body.dark-mode .modal-qty-btn {
+  background: #334155;
+  border-color: #475569;
+  color: white;
+}
+
+body.dark-mode .modal-qty-btn:hover {
+  background: #475569;
 }
 
 .modal-qty-display {

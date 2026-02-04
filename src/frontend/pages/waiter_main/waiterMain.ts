@@ -176,9 +176,21 @@ function setupEventListeners() {
 
   // Sidebar Toggle
   if (menuBtn && sidebar) {
+    const overlay = document.getElementById("sidebarOverlay");
+
+    // Toggle Menu
     menuBtn.addEventListener("click", () => {
       sidebar.classList.toggle("active");
+      if (overlay) overlay.classList.toggle("active");
     });
+
+    // Close on Overlay Click
+    if (overlay) {
+      overlay.addEventListener("click", () => {
+        sidebar.classList.remove("active");
+        overlay.classList.remove("active");
+      });
+    }
   }
 
   // Orders Search Input

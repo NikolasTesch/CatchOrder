@@ -205,7 +205,7 @@ const orders = [
     user_id: waiterId,
     status: 'OPEN',
     total: 5900,
-    opened_at: new Date('2026-01-30T10:00:00'),
+    opened_at: new Date('2026-02-04T13:00:00'),
     closed_at: null as Date | null,
   },
   {
@@ -214,7 +214,7 @@ const orders = [
     user_id: waiterId,
     status: 'OPEN',
     total: 8500,
-    opened_at: new Date('2026-01-30T10:30:00'),
+    opened_at: new Date('2026-02-04T13:10:00'),
     closed_at: null as Date | null,
   },
   {
@@ -223,7 +223,7 @@ const orders = [
     user_id: waiterId,
     status: 'OPEN',
     total: 3100,
-    opened_at: new Date('2026-01-30T11:00:00'),
+    opened_at: new Date('2026-02-04T13:20:00'),
     closed_at: null as Date | null,
   },
   {
@@ -232,7 +232,7 @@ const orders = [
     user_id: waiterId,
     status: 'OPEN',
     total: 3800,
-    opened_at: new Date('2026-01-30T11:30:00'),
+    opened_at: new Date('2026-02-04T13:30:00'),
     closed_at: null as Date | null,
   },
   {
@@ -241,7 +241,7 @@ const orders = [
     user_id: waiterId,
     status: 'OPEN',
     total: 4700,
-    opened_at: new Date('2026-01-30T12:00:00'),
+    opened_at: new Date('2026-02-04T13:40:00'),
     closed_at: null as Date | null,
   },
   // Pedidos Fechados (Mesas 1-5 que agora estão Available)
@@ -252,8 +252,8 @@ const orders = [
     status: 'CLOSED',
     total: 8600,
     tip: 860,
-    opened_at: new Date('2026-01-29T14:00:00'),
-    closed_at: new Date('2026-01-29T15:30:00') as Date | null,
+    opened_at: new Date('2026-02-04T13:00:00'),
+    closed_at: new Date('2026-02-04T13:15:00') as Date | null,
   },
   {
     id: orderIds[6],
@@ -262,8 +262,8 @@ const orders = [
     status: 'CLOSED',
     total: 8100,
     tip: 810,
-    opened_at: new Date('2026-01-29T16:00:00'),
-    closed_at: new Date('2026-01-29T17:15:00') as Date | null,
+    opened_at: new Date('2026-02-04T13:10:00'),
+    closed_at: new Date('2026-02-04T13:25:00') as Date | null,
   },
   {
     id: orderIds[7],
@@ -272,8 +272,8 @@ const orders = [
     status: 'CLOSED',
     total: 9500,
     tip: 950,
-    opened_at: new Date('2026-01-29T18:00:00'),
-    closed_at: new Date('2026-01-29T19:00:00') as Date | null,
+    opened_at: new Date('2026-02-04T13:20:00'),
+    closed_at: new Date('2026-02-04T13:35:00') as Date | null,
   },
   {
     id: orderIds[8],
@@ -282,8 +282,8 @@ const orders = [
     status: 'CLOSED',
     total: 7300,
     tip: 730,
-    opened_at: new Date('2026-01-30T08:00:00'),
-    closed_at: new Date('2026-01-30T09:15:00') as Date | null,
+    opened_at: new Date('2026-02-04T13:30:00'),
+    closed_at: new Date('2026-02-04T13:45:00') as Date | null,
   },
   {
     id: orderIds[9],
@@ -292,8 +292,8 @@ const orders = [
     status: 'CLOSED',
     total: 4500,
     tip: 450,
-    opened_at: new Date('2026-01-30T09:30:00'),
-    closed_at: new Date('2026-01-30T10:45:00') as Date | null,
+    opened_at: new Date('2026-02-04T13:40:00'),
+    closed_at: new Date('2026-02-04T13:55:00') as Date | null,
   },
 ];
 
@@ -306,6 +306,7 @@ const orderItems = [
     product_id: productIds[3],
     quantity: 2,
     unit_price: 1200,
+    delivered_at: null as Date | null,
   },
   {
     id: uuidv4(),
@@ -313,6 +314,7 @@ const orderItems = [
     product_id: productIds[13],
     quantity: 1,
     unit_price: 3500,
+    delivered_at: null as Date | null,
   },
   // Pedido 1 (Aberto) -> 2x Suco + 1x Sushi
   {
@@ -321,6 +323,7 @@ const orderItems = [
     product_id: productIds[6],
     quantity: 2,
     unit_price: 1000,
+    delivered_at: null as Date | null,
   },
   {
     id: uuidv4(),
@@ -328,6 +331,7 @@ const orderItems = [
     product_id: productIds[15],
     quantity: 1,
     unit_price: 6500,
+    delivered_at: null as Date | null,
   },
   // Pedido 2 (Aberto) -> 1x Cafe + 1x Tacaca
   {
@@ -336,6 +340,7 @@ const orderItems = [
     product_id: productIds[1],
     quantity: 1,
     unit_price: 600,
+    delivered_at: null as Date | null,
   },
   {
     id: uuidv4(),
@@ -343,6 +348,7 @@ const orderItems = [
     product_id: productIds[16],
     quantity: 1,
     unit_price: 2500,
+    delivered_at: null as Date | null,
   },
   // Pedido 3 (Aberto) -> 2x Refri + 1x Gyoza
   {
@@ -351,6 +357,7 @@ const orderItems = [
     product_id: productIds[5],
     quantity: 2,
     unit_price: 800,
+    delivered_at: null as Date | null,
   },
   {
     id: uuidv4(),
@@ -358,6 +365,7 @@ const orderItems = [
     product_id: productIds[11],
     quantity: 1,
     unit_price: 2200,
+    delivered_at: null as Date | null,
   },
   // Pedido 4 (Aberto) -> 1x Agua + 1x Carbonara
   {
@@ -366,6 +374,7 @@ const orderItems = [
     product_id: productIds[0],
     quantity: 1,
     unit_price: 500,
+    delivered_at: null as Date | null,
   },
   {
     id: uuidv4(),
@@ -373,6 +382,7 @@ const orderItems = [
     product_id: productIds[8],
     quantity: 1,
     unit_price: 4200,
+    delivered_at: null as Date | null,
   },
 
   // Pedido 5 (Fechado) -> 2x Pizza + 2x Refri
@@ -382,6 +392,7 @@ const orderItems = [
     product_id: productIds[13],
     quantity: 2,
     unit_price: 3500,
+    delivered_at: new Date('2026-02-04T13:10:00'),
   },
   {
     id: uuidv4(),
@@ -389,6 +400,7 @@ const orderItems = [
     product_id: productIds[5],
     quantity: 2,
     unit_price: 800,
+    delivered_at: new Date('2026-02-04T13:10:00'),
   },
   // Pedido 6 (Fechado) -> 1x Carne Assada + 2x Milkshake
   {
@@ -397,6 +409,7 @@ const orderItems = [
     product_id: productIds[9],
     quantity: 1,
     unit_price: 4500,
+    delivered_at: new Date('2026-02-04T13:20:00'),
   },
   {
     id: uuidv4(),
@@ -404,6 +417,7 @@ const orderItems = [
     product_id: productIds[4],
     quantity: 2,
     unit_price: 1800,
+    delivered_at: new Date('2026-02-04T13:20:00'),
   },
   // Pedido 7 (Fechado) -> 1x Sushi + 2x Caipirinha
   {
@@ -412,6 +426,7 @@ const orderItems = [
     product_id: productIds[15],
     quantity: 1,
     unit_price: 6500,
+    delivered_at: new Date('2026-02-04T13:30:00'),
   },
   {
     id: uuidv4(),
@@ -419,6 +434,7 @@ const orderItems = [
     product_id: productIds[2],
     quantity: 2,
     unit_price: 1500,
+    delivered_at: new Date('2026-02-04T13:30:00'),
   },
   // Pedido 8 (Fechado) -> 1x Frango Tucupi + 1x Acai
   {
@@ -427,6 +443,7 @@ const orderItems = [
     product_id: productIds[10],
     quantity: 1,
     unit_price: 3800,
+    delivered_at: new Date('2026-02-04T13:40:00'),
   },
   {
     id: uuidv4(),
@@ -434,6 +451,7 @@ const orderItems = [
     product_id: productIds[7],
     quantity: 1,
     unit_price: 3500,
+    delivered_at: new Date('2026-02-04T13:40:00'),
   },
   // Pedido 9 (Fechado) -> 1x Manicoba + 1x Agua
   {
@@ -442,6 +460,7 @@ const orderItems = [
     product_id: productIds[12],
     quantity: 1,
     unit_price: 4000,
+    delivered_at: new Date('2026-02-04T13:50:00'),
   },
   {
     id: uuidv4(),
@@ -449,6 +468,7 @@ const orderItems = [
     product_id: productIds[0],
     quantity: 1,
     unit_price: 500,
+    delivered_at: new Date('2026-02-04T13:50:00'),
   },
 ];
 
@@ -462,7 +482,7 @@ export const runSeeds = async () => {
     process.env.WAITER_PASSWORD as string,
   );
   const totemPasswordHash = await hashPassword(
-    process.env.TOTEM_PASSWORD as string
+    process.env.TOTEM_PASSWORD as string,
   );
 
   const users = [
@@ -486,7 +506,7 @@ export const runSeeds = async () => {
       username: process.env.TOTEM_USERNAME || 'totem',
       password_hash: totemPasswordHash,
       role: userRole.WAITER, // Totem acts as a waiter
-    }
+    },
   ];
 
   try {
@@ -569,14 +589,15 @@ export const runSeeds = async () => {
     // Inserir itens do pedido
     for (const item of orderItems) {
       await db.run(
-        `INSERT INTO order_items (id, order_id, product_id, quantity, unit_price)
-         VALUES (?, ?, ?, ?, ?)`,
+        `INSERT INTO order_items (id, order_id, product_id, quantity, unit_price, delivered_at)
+         VALUES (?, ?, ?, ?, ?, ?)`,
         [
           item.id,
           item.order_id,
           item.product_id,
           item.quantity,
           item.unit_price,
+          item.delivered_at ? item.delivered_at.toISOString() : null,
         ],
       );
     }

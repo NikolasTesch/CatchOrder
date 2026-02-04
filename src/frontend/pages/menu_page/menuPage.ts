@@ -170,7 +170,7 @@ class MenuController {
   private checkSession(): boolean {
     const tableId = sessionStorage.getItem(STORAGE_KEYS.TABLE);
     if (!tableId) {
-      window.location.href = 'tablePage.html';
+      this.redirectToTablePage();
       return false;
     }
     return true;
@@ -780,11 +780,7 @@ class MenuController {
       sessionStorage.removeItem(STORAGE_KEYS.TABLE_NUMBER);
 
       setTimeout(() => {
-        if (window.location.pathname.includes('/pages/')) {
-          window.location.href = 'tablePage.html';
-        } else {
-          window.location.href = 'pages/tablePage.html';
-        }
+        this.redirectToTablePage();
       }, 2000);
 
     } catch (error) {
@@ -829,7 +825,7 @@ class MenuController {
 
       // Redirect
       setTimeout(() => {
-        window.location.href = 'tablePage.html';
+        this.redirectToTablePage();
       }, 2000);
 
     } catch (error) {
@@ -977,6 +973,15 @@ class MenuController {
   }
 
 
+
+  private isRedirecting = false;
+
+  private redirectToTablePage() {
+    if (this.isRedirecting) return;
+    this.isRedirecting = true;
+
+    window.location.assign('/server09/pages/tablePage.html');
+  }
 
   private showError(msg: string) {
     if (this.productsGridEl) {

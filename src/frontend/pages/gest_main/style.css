@@ -391,7 +391,7 @@ body.dark-mode #headerLogo {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  text-align: left;
+  text-align: center;
 }
 
 .data-table thead {
@@ -747,6 +747,8 @@ body.dark-mode #headerLogo {
 .product-actions {
   display: flex;
   gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
 }
 
 .btn-icon {
@@ -767,7 +769,7 @@ body.dark-mode #headerLogo {
 }
 
 .btn-icon.btn-danger:hover {
-  background: var(--red);
+  color: white;
 }
 
 /* --- Colors Utils --- */

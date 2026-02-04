@@ -1,8 +1,17 @@
 import './style.css';
+import '../../utils/utils';
 import { ApiService } from '../../services/apiService';
 import { resolveImagePath } from '../../utils/assets';
 import { centsToReais, formatCurrency } from '../../utils/currency';
 import { ModalService } from '../../utils/modalService';
+
+declare global {
+  interface Window {
+    ThemeManager: {
+      init: () => void;
+    };
+  }
+}
 
 // Interfaces
 interface Category {
@@ -85,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function init() {
-  initDarkMode();
+  if (window.ThemeManager) window.ThemeManager.init();
   setupEventListeners();
 
   // Standard Auth Check
@@ -160,6 +169,8 @@ async function init() {
 
 // --- Auth & Helpers ---
 
+// --- Auth & Helpers ---
+
 async function checkAuth(): Promise<boolean> {
   try {
     await ApiService.get('/auth/me');
@@ -171,15 +182,6 @@ async function checkAuth(): Promise<boolean> {
   }
 }
 
-function initDarkMode() {
-  // Basic Dark Mode Logic if needed, usually global.js handles this
-  const darkModeToggle = document.getElementById('darkModeToggle');
-  if (darkModeToggle) {
-    darkModeToggle.onclick = () => {
-      document.body.classList.toggle('dark-mode');
-    };
-  }
-}
 
 // --- Business Logic ---
 
@@ -756,7 +758,7 @@ function getUserIdFromSession() {
     try {
       const user = JSON.parse(userStr);
       return user.id;
-    } catch (e) {}
+    } catch (e) { }
   }
   return '140e6988-51f7-418b-96c2-05452d3999e5';
 }
@@ -793,7 +795,7 @@ function toggleProfilePopover(btn: HTMLElement) {
     if (userStr) {
       try {
         user = JSON.parse(userStr);
-      } catch (e) {}
+      } catch (e) { }
     }
 
     if (user) {

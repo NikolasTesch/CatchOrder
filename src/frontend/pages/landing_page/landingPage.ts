@@ -166,7 +166,9 @@ loginForm.addEventListener('submit', (e: SubmitEvent) => {
       localStorage.setItem('user', JSON.stringify(data.user));
 
       // Redirect based on role
-      if (data.user.role === 'waiter') {
+      if (data.user.isTotem) {
+        window.location.href = 'tablePage.html';
+      } else if (data.user.role === 'waiter') {
         window.location.href = 'waiterMain.html';
       } else {
         // Admin or Manager -> Gestão

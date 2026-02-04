@@ -990,7 +990,9 @@ body.dark-mode .category-card,
 body.dark-mode .gest-modal-content,
 body.dark-mode .toast,
 body.dark-mode .search-bar {
-  background-color: #1e293b;
+  background-color: rgba(30, 41, 59, 0.7); /* Glassmorphism #1E293B */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-color: rgba(255, 255, 255, 0.1);
 }
 

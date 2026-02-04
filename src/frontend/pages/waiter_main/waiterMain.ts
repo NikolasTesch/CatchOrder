@@ -1,6 +1,15 @@
 import '../../styles/global.css';
+import '../../utils/utils'; // Global utils (ThemeManager)
 import './style.css';
 import { ApiService } from '../../services/apiService';
+
+declare global {
+  interface Window {
+    ThemeManager: {
+      init: () => void;
+    };
+  }
+}
 
 // Interfaces
 interface OrderItem {
@@ -56,7 +65,11 @@ async function init() {
   const user = await loadCurrentUser();
   if (!user) return;
 
-  initDarkMode();
+  // Use Global ThemeManager if available
+  if (window.ThemeManager) {
+    window.ThemeManager.init();
+  }
+
   setupEventListeners();
   // updateDateDisplay(); // removed from header
   loadTables();
@@ -157,38 +170,9 @@ async function loadCurrentUser(): Promise<User | null> {
   }
 }
 
-// Dark Mode
-function initDarkMode() {
-  const savedTheme = localStorage.getItem("theme");
-  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-  if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
-    document.body.classList.add("dark-mode");
-    updateDarkModeIcon(true);
-  } else {
-    updateDarkModeIcon(false);
-  }
-}
-
-function toggleDarkMode() {
-  const isDark = document.body.classList.toggle("dark-mode");
-  localStorage.setItem("theme", isDark ? "dark" : "light");
-  updateDarkModeIcon(isDark);
-}
-
-function updateDarkModeIcon(isDark: boolean) {
-  const icon = darkModeToggle?.querySelector(".material-symbols-outlined");
-  if (icon) {
-    icon.textContent = isDark ? "dark_mode" : "light_mode";
-  }
-}
-
 // Event Listeners
 function setupEventListeners() {
-  // Dark mode
-  if (darkModeToggle) {
-    darkModeToggle.addEventListener("click", toggleDarkMode);
-  }
+  // Dark mode toggle handled by ThemeManager in utils.js via event delegation
 
   // Sidebar Toggle
   if (menuBtn && sidebar) {
@@ -297,8 +281,8 @@ function toggleProfilePopover(btn: HTMLElement) {
       const createdDate =
         "created_at" in currentUser && currentUser.created_at
           ? new Date(currentUser.created_at as string).toLocaleDateString(
-              "pt-BR",
-            )
+            "pt-BR",
+          )
           : "-";
 
       popover.innerHTML = `
@@ -592,16 +576,16 @@ function renderActiveOrders(orders: Order[], tables: Table[]) {
       const itemsHtml =
         order.items && order.items.length > 0
           ? order.items
-              .slice(0, 3)
-              .map(
-                (i) => `
+            .slice(0, 3)
+            .map(
+              (i) => `
               <div class="order-item-line">
                 <span class="item-qty">${i.quantity}x</span>
                 <span class="item-name">${i.name || i.product_name}</span>
               </div>
             `,
-              )
-              .join("")
+            )
+            .join("")
           : '<span class="item-name">Sem itens</span>';
 
       const moreItems =
@@ -653,7 +637,7 @@ function renderActiveOrders(orders: Order[], tables: Table[]) {
       </div>
     `;
     })
-    .join("");  container.innerHTML = ordersHtml;
+    .join(""); container.innerHTML = ordersHtml;
 
   // Add click listeners to Edit Buttons
   container.querySelectorAll(".btn-edit-order").forEach((btn) => {
@@ -667,7 +651,8 @@ function renderActiveOrders(orders: Order[], tables: Table[]) {
         window.location.href = `createOrder.html?table_id=${order.table_id}&order_id=${order.id}`;
       }
     });
-  });}
+  });
+}
 
 // ========================================
 // SECTION HANDLING (SPA)
@@ -713,6 +698,8 @@ function handleSectionChange(sectionId: string) {
 async function loadCommissions() {
   try {
     if (!currentUser) return;
+
+    if (allTables.length === 0) await loadTables();
 
     const response = await ApiService.get<{ data: Order[] }>("/orders");
     const orders = response.data || [];
@@ -802,11 +789,19 @@ function renderCommissionsView(orders: Order[]) {
             }
           }
 
+          // Find Table Number
+          const table = allTables.find((t) => t.id === order.table_id);
+          const tableNumber = table
+            ? table.number < 10
+              ? "0" + table.number
+              : table.number
+            : "?";
+
           return `
                     <tr style="border-bottom: 1px solid #f1f5f9;">
                         <td style="padding: 1rem; color: var(--color-primary);">#${order.id.slice(0, 8)}</td>
                         <td style="padding: 1rem; color: var(--color-primary);">${dateStr}</td>
-                        <td style="padding: 1rem; color: var(--color-primary);">${order.table_id}</td> 
+                        <td style="padding: 1rem; color: var(--color-primary);">${tableNumber}</td> 
                         <td style="padding: 1rem; color: #64748b;">${formatCurrency(total)}</td>
                         <td style="padding: 1rem; color: ${finalTip > 0 ? "#10b981" : "#94a3b8"}; font-weight: 600;">${finalTip > 0 ? formatCurrency(finalTip) : "---"}</td>
                     </tr>
@@ -924,10 +919,10 @@ function renderOrderGrid(
       const itemsDesc =
         order.items && order.items.length
           ? order.items
-              // Limit items? Dashboard limits to 3. Let's limit to 3 here too to match "mesmo formato".
-              .slice(0, 3)
-              .map((i: any) => `${i.quantity}x ${i.name || i.product_name}`)
-              .join(", ")
+            // Limit items? Dashboard limits to 3. Let's limit to 3 here too to match "mesmo formato".
+            .slice(0, 3)
+            .map((i: any) => `${i.quantity}x ${i.name || i.product_name}`)
+            .join(", ")
           : "Sem itens";
 
       const moreItemsText =

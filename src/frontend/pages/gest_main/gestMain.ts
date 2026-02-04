@@ -1,5 +1,6 @@
-export {};
+export { };
 import './style.css';
+import '../../utils/utils'; // Import for side-effects (ThemeManager, Toast, etc)
 import {
   centsToReais,
   formatCurrency,
@@ -75,7 +76,11 @@ declare global {
     submitCategoryForm: (event: Event, id: string | null) => Promise<void>;
     closeModal: () => void;
     // Commissiosn
+    // Commissiosn
     closeCommissionModal: () => void;
+    ThemeManager: {
+      init: () => void;
+    };
   }
 }
 
@@ -107,29 +112,12 @@ const darkModeToggle = document.getElementById('darkModeToggle');
 // ========================================
 // DARK MODE
 // ========================================
-function initDarkMode() {
-  const savedTheme = localStorage.getItem('theme');
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-  if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-    document.body.classList.add('dark-mode');
-    updateDarkModeIcon(true);
-  } else {
-    updateDarkModeIcon(false);
-  }
-}
-
-function toggleDarkMode() {
-  const isDark = document.body.classList.toggle('dark-mode');
-  localStorage.setItem('theme', isDark ? 'dark' : 'light');
-  updateDarkModeIcon(isDark);
-}
-
-function updateDarkModeIcon(isDark: boolean) {
-  const icon = darkModeToggle?.querySelector('.material-symbols-outlined');
-  if (icon) {
-    icon.textContent = isDark ? 'dark_mode' : 'light_mode';
-  }
+// ========================================
+// DARK MODE
+// ========================================
+// Handled by global ThemeManager in utils.js
+if (window.ThemeManager) {
+  window.ThemeManager.init();
 }
 
 // ========================================
@@ -652,15 +640,14 @@ function showUserForm(userId: string | null = null) {
         <label class="form-label">Username</label>
         <input type="text" class="form-input" name="username" value="${user?.username || ''}" placeholder=" " required>
       </div>
-      ${
-        !isEdit
-          ? `
+      ${!isEdit
+        ? `
       <div class="form-group">
         <label class="form-label">Senha</label>
         <input type="password" class="form-input" name="password" placeholder=" " required>
       </div>
       `
-          : ""
+        : ""
       }
       <div class="form-group">
         <label class="form-label">Função</label>
@@ -902,14 +889,14 @@ function showProductForm(productId: string | null = null) {
         <select class="form-select" name="category_id" required>
           <option value="">Selecione...</option>
           ${categories
-            .map(
-              (cat) => `
+        .map(
+          (cat) => `
             <option value="${cat.id}" ${product?.category_id === cat.id ? "selected" : ""}>
               ${cat.name}
             </option>
           `,
-            )
-            .join("")}
+        )
+        .join("")}
         </select>
       </div>
       <div class="form-group">
@@ -1215,8 +1202,8 @@ async function viewOrder(orderId: string) {
             </thead>
             <tbody>
               ${order.items
-                .map(
-                  (item: any) => `
+            .map(
+              (item: any) => `
                 <tr>
                   <td class="item-name">${item.product_name || "Produto Removido"}</td>
                   <td class="item-qty" style="text-align: center;">${item.quantity}</td>
@@ -1224,8 +1211,8 @@ async function viewOrder(orderId: string) {
                   <td style="text-align: right; font-weight: 700;">${formatCurrency(item.total_item || item.quantity * item.unit_price)}</td>
                 </tr>
               `,
-                )
-                .join("")}
+            )
+            .join("")}
             </tbody>
           </table>
         `
@@ -1250,16 +1237,15 @@ async function viewOrder(orderId: string) {
             <span class="order-summary-label">DATA E HORA (ABERTURA)</span>
             <span class="order-summary-value">${order.opened_at ? new Date(order.opened_at).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" }) : "-"}</span>
           </div>
-          ${
-            order.closed_at
-              ? `
+          ${order.closed_at
+          ? `
           <div class="order-summary-item">
             <span class="order-summary-label">FINALIZADO EM</span>
             <span class="order-summary-value">${new Date(order.closed_at).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })}</span>
           </div>
           `
-              : ""
-          }
+          : ""
+        }
         </div>
 
         <!-- Items Header -->
@@ -1489,7 +1475,7 @@ function applyProductFilters() {
 // INITIALIZATION
 // ========================================
 document.addEventListener('DOMContentLoaded', () => {
-  initDarkMode();
+  // initDarkMode() handled by ThemeManager at top of file
 
   // Event Listeners
   if (menuBtn && sidebar) {
@@ -1540,9 +1526,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  if (darkModeToggle) {
-    darkModeToggle.addEventListener('click', toggleDarkMode);
-  }
+  // Dark mode toggle handled by ThemeManager via event delegation
 
   // Filter Listeners
   document.getElementById('searchUsers')?.addEventListener('input', (e) => {
@@ -1953,16 +1937,16 @@ function renderCommissionWaiters() {
         const dateObj = order.closed_at ? new Date(order.closed_at) : null;
         const dateStr = dateObj
           ? dateObj.toLocaleDateString("pt-BR", {
-              day: "2-digit",
-              month: "2-digit",
-              year: "numeric",
-            })
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          })
           : "-";
         const timeStr = dateObj
           ? dateObj.toLocaleTimeString("pt-BR", {
-              hour: "2-digit",
-              minute: "2-digit",
-            })
+            hour: "2-digit",
+            minute: "2-digit",
+          })
           : "";
 
         const orderTotal = Number(order.total) || 0;

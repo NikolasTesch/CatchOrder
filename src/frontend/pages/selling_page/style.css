@@ -60,6 +60,15 @@
     --gradient-accent: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-secondary-light) 100%);
 }
 
+@keyframes neon-pulse {
+    0%, 100% {
+        box-shadow: 0 0 10px rgba(21, 74, 87, 0.4), 0 0 20px rgba(21, 74, 87, 0.2);
+    }
+    50% {
+        box-shadow: 0 0 15px rgba(21, 74, 87, 0.6), 0 0 25px rgba(21, 74, 87, 0.4);
+    }
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -362,14 +371,14 @@ a {
     padding: 2.5rem;
     border-radius: 16px;
     box-shadow: var(--shadow-sm);
-    border: 1px solid rgba(21, 74, 87, 0.1); /* Primary color low opacity */
-    transition: var(--transition);
+    border: 1px solid rgba(21, 74, 87, 0.35); 
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .card:hover {
     transform: translateY(-8px);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-    border-color: var(--color-primary-light);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 15px rgba(21, 74, 87, 0.3), 0 10px 40px rgba(0,0,0,0.1);
 }
 
 .icon-box {
@@ -662,6 +671,15 @@ a {
     }
 }
 
+@keyframes neon-pulse {
+    0%, 100% {
+        box-shadow: 0 0 10px rgba(21, 74, 87, 0.4), 0 0 20px rgba(21, 74, 87, 0.2);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(21, 74, 87, 0.6), 0 0 30px rgba(21, 74, 87, 0.4);
+    }
+}
+
 /* Responsividade */
 @media (max-width: 968px) {
     .hero h1 {
@@ -927,13 +945,10 @@ a {
     border-radius: 16px;
     overflow: hidden;
 
-    /* MUDANÇA 3: Ajustei a borda. 
-       Como não está mais sobre o fundo escuro, uma borda grossa branca sumiria.
-       Coloquei uma borda fina cinza para acabamento. */
-    border: 1px solid var(--border-light);
-
-    /* Sombra mais suave, já que não precisa "flutuar" tanto */
-    box-shadow: var(--shadow-lg);
+    /* Neon Style */
+    border: 2px solid rgba(21, 74, 87, 0.5);
+    box-shadow: var(--neon-primary), 0 20px 40px rgba(0,0,0,0.2);
+    animation: neon-pulse 3s infinite ease-in-out;
 }
 
 .video-container video {

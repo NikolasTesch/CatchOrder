@@ -724,7 +724,7 @@ h1, h2, h3, h4, h5, h6,
   background: var(--glass-bg-light);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(21, 74, 87, 0.15);
+  border: 1px solid rgba(21, 74, 87, 0.35);
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
 }
 

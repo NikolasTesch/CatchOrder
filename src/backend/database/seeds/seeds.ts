@@ -404,8 +404,8 @@ const orderItems = [
 export const runSeeds = async () => {
   const db = await getDb();
 
-  const adminPasswordHash = await hashPassword(
-    process.env.ADMIN_PASSWORD as string,
+  const managerPasswordHash = await hashPassword(
+    process.env.MANAGER_PASSWORD as string,
   );
   const waiterPasswordHash = await hashPassword(
     process.env.WAITER_PASSWORD as string,
@@ -414,10 +414,10 @@ export const runSeeds = async () => {
   const users = [
     {
       id: adminId,
-      name: process.env.ADMIN_NAME,
-      username: process.env.ADMIN_USERNAME,
-      password_hash: adminPasswordHash,
-      role: userRole.ADMIN,
+      name: process.env.MANAGER_NAME,
+      username: process.env.MANAGER_USERNAME,
+      password_hash: managerPasswordHash,
+      role: userRole.MANAGER,
     },
     {
       id: waiterId,

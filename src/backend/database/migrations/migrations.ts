@@ -52,12 +52,15 @@ export const runMigrations = async () => {
       name TEXT NOT NULL,
       username TEXT UNIQUE NOT NULL,
       password_hash TEXT NOT NULL,
-      role TEXT NOT NULL CHECK (role IN ('admin', 'manager', 'waiter')),
+      role TEXT NOT NULL CHECK (role IN ('manager', 'waiter')),
       image_url TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME
     )
   `);
+
+  // Migration: Convert 'admin' users to 'manager'
+  await db.exec(`UPDATE users SET role = 'manager' WHERE role = 'admin'`);
 
   // ========================================
   // TABELA: restaurant_tables

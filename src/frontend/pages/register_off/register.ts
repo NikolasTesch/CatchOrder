@@ -77,7 +77,12 @@ document.addEventListener('DOMContentLoaded', () => {
         setLoadingState(true);
 
         try {
-            const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : (window.location.pathname.includes('/server09/') ? '/server09/api' : '/api');
+            let API_BASE = '/api';
+            if (window.location.hostname === 'localhost') {
+                API_BASE = 'http://localhost:3000/api';
+            } else if (window.location.pathname.startsWith('/server09/')) {
+                API_BASE = '/server09/api';
+            }
             const response = await fetch(`${API_BASE}/users`, {
                 method: 'POST',
                 headers: {

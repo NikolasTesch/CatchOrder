@@ -49,3 +49,6 @@ public/pages/
 # Personal learning context
 .context/
 .senior-web-dev-mentor/
+
+# Local improvement proposals (not for remote repository)
+docs/

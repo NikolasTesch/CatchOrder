@@ -121,6 +121,7 @@ export const runMigrations = async () => {
     quantity INTEGER NOT NULL CHECK(quantity > 0),
     unit_price INTEGER NOT NULL CHECK(unit_price >= 0),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    delivered_at DATETIME,
     FOREIGN KEY(order_id) REFERENCES orders(id) 
         ON DELETE CASCADE 
         ON UPDATE CASCADE,
@@ -129,6 +130,33 @@ export const runMigrations = async () => {
         ON UPDATE CASCADE
   )
   `);
+
+  // Migration for existing databases: Add delivered_at column if not exists
+  try {
+    const columns = await db.all('PRAGMA table_info(order_items)');
+    const deliveredExists = columns.some((c: any) => c.name === 'delivered_at');
+    if (!deliveredExists) {
+      await db.exec(`ALTER TABLE order_items ADD COLUMN delivered_at DATETIME`);
+      console.log('Migration: Added delivered_at to order_items');
+    }
+  } catch (error) {
+    console.error('Migration Error (delivered_at):', error);
+  }
+
+  // Migration for existing databases: Add created_at column if not exists
+  try {
+    const columns = await db.all('PRAGMA table_info(order_items)');
+    const createdExists = columns.some((c: any) => c.name === 'created_at');
+    if (!createdExists) {
+      // SQLite limitation: cannot add column with non-constant default (CURRENT_TIMESTAMP) via ALTER TABLE
+      await db.exec(`ALTER TABLE order_items ADD COLUMN created_at DATETIME`);
+      // Update existing rows to have a timestamp
+      await db.exec(`UPDATE order_items SET created_at = datetime('now') WHERE created_at IS NULL`);
+      console.log('Migration: Added created_at to order_items');
+    }
+  } catch (error) {
+    console.error('Migration Error (created_at):', error);
+  }
 
   // ========================================
   // ÍNDICES PARA OTIMIZAÇÃO DE PERFORMANCE

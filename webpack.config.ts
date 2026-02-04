@@ -51,14 +51,14 @@ const config: webpack.Configuration = {
     extensions: ['.ts', '.js'],
   },
   output: {
-    path: path.resolve(__dirname, 'public/js'),
-    filename: '[name].bundle.js',
-    publicPath: '../js/',
-    clean: true,
+    path: path.resolve(__dirname, 'public'),
+    filename: 'js/[name].bundle.js',
+    publicPath: '../',
+    clean: false, // Prevent deleting img/uploads
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: '../css/[name].css', // Output to public/css/[name].css
+      filename: 'css/[name].css', // Output to public/css/[name].css
     }),
     ...(() => {
       const plugins: HtmlWebpackPlugin[] = [];
@@ -76,7 +76,7 @@ const config: webpack.Configuration = {
               plugins.push(
                 new HtmlWebpackPlugin({
                   template: path.join(pagePath, htmlFile),
-                  filename: `../../public/pages/${htmlFile}`, // Output to public root
+                  filename: `pages/${htmlFile}`, // Output to public root
                   chunks: ['global', dirent.name], // Inject global styles and this page's bundle
                 })
               );

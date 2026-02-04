@@ -314,9 +314,6 @@ async function loadDashboard() {
     const occupiedTables = allTables.filter(
       (t) => t.status === 'OCCUPIED',
     ).length;
-    const reservedTables = allTables.filter(
-      (t) => t.status === 'RESERVED',
-    ).length;
 
     const availableTablesEl = document.getElementById('availableTables');
     if (availableTablesEl)
@@ -325,10 +322,6 @@ async function loadDashboard() {
     const occupiedTablesEl = document.getElementById('occupiedTables');
     if (occupiedTablesEl)
       occupiedTablesEl.textContent = occupiedTables.toString();
-
-    const reservedTablesEl = document.getElementById('reservedTables');
-    if (reservedTablesEl)
-      reservedTablesEl.textContent = reservedTables.toString();
 
     // Calculate Daily Sales
     const today = new Date();
@@ -386,20 +379,21 @@ function renderRecentOrders(ordersData: Order[]) {
   }
 
   container.innerHTML = recentOrders
-    .map(
-      (order) => `
-      <div class="recent-item">
-        <div class="recent-item-header">
-          <span class="recent-item-id">Pedido #${order.id.substring(0, 8)}</span>
-          <span class="recent-item-status">${translateStatus(order.status)}</span>
-        </div>
-        <div class="recent-item-info">
-          ${getTableNumber(order.table_id)} | Total: ${formatCurrency(order.total || 0)}
-        </div>
-      </div>
-    `,
-    )
-    .join('');
+    .map((order) => {
+      const statusClass = order.status === "OPEN" ? "status-open" : "";
+      return `
+          <div class="recent-item">
+            <div class="recent-item-header">
+              <span class="recent-item-id">Pedido #${order.id.substring(0, 8)}</span>
+              <span class="recent-item-status ${statusClass}">${translateStatus(order.status)}</span>
+            </div>
+            <div class="recent-item-info">
+              ${getTableNumber(order.table_id)} | Total: <span class="dashboard-value">${formatCurrency(order.total || 0)}</span>
+            </div>
+          </div>
+        `;
+    })
+    .join("");
 }
 
 function renderTopProducts(ordersData: Order[]) {
@@ -439,7 +433,7 @@ function renderTopProducts(ordersData: Order[]) {
         <div class="recent-item">
             <div class="recent-item-header">
                 <span class="recent-item-id">${name}</span>
-                <span class="recent-item-status">${qty} item(s)</span>
+                <span class="recent-item-status"><span class="dashboard-value">${qty}</span> item(s)</span>
             </div>
         </div>
     `,
@@ -466,7 +460,7 @@ function renderBiggestSales(ordersData: Order[]) {
         <div class="recent-item">
             <div class="recent-item-header">
                 <span class="recent-item-id">Pedido #${order.id.substring(0, 8)}</span>
-                <span class="recent-item-status">${formatCurrency(order.total || 0)}</span>
+                <span class="recent-item-status"><span class="dashboard-value">${formatCurrency(order.total || 0)}</span></span>
             </div>
              <div class="recent-item-info">
                 ${order.opened_at ? new Date(order.opened_at).toLocaleDateString('pt-BR') : '-'}
@@ -528,10 +522,10 @@ function toggleProfilePopover(btn: HTMLElement) {
   let popover = document.getElementById('profilePopover');
 
   if (!popover) {
-    popover = document.createElement('div');
-    popover.id = 'profilePopover';
-    popover.className = 'popover';
-    popover.addEventListener('click', (e) => e.stopPropagation());
+    popover = document.createElement("div");
+    popover.id = "profilePopover";
+    popover.className = "popover";
+    popover.addEventListener("click", (e) => e.stopPropagation());
 
     if (currentUser) {
       const createdDate = currentUser.created_at
@@ -570,10 +564,10 @@ function toggleNotificationPopover(btn: HTMLElement) {
   let popover = document.getElementById('notificationPopover');
 
   if (!popover) {
-    popover = document.createElement('div');
-    popover.id = 'notificationPopover';
-    popover.className = 'popover';
-    popover.addEventListener('click', (e) => e.stopPropagation());
+    popover = document.createElement("div");
+    popover.id = "notificationPopover";
+    popover.className = "popover";
+    popover.addEventListener("click", (e) => e.stopPropagation());
     popover.innerHTML = `
       <div class="popover-header">Notificações</div>
       <div class="popover-body">
@@ -666,7 +660,7 @@ function showUserForm(userId: string | null = null) {
         <input type="password" class="form-input" name="password" placeholder=" " required>
       </div>
       `
-          : ''
+          : ""
       }
       <div class="form-group">
         <label class="form-label">Função</label>
@@ -910,12 +904,12 @@ function showProductForm(productId: string | null = null) {
           ${categories
             .map(
               (cat) => `
-            <option value="${cat.id}" ${product?.category_id === cat.id ? 'selected' : ''}>
+            <option value="${cat.id}" ${product?.category_id === cat.id ? "selected" : ""}>
               ${cat.name}
             </option>
           `,
             )
-            .join('')}
+            .join("")}
         </select>
       </div>
       <div class="form-group">
@@ -1071,9 +1065,8 @@ function showTableForm(tableId: string | null = null) {
       <div class="form-group">
         <label class="form-label">Status</label>
         <select class="form-select" name="status" required>
-          <option value="AVAILABLE" ${table?.status === 'AVAILABLE' ? 'selected' : ''}>Disponível</option>
-          <option value="OCCUPIED" ${table?.status === 'OCCUPIED' ? 'selected' : ''}>Ocupada</option>
-          <option value="RESERVED" ${table?.status === 'RESERVED' ? 'selected' : ''}>Reservada</option>
+          <option value="AVAILABLE" ${table?.status === "AVAILABLE" ? "selected" : ""}>Disponível</option>
+          <option value="OCCUPIED" ${table?.status === "OCCUPIED" ? "selected" : ""}>Ocupada</option>
         </select>
       </div>
       <div class="form-actions">
@@ -1187,19 +1180,37 @@ async function viewOrder(orderId: string) {
     const response = await apiCall<ApiResponse<Order>>(`/orders/${orderId}`);
     const order = response.data;
 
-    if (modalTitle)
-      modalTitle.textContent = `Pedido #${orderId.substring(0, 8)}`;
+    if (modalTitle) {
+      modalTitle.innerHTML = `
+        <div class="header-title-with-icon">
+          <div class="header-icon-box">
+            <span class="material-symbols-outlined">receipt_long</span>
+          </div>
+          <span>Pedido #${orderId.substring(0, 8)}</span>
+        </div>
+      `;
+    }
+
+    const calculatedTotal =
+      order.items?.reduce(
+        (sum, item) =>
+          sum + (item.total_item || item.quantity * item.unit_price),
+        0,
+      ) ||
+      order.total ||
+      0;
+
     if (modalBody) {
       const itemsHtml =
         order.items && order.items.length > 0
           ? `
-          <table class="table" style="margin-top: 15px;">
+          <table class="order-items-table">
             <thead>
               <tr>
-                <th>Produto</th>
-                <th>Qtd</th>
-                <th>Unitário</th>
-                <th>Total</th>
+                <th>PRODUTO</th>
+                <th style="text-align: center;">QTD</th>
+                <th style="text-align: right;">UNITÁRIO</th>
+                <th style="text-align: right;">TOTAL</th>
               </tr>
             </thead>
             <tbody>
@@ -1207,33 +1218,72 @@ async function viewOrder(orderId: string) {
                 .map(
                   (item: any) => `
                 <tr>
-                  <td>${item.product_name || 'Produto Removido'}</td>
-                  <td>${item.quantity}</td>
-                  <td>${formatCurrency(item.unit_price)}</td>
-                  <td>${formatCurrency(item.total_item || item.quantity * item.unit_price)}</td>
+                  <td class="item-name">${item.product_name || "Produto Removido"}</td>
+                  <td class="item-qty" style="text-align: center;">${item.quantity}</td>
+                  <td style="text-align: right; color: #64748b;">${formatCurrency(item.unit_price)}</td>
+                  <td style="text-align: right; font-weight: 700;">${formatCurrency(item.total_item || item.quantity * item.unit_price)}</td>
                 </tr>
               `,
                 )
-                .join('')}
+                .join("")}
             </tbody>
           </table>
         `
-          : '<p>Nenhum item neste pedido.</p>';
+          : "<p style='padding: 20px; color: #64748b;'>Nenhum item neste pedido.</p>";
 
       modalBody.innerHTML = `
-      <div style="margin-bottom: 20px;">
-        <p><strong>Mesa:</strong> ${getTableNumber(order.table_id)}</p>
-        <p><strong>Status:</strong> <span class="status-pill ${order.status.toLowerCase()}">${translateStatus(order.status)}</span></p>
-        <p><strong>Data:</strong> ${order.opened_at ? new Date(order.opened_at).toLocaleString('pt-BR') : '-'}</p>
-        <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
-        <h4 style="margin-bottom: 10px;">Itens do Pedido</h4>
-        ${itemsHtml}
-        <div style="margin-top: 15px; text-align: right;">
-           <p class="summary-value" style="font-size: 1.2rem;"><strong>Total: ${formatCurrency(order.total || 0)}</strong></p>
+      <div class="order-details-container">
+        <!-- Summary Grid -->
+        <div class="order-summary-grid">
+          <div class="order-summary-item">
+            <span class="order-summary-label">MESA</span>
+            <span class="order-summary-value">${getTableNumber(order.table_id)}</span>
+          </div>
+          <div class="order-summary-item">
+            <span class="order-summary-label">STATUS</span>
+            <div class="status-dot-wrapper">
+              <span class="status-dot ${order.status.toLowerCase()}"></span>
+              <span class="order-summary-value">${translateStatus(order.status)}</span>
+            </div>
+          </div>
+          <div class="order-summary-item">
+            <span class="order-summary-label">DATA E HORA (ABERTURA)</span>
+            <span class="order-summary-value">${order.opened_at ? new Date(order.opened_at).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" }) : "-"}</span>
+          </div>
+          ${
+            order.closed_at
+              ? `
+          <div class="order-summary-item">
+            <span class="order-summary-label">FINALIZADO EM</span>
+            <span class="order-summary-value">${new Date(order.closed_at).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })}</span>
+          </div>
+          `
+              : ""
+          }
         </div>
-      </div>
-      <div class="form-actions">
-        <button type="button" class="btn-secondary" onclick="closeModal()">Fechar</button>
+
+        <!-- Items Header -->
+        <div class="order-items-section-title">
+          <span class="material-symbols-outlined" style="font-size: 18px;">restaurant</span>
+          <span>Itens do Pedido</span>
+        </div>
+
+        <!-- Items Content -->
+        <div class="order-items-container">
+          ${itemsHtml}
+        </div>
+
+        <!-- Footer -->
+        <div class="order-footer-display">
+          <div class="order-total-block">
+            <span class="total-label-text">Total do Pedido:</span>
+            <span class="total-amount-large">${formatCurrency(calculatedTotal)}</span>
+          </div>
+          <div class="modal-footer-actions">
+            <button type="button" class="btn-secondary" onclick="window.print()" style="min-width: 120px;">Imprimir</button>
+            <button type="button" class="btn-primary" onclick="closeModal()" style="min-width: 120px;">Fechar</button>
+          </div>
+        </div>
       </div>
     `;
     }
@@ -1557,10 +1607,10 @@ document.addEventListener('DOMContentLoaded', () => {
 // ========================================
 async function loadInsights() {
   // Setup listeners if not already
-  const btn = document.getElementById('filterInsightsBtn');
+  const btn = document.getElementById("filterInsightsBtn");
   if (btn && !btn.dataset.listening) {
-    btn.addEventListener('click', fetchInsightsData);
-    btn.dataset.listening = 'true';
+    btn.addEventListener("click", fetchInsightsData);
+    btn.dataset.listening = "true";
   }
 
   // Initial fetch with defaults
@@ -1570,25 +1620,25 @@ async function loadInsights() {
 async function fetchInsightsData() {
   try {
     const startDateInput = document.getElementById(
-      'startDate',
+      "startDate",
     ) as HTMLInputElement;
-    const endDateInput = document.getElementById('endDate') as HTMLInputElement;
+    const endDateInput = document.getElementById("endDate") as HTMLInputElement;
 
     // Default to last 30 days if empty
     if (!startDateInput.value) {
       const d = new Date();
       d.setDate(d.getDate() - 30);
-      startDateInput.value = d.toISOString().split('T')[0];
+      startDateInput.value = d.toISOString().split("T")[0];
     }
     if (!endDateInput.value) {
-      endDateInput.value = new Date().toISOString().split('T')[0];
+      endDateInput.value = new Date().toISOString().split("T")[0];
     }
 
     const start = startDateInput.value;
     const end = endDateInput.value;
 
-    const startISO = new Date(start + 'T00:00:00').toISOString();
-    const endISO = new Date(end + 'T23:59:59').toISOString();
+    const startISO = new Date(start + "T00:00:00").toISOString();
+    const endISO = new Date(end + "T23:59:59").toISOString();
 
     // Use apiCall wrapper
     const result = await apiCall<{ data: any }>(
@@ -1597,27 +1647,27 @@ async function fetchInsightsData() {
 
     renderInsights(result.data);
   } catch (error: any) {
-    console.error('Error fetching insights:', error);
-    showToast(`Erro ao carregar insights: ${error.message}`, 'error');
+    console.error("Error fetching insights:", error);
+    showToast(`Erro ao carregar insights: ${error.message}`, "error");
 
     // Update UI placeholders to show error state
     const loadingTexts = document.querySelectorAll(
-      '#insights-section .loading-text',
+      "#insights-section .loading-text",
     );
-    loadingTexts.forEach((el) => (el.textContent = 'Erro ao carregar dados.'));
+    loadingTexts.forEach((el) => (el.textContent = "Erro ao carregar dados."));
   }
 }
 
 function renderInsights(data: any) {
   // 1. Summary Cards
-  const avgTicketEl = document.getElementById('insightAvgTicket');
+  const avgTicketEl = document.getElementById("insightAvgTicket");
   if (avgTicketEl)
     avgTicketEl.textContent = formatCurrency(data.summary.average_ticket);
 
-  const revEl = document.getElementById('insightTotalRevenue');
+  const revEl = document.getElementById("insightTotalRevenue");
   if (revEl) revEl.textContent = formatCurrency(data.summary.total_revenue);
 
-  const ordEl = document.getElementById('insightTotalOrders');
+  const ordEl = document.getElementById("insightTotalOrders");
   if (ordEl) ordEl.textContent = data.summary.total_orders;
 
   // 2. Hourly Sales Chart
@@ -1631,10 +1681,10 @@ function renderInsights(data: any) {
 }
 
 function renderHourlyChart(hourlyData: any[]) {
-  const container = document.getElementById('hourlySalesChart');
+  const container = document.getElementById("hourlySalesChart");
   if (!container) return;
 
-  container.innerHTML = '';
+  container.innerHTML = "";
 
   // Find max value for normalization
   const maxRevenue = Math.max(...hourlyData.map((h: any) => h.revenue), 1);
@@ -1643,15 +1693,15 @@ function renderHourlyChart(hourlyData: any[]) {
   const fullDayData = Array(24)
     .fill(0)
     .map((_, i) => {
-      const hourStr = i.toString().padStart(2, '0');
+      const hourStr = i.toString().padStart(2, "0");
       const found = hourlyData.find((h: any) => h.hour === hourStr);
       return found ? found.revenue : 0;
     });
 
   fullDayData.forEach((revenue, hour) => {
     const heightPercent = (revenue / maxRevenue) * 100;
-    const bar = document.createElement('div');
-    bar.className = 'chart-bar';
+    const bar = document.createElement("div");
+    bar.className = "chart-bar";
     bar.style.height = `${Math.max(heightPercent, 1)}%`; // Min 1% visibility to show bar exists
     bar.dataset.hour = `${hour}h`;
     bar.dataset.value = formatCurrency(revenue);
@@ -1661,10 +1711,10 @@ function renderHourlyChart(hourlyData: any[]) {
 }
 
 function renderABCList(products: any[]) {
-  const container = document.getElementById('abcProductList');
+  const container = document.getElementById("abcProductList");
   if (!container) return;
 
-  container.innerHTML = '';
+  container.innerHTML = "";
 
   if (products.length === 0) {
     container.innerHTML = '<p class="loading-text">Nenhum dado no período.</p>';
@@ -1672,15 +1722,15 @@ function renderABCList(products: any[]) {
   }
 
   products.forEach((p: any) => {
-    const item = document.createElement('div');
-    item.className = 'abc-item';
+    const item = document.createElement("div");
+    item.className = "abc-item";
 
     const badgeClass =
-      p.classification === 'A'
-        ? 'badge-a'
-        : p.classification === 'B'
-          ? 'badge-b'
-          : 'badge-c';
+      p.classification === "A"
+        ? "badge-a"
+        : p.classification === "B"
+          ? "badge-b"
+          : "badge-c";
 
     item.innerHTML = `
             <div class="abc-info">
@@ -1700,10 +1750,10 @@ function renderABCList(products: any[]) {
 }
 
 function renderWaiterTable(waiters: any[]) {
-  const tbody = document.getElementById('waiterPerformanceBody');
+  const tbody = document.getElementById("waiterPerformanceBody");
   if (!tbody) return;
 
-  tbody.innerHTML = '';
+  tbody.innerHTML = "";
 
   if (waiters.length === 0) {
     tbody.innerHTML =
@@ -1712,7 +1762,7 @@ function renderWaiterTable(waiters: any[]) {
   }
 
   waiters.forEach((w: any) => {
-    const tr = document.createElement('tr');
+    const tr = document.createElement("tr");
     tr.innerHTML = `
             <td>${w.name}</td>
             <td>${formatCurrency(w.total_sales)}</td>
@@ -1854,7 +1904,7 @@ function renderCommissionWaiters() {
     return db - da;
   });
 
-  // Calculate Stats for Modal Footer
+  // Calculate Stats
   const now = new Date();
   const todayStr = now.toLocaleDateString('pt-BR', {
     day: '2-digit',
@@ -1900,53 +1950,66 @@ function renderCommissionWaiters() {
   } else {
     tbody.innerHTML = waiterOrders
       .map((order) => {
-        const dateStr = order.closed_at
-          ? new Date(order.closed_at).toLocaleDateString('pt-BR', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
+        const dateObj = order.closed_at ? new Date(order.closed_at) : null;
+        const dateStr = dateObj
+          ? dateObj.toLocaleDateString("pt-BR", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
             })
-          : '-';
+          : "-";
+        const timeStr = dateObj
+          ? dateObj.toLocaleTimeString("pt-BR", {
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+          : "";
 
         const orderTotal = Number(order.total) || 0;
         const tipVal = order.tip ? Number(order.tip) : 0;
-        const commissionDisplay = tipVal > 0 ? formatCurrency(tipVal) : '---';
 
         // Resolve Table Number
         const tableObj = tables.find((t) => t.id === String(order.table_id));
-
-        let tableDisplay = 'Mesa ?';
-        if (tableObj) {
-          tableDisplay = `Mesa ${tableObj.number}`;
-        }
+        let tableDisplay = tableObj
+          ? `Mesa ${tableObj.number.toString().padStart(2, "0")}`
+          : "Mesa ?";
 
         return `
           <tr>
-              <td>#${order.id.slice(0, 8)}</td>
-              <td>${dateStr}</td>
-              <td>${tableDisplay}</td>
-              <td style="color: var(--text-muted);">${formatCurrency(orderTotal)}</td>
-              <td style="color: ${tipVal > 0 ? 'var(--emerald)' : 'var(--text-dim)'}; font-weight: 600;">${commissionDisplay}</td>
+              <td style="color: var(--color-primary); font-family: monospace; font-weight: 500;">#${order.id.slice(0, 8)}</td>
+              <td>
+                <div style="display:flex; flex-direction:column;">
+                  <span style="font-weight:700;">${dateStr}</span>
+                  <span style="font-size:0.7rem; color:var(--text-secondary);">${timeStr}</span>
+                </div>
+              </td>
+              <td style="color: var(--text-secondary); font-size: 0.85rem;">${tableDisplay}</td>
+              <td style="text-align: right; font-weight: 700;">${formatCurrency(orderTotal)}</td>
+              <td style="text-align: right; color: var(--emerald); font-weight: 700;">${formatCurrency(tipVal)}</td>
           </tr>
           `;
       })
       .join('');
   }
 
-  // Update Footer with Green Stats
+  // Inject Stat Cards
   totalEl.innerHTML = `
-      <div style="display: flex; gap: 1.5rem; align-items: center;">
-          <span style="font-size: 0.9rem; color: var(--text-muted);">Vendas Total: ${formatCurrency(totalSales)}</span>
-          <div style="display: flex; flex-direction: column; align-items: flex-end;">
-              <span style="color: var(--emerald); font-weight: 600;">Dia Total: ${formatCurrency(commissionDay)}</span>
-              <span style="color: var(--emerald); font-weight: 600;">Mês Total: ${formatCurrency(commissionMonth)}</span>
-          </div>
-      </div>
-    `;
-  modal.classList.add('active');
-};
+    <div class="stat-card-mini">
+        <span class="stat-label">Vendas Total</span>
+        <span class="stat-value">${formatCurrency(totalSales)}</span>
+    </div>
+    <div class="stat-card-mini">
+        <span class="stat-label">Dia Total</span>
+        <span class="stat-value">${formatCurrency(commissionDay)}</span>
+    </div>
+    <div class="stat-card-mini accent">
+        <span class="stat-label">Mês Total</span>
+        <span class="stat-value">${formatCurrency(commissionMonth)}</span>
+    </div>
+  `;
+
+  modal.classList.add("active");
+};;
 
 (window as any).closeCommissionModal = () => {
   const modal = document.getElementById('commissionModal');

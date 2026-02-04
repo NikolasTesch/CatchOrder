@@ -35,9 +35,6 @@
       <button class="icon-btn" id="darkModeToggle">
         <span class="material-symbols-outlined">light_mode</span>
       </button>
-      <button class="icon-btn" id="notificationsBtn">
-        <span class="material-symbols-outlined">notifications</span>
-      </button>
       <button class="icon-btn" id="profileBtn">
         <span class="material-symbols-outlined">account_circle</span>
       </button>
@@ -99,28 +96,55 @@
         <div class="gest-modal" id="commissionModal">
           <div class="gest-modal-content">
             <div class="gest-modal-header">
-              <h3 id="modalWaiterName">Detalhes do Garçom</h3>
+              <div class="report-header-box">
+                <div class="report-icon-container">
+                    <span class="material-symbols-outlined">leaderboard</span>
+                </div>
+                <div>
+                    <span style="font-size: 0.65rem; font-weight: 800; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.05em; display: block; margin-bottom: 2px;">Relatório de Desempenho</span>
+                    <h3 id="modalWaiterName" style="font-size: 1.25rem; font-weight: 800; color: var(--color-primary); margin: 0;">Waiter Name</h3>
+                </div>
+              </div>
               <button class="close-btn" onclick="closeCommissionModal()">
                 <span class="material-symbols-outlined">close</span>
               </button>
             </div>
-            <div class="modal-body">
-              <div class="table-container">
-                <table class="data-table">
-                  <thead>
-                    <tr>
-                      <th>ID Pedido</th>
-                      <th>Data Fechamento</th>
-                      <th>Mesa</th>
-                      <th>Total</th>
-                      <th>Comissão</th>
-                    </tr>
-                  </thead>
-                  <tbody id="commissionTableBody"></tbody>
-                </table>
+            
+            <div class="gest-modal-body">
+              <div class="report-table-section">
+                <div class="table-container" style="border:none; box-shadow:none; margin:0;">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>ID Pedido</th>
+                        <th>Fechamento</th>
+                        <th>Mesa</th>
+                        <th style="text-align: right;">Total</th>
+                        <th style="text-align: right;">Comissão</th>
+                      </tr>
+                    </thead>
+                    <tbody id="commissionTableBody"></tbody>
+                  </table>
+                </div>
               </div>
-              <div class="commission-total-display">
-                Total: <span id="modalTotalSales">R$ 0,00</span>
+
+              <!-- Summary Cards will be injected by TS into this container -->
+              <div id="modalTotalSales" class="commission-stats-summary">
+                <!-- Stat cards here -->
+              </div>
+              
+              <div class="report-footer-actions">
+                <div class="report-update-time">
+                  <span class="material-symbols-outlined" style="font-size: 16px; animation: spin 4s linear infinite;">history</span>
+                  <span>Atualizado em tempo real</span>
+                </div>
+                <div class="report-btns-group">
+                  <button class="btn-secondary btn-sm" onclick="window.print()">Exportar PDF</button>
+                  <button class="btn-primary btn-sm" onclick="window.print()" style="background: var(--color-primary);">
+                    <span class="material-symbols-outlined" style="font-size: 18px;">print</span>
+                    Imprimir Relatório
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -266,10 +290,10 @@
             <span class="material-symbols-outlined">search</span>
             <input type="text" id="searchProducts" placeholder="Buscar produtos...">
           </div>
-          <select id="categoryFilter" class="filter-select glass">
+          <select id="categoryFilter" class="filter-select">
             <option value="">Todas Categorias</option>
           </select>
-          <select id="statusFilter" class="filter-select glass">
+          <select id="statusFilter" class="filter-select">
             <option value="">Todos Status</option>
             <option value="1">Ativos</option>
             <option value="0">Inativos</option>
@@ -291,11 +315,10 @@
         </div>
 
         <div class="filters-bar">
-          <select id="tableStatusFilter" class="filter-select glass">
+          <select id="tableStatusFilter" class="filter-select">
             <option value="">Todos Status</option>
             <option value="AVAILABLE">Disponível</option>
             <option value="OCCUPIED">Ocupada</option>
-            <option value="RESERVED">Reservada</option>
           </select>
         </div>
 
@@ -310,11 +333,10 @@
         </div>
 
         <div class="filters-bar">
-          <select id="orderStatusFilter" class="filter-select glass">
+          <select id="orderStatusFilter" class="filter-select">
             <option value="">Todos Status</option>
             <option value="OPEN">Aberto</option>
             <option value="CLOSED">Fechado</option>
-            <option value="CANCELLED">Cancelado</option>
           </select>
         </div>
 

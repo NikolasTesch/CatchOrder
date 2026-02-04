@@ -59,8 +59,41 @@ select {
   font-size: inherit;
   border: none;
   outline: none;
+  background-color: transparent;
 }
 
+select {
+  cursor: pointer;
+  padding: 0.75rem 1.25rem !important;
+  border: none !important;
+  border-radius: 99px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+select:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(21, 74, 87, 0.1), 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+body.dark-mode select {
+  background-color: #2a2a2a;
+  color: white;
+}
+
+select option {
+  background-color: white;
+  color: var(--color-primary);
+  padding: 12px;
+}
+
+body.dark-mode select option {
+  background-color: #1a1a1a;
+  color: white;
+}
 ul,
 ol {
   list-style: none;
@@ -105,14 +138,14 @@ img {
   --color-info: #17a2b8;
 
   /* Background Colors */
-  --bg-primary: #fcf7f8;
-  --bg-secondary: #dfdfdf;
+  --bg-primary: #f4f7f8;
+  --bg-secondary: #e9ecef;
   --bg-white: #ffffff;
   --bg-card: #ffffff;
   --bg-overlay: rgba(0, 0, 0, 0.5);
 
   /* Text Colors */
-  --text-primary: #000000;
+  --text-primary: #154a57;
   --text-secondary: #666666;
   --text-tertiary: #999999;
   --text-white: #ffffff;
@@ -120,15 +153,22 @@ img {
   --text-on-secondary: #000000;
 
   /* Border Colors */
-  --border-light: #e0e0e0;
-  --border-medium: #cccccc;
-  --border-dark: #999999;
+  --border-light: rgba(21, 74, 87, 0.1);
+  --border-medium: rgba(21, 74, 87, 0.2);
+  --border-dark: rgba(21, 74, 87, 0.4);
 
   /* Shadow Colors */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
   --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+
+  /* Neon & Glass Effects (Light Mode) */
+  --neon-primary: 0 0 10px rgba(21, 74, 87, 0.5), 0 0 20px rgba(21, 74, 87, 0.3);
+  --neon-secondary: 0 0 10px rgba(244, 172, 69, 0.5), 0 0 20px rgba(244, 172, 69, 0.3);
+  --glass-bg-light: rgba(255, 255, 255, 0.7);
+  --glass-border-light: rgba(255, 255, 255, 0.5);
+  --neon-border-color: rgba(21, 74, 87, 0.4);
 
   /* === SPACING SCALE === */
   --space-xs: 0.25rem; /* 4px */
@@ -178,7 +218,12 @@ img {
   --z-modal-backdrop: 400;
   --z-modal: 500;
   --z-popover: 600;
+  --z-popover: 600;
   --z-tooltip: 700;
+
+  /* Layout Variables */
+  --sidebar-width: clamp(250px, 18vw, 320px);
+  --header-height: 70px;
 }
 
 /* Manual dark mode toggle via JavaScript */
@@ -454,16 +499,25 @@ body.dark-mode {
   width: 100%;
 }
 
-.input {
+.input,
+.select {
   width: 100%;
-  padding: var(--space-sm) var(--space-md);
-  min-height: 44px;
-  font-size: var(--text-base);
-  background-color: var(--bg-white);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-md);
+  padding: 0.5rem 0.75rem;
+  min-height: 40px;
+  font-size: var(--text-sm);
+  background-color: #ffffff;
+  border: none;
+  border-radius: 12px;
   transition: all var(--transition-base);
   color: var(--text-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.input:focus,
+.select:focus {
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(21, 74, 87, 0.1);
+  transform: translateY(-1px);
 }
 
 .input::placeholder {
@@ -473,6 +527,7 @@ body.dark-mode {
 .input:focus {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
+  background-color: #ffffff;
 }
 
 .input:disabled {
@@ -489,10 +544,10 @@ body.dark-mode {
 
 .form-label {
   display: block;
-  margin-bottom: var(--space-xs);
-  font-weight: var(--font-medium);
-  color: var(--text-primary);
-  font-size: var(--text-sm);
+  margin-bottom: 0.4rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  font-size: 0.85rem;
 }
 
 .form-label.required::after {
@@ -626,86 +681,7 @@ body.dark-mode {
   background-size: 20px;
 }
 
-:root {
-  /* === PALETA DE CORES (Light Mode - Default) === */
-
-  /* Cores Principais */
-  --primary: #6366f1; /* Indigo 500 */
-  --primary-hover: #4f46e5; /* Indigo 600 */
-  --primary-soft: rgba(99, 102, 241, 0.1);
-
-  /* Legacy Mapping (Light) */
-  --color-primary: var(--primary);
-  --color-primary-rgb: 99, 102, 241;
-  --color-secondary: #0f172a; /* Slate 900 */
-  --color-info: #3b82f6; /* Blue 500 */
-  --color-success: #10b981; /* Emerald 500 */
-  --color-warning: #f59e0b; /* Amber 500 */
-  --color-danger: #ef4444; /* Red 500 */
-
-  /* Backgrounds (Light) */
-  --background-dark: #f8fafc; /* Slate 50 */
-  --background-glass: rgba(255, 255, 255, 0.7);
-  --background-glass-hover: rgba(255, 255, 255, 0.9);
-  --background-card: #ffffff;
-
-  /* Legacy Backgrounds (Light) */
-  --bg-primary: #f8fafc;
-  --bg-secondary: #ffffff;
-  --bg-tertiary: #e2e8f0;
-
-  /* Textos (Light) */
-  --text-light: #1e293b; /* Slate 800 */
-  --text-main: #334155; /* Slate 700 */
-  --text-muted: #475569; /* Slate 600 (Darker for contrast) */
-  --text-dim: #64748b; /* Slate 500 (Darker for contrast) */
-
-  /* Legacy Text (Light) */
-  --text-primary: #1e293b;
-  --text-secondary: #475569;
-  --text-tertiary: #64748b;
-  --text-white: #ffffff;
-  --text-title: #1e293b; /* Slate 800 - Standard Title Color */
-
-  /* Status Colors */
-  --emerald: #10b981;
-  --red: #ef4444;
-  --amber: #f59e0b;
-  --blue: #3b82f6;
-
-  /* Bordas e Efeitos */
-  --border-glass: rgba(
-    0,
-    0,
-    0,
-    0.1
-  ); /* Darker border for light mode visibility */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
-
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-  --radius-full: 9999px;
-
-  /* Layout */
-  --header-height: 70px;
-  --sidebar-width: 260px;
-
-  /* Transitions */
-  --transition-base: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-fast: 150ms ease-in-out;
-
-  /* Z-Index */
-  --z-negative: -1;
-  --z-normal: 1;
-  --z-fixed: 1030;
-  --z-modal: 1050;
-  --z-toast: 1080;
-}
+/* Removed duplicate :root block */
 
 /* === DARK MODE (Glassmorphism Identity - Requested) === */
 body.dark-mode {
@@ -788,8 +764,27 @@ h1, h2, h3, h4, h5, h6,
   background: var(--background-glass);
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border: 1px solid var(--border-glass);
+  border: none;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.glass-light {
+  background: var(--glass-bg-light);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(21, 74, 87, 0.35);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+}
+
+.neon-border {
+  border: 1px solid var(--neon-border-color);
+  box-shadow: var(--neon-primary);
+  transition: all 0.3s ease-in-out;
+}
+
+.neon-border:hover {
+  box-shadow: 0 0 15px rgba(21, 74, 87, 0.6), 0 0 30px rgba(21, 74, 87, 0.4);
+  border-color: var(--color-primary);
 }
 
 /* --- Background Blobs (Animação de Fundo) --- */
@@ -896,7 +891,8 @@ textarea {
 .card {
   background-color: var(--bg-card);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
+  border: 1.5px solid var(--border-light);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
   overflow: hidden;
   transition: all var(--transition-base);
 }

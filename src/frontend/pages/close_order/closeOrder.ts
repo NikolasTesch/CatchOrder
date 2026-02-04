@@ -3,6 +3,14 @@ import { ApiService } from '../../services/apiService';
 import { formatCurrency, centsToReais } from '../../utils/currency';
 
 // Interfaces
+interface User {
+  id: string;
+  name: string;
+  username: string;
+  role: 'admin' | 'manager' | 'waiter';
+  created_at?: string;
+}
+
 interface OrderItem {
   product_id: string;
   product_name: string;
@@ -30,43 +38,56 @@ let currentOrder: Order | null = null;
 let orderId: string | null = null;
 let tableId: string | null = null;
 let tableNumber: string | null = null;
+let currentUser: User | null = null;
 
 // DOM Elements
 // Table number display removed from UI in this redesign
-// Table number display removed from UI in this redesign
-const consumedList = document.getElementById("consumed-list");
-const displayTableNumberEl = document.getElementById("display-table-number");
-const subtotalEl = document.getElementById("subtotal");
-const tipEl = document.getElementById("tip-value");
-const totalEl = document.getElementById("total-final");
-const tipToggle = document.getElementById("tip-toggle") as HTMLInputElement;
-const btnBack = document.getElementById("btn-back");
-const btnCloseOrder = document.getElementById("btn-close-order");
+const consumedList = document.getElementById('consumed-list');
+const displayTableNumberEl = document.getElementById('display-table-number');
+const subtotalEl = document.getElementById('subtotal');
+const tipEl = document.getElementById('tip-value');
+const totalEl = document.getElementById('total-final');
+const tipToggle = document.getElementById('tip-toggle') as HTMLInputElement;
+const btnBack = document.getElementById('btn-back');
+const btnCloseOrder = document.getElementById('btn-close-order');
 
-const observationsSection = document.getElementById("observations-section");
-const observationsText = document.getElementById("observations-text");
+const observationsSection = document.getElementById('observations-section');
+const observationsText = document.getElementById('observations-text');
 
 // Initialize
-document.addEventListener("DOMContentLoaded", init);
+document.addEventListener('DOMContentLoaded', init);
 
 async function init() {
   initDarkMode();
+  // Setup listeners first
   setupHeaderListeners();
+
+  // Load User
+  await loadCurrentUser();
 
   // Get URL parameters
   const params = new URLSearchParams(window.location.search);
-  orderId = params.get("order_id");
-  tableId = params.get("table_id");
+  orderId = params.get('order_id');
+  tableId = params.get('table_id');
 
   if (!orderId) {
-    showError("Pedido não encontrado");
-    setTimeout(() => (window.location.href = "waiterMain.html"), 2000);
+    showError('Pedido não encontrado');
+    setTimeout(() => (window.location.href = 'waiterMain.html'), 2000);
     return;
   }
 
   await loadOrder();
   await loadTable();
   setupEventListeners();
+}
+
+async function loadCurrentUser() {
+  try {
+    const response = await ApiService.get<{ user: User }>('/auth/me');
+    currentUser = response.user;
+  } catch (error) {
+    // console.error("Error loading current user:", error);
+  }
 }
 
 async function loadOrder() {
@@ -78,8 +99,7 @@ async function loadOrder() {
 
     renderOrderDetails();
   } catch (error) {
-
-    showError("Erro ao carregar pedido");
+    showError('Erro ao carregar pedido');
   }
 }
 
@@ -92,15 +112,11 @@ async function loadTable() {
     );
     tableNumber = response.data.number.toString();
 
-
     if (displayTableNumberEl) {
       displayTableNumberEl.textContent = tableNumber;
     }
-  } catch (error) {
-
-  }
+  } catch (error) {}
 }
-
 
 function renderOrderDetails() {
   if (!currentOrder) return;
@@ -117,7 +133,7 @@ function renderOrderDetails() {
       <div class="bill-divider"></div>
       `,
       )
-      .join("");
+      .join('');
     // Remove last divider if desired, but image shows separators.
   } else if (consumedList) {
     consumedList.innerHTML =
@@ -128,9 +144,9 @@ function renderOrderDetails() {
   if (observationsSection && observationsText) {
     if (currentOrder.observations) {
       observationsText.textContent = currentOrder.observations;
-      observationsSection.style.display = "block";
+      observationsSection.style.display = 'block';
     } else {
-      observationsSection.style.display = "none";
+      observationsSection.style.display = 'none';
     }
   }
 
@@ -161,17 +177,17 @@ function updateTotals() {
 
 function setupEventListeners() {
   if (btnBack) {
-    btnBack.addEventListener("click", () => {
+    btnBack.addEventListener('click', () => {
       window.location.href = `createOrder.html?order_id=${orderId}&table_id=${tableId}`;
     });
   }
 
   if (btnCloseOrder) {
-    btnCloseOrder.addEventListener("click", closeOrder);
+    btnCloseOrder.addEventListener('click', closeOrder);
   }
 
   if (tipToggle) {
-    tipToggle.addEventListener("change", updateTotals);
+    tipToggle.addEventListener('change', updateTotals);
   }
 }
 
@@ -180,8 +196,8 @@ function closeOrder() {
 
   // Show custom confirmation modal
   showConfirmModal(
-    "Fechar Comanda",
-    "Deseja realmente fechar a comanda? A mesa será liberada e esta ação não pode ser desfeita.",
+    'Fechar Comanda',
+    'Deseja realmente fechar a comanda? A mesa será liberada e esta ação não pode ser desfeita.',
     async () => {
       try {
         // Calculate tip based on checkbox
@@ -197,15 +213,15 @@ function closeOrder() {
         // Close order on backend
         await ApiService.patch(`/orders/${orderId}/close`, { tip: tipAmount });
 
-        showSuccess("Comanda fechada com sucesso!");
+        showSuccess('Comanda fechada com sucesso!');
 
         // Redirect to waiterMain
         setTimeout(() => {
-          window.location.href = "waiterMain.html";
+          window.location.href = 'waiterMain.html';
         }, 1500);
       } catch (error: any) {
         // console.error("Erro ao fechar comanda:", error);
-        showError(error.message || "Erro ao fechar comanda");
+        showError(error.message || 'Erro ao fechar comanda');
       }
     },
   );
@@ -244,17 +260,19 @@ function setupHeaderListeners() {
   const darkModeToggle = document.getElementById('darkModeToggle');
   if (darkModeToggle) darkModeToggle.addEventListener('click', toggleDarkMode);
 
-  const menuBtn = document.getElementById('menuBtn');
-  if (menuBtn) {
-    menuBtn.addEventListener('click', () => {
-      window.location.href = 'waiterMain.html';
-    });
+  const userBtn = document.getElementById('userBtn');
+  const headerActions = document.querySelector(
+    '.header-actions',
+  ) as HTMLElement;
+
+  if (headerActions) {
+    headerActions.style.position = 'relative'; // Context for absolute popover
   }
 
-  const userBtn = document.getElementById('userBtn');
   if (userBtn) {
-    userBtn.addEventListener('click', () => {
-
+    userBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleProfilePopover();
     });
   }
 
@@ -265,18 +283,89 @@ function setupHeaderListeners() {
     });
   }
 
-  const logoutBtn = document.getElementById('logoutBtn');
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', async () => {
-      try {
-        await ApiService.post('/auth/logout', {});
-      } catch (e) {
-        // console.error('Logout error', e);
-      } finally {
-        localStorage.removeItem('user');
-        window.location.href = 'landingPage.html';
+  // Close popovers on click outside
+  document.addEventListener('click', () => {
+    closePopovers();
+  });
+}
+
+function toggleProfilePopover() {
+  const popoverId = 'profilePopover';
+  let popover = document.getElementById(popoverId);
+  const isAlreadyActive = popover?.classList.contains('active');
+
+  closePopovers(); // Close all first
+
+  if (isAlreadyActive) {
+    return; // Done
+  }
+
+  // Create if needed
+  if (!popover) {
+    popover = document.createElement('div');
+    popover.id = popoverId;
+    popover.className = 'popover';
+    popover.addEventListener('click', (e) => e.stopPropagation());
+
+    if (currentUser) {
+      const createdDate = currentUser.created_at
+        ? new Date(currentUser.created_at).toLocaleDateString('pt-BR')
+        : '-';
+
+      popover.innerHTML = `
+        <div class="popover-header">Perfil de Usuário</div>
+        <div class="popover-body">
+          <div class="user-info-card">
+            <div class="user-name">${currentUser.name}</div>
+            <div class="user-username">@${currentUser.username}</div>
+            <div class="user-role-badge">
+              <span class="role-badge ${currentUser.role}">${currentUser.role}</span>
+            </div>
+            <div style="margin-top: 10px; font-size: 0.8rem; color: #888;">
+              Membro desde: ${createdDate}
+            </div>
+             <button class="btn btn-outline btn-sm btn-full" id="logoutBtn" style="margin-top: 15px; border-color: var(--color-danger); color: var(--color-danger);">
+              <span class="material-symbols-outlined" style="font-size: 18px; margin-right: 5px;">logout</span>
+              Sair
+            </button>
+          </div>
+        </div>
+      `;
+
+      // Add logout listener dynamically since it's inside the popover
+      const logoutBtn = popover.querySelector('#logoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', performLogout);
       }
-    });
+    } else {
+      popover.innerHTML = `<div class="popover-body">Carregando perfil...</div>`;
+    }
+
+    // Append to header-actions to use its positioning
+    const headerActions = document.querySelector('.header-actions');
+    if (headerActions) headerActions.appendChild(popover);
+  }
+
+  // Open
+  if (popover) {
+    popover.classList.add('active');
+  }
+}
+
+function closePopovers() {
+  document
+    .querySelectorAll('.popover')
+    .forEach((p) => p.classList.remove('active'));
+}
+
+async function performLogout() {
+  try {
+    await ApiService.post('/auth/logout', {});
+  } catch (e) {
+    // console.error('Logout error', e);
+  } finally {
+    localStorage.removeItem('user');
+    window.location.href = '/pages/landingPage.html'; // Go to root/landing
   }
 }
 

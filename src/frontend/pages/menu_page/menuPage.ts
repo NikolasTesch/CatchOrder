@@ -780,7 +780,11 @@ class MenuController {
       sessionStorage.removeItem(STORAGE_KEYS.TABLE_NUMBER);
 
       setTimeout(() => {
-        window.location.href = '/pages/tablePage.html';
+        if (window.location.pathname.includes('/pages/')) {
+          window.location.href = 'tablePage.html';
+        } else {
+          window.location.href = 'pages/tablePage.html';
+        }
       }, 2000);
 
     } catch (error) {
@@ -825,7 +829,7 @@ class MenuController {
 
       // Redirect
       setTimeout(() => {
-        window.location.href = '/pages/tablePage.html';
+        window.location.href = 'tablePage.html';
       }, 2000);
 
     } catch (error) {

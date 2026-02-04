@@ -461,6 +461,9 @@ export const runSeeds = async () => {
   const waiterPasswordHash = await hashPassword(
     process.env.WAITER_PASSWORD as string,
   );
+  const totemPasswordHash = await hashPassword(
+    process.env.TOTEM_PASSWORD as string
+  );
 
   const users = [
     {
@@ -477,6 +480,13 @@ export const runSeeds = async () => {
       password_hash: waiterPasswordHash,
       role: userRole.WAITER,
     },
+    {
+      id: uuidv4(),
+      name: process.env.TOTEM_NAME || 'Totem',
+      username: process.env.TOTEM_USERNAME || 'totem',
+      password_hash: totemPasswordHash,
+      role: userRole.WAITER, // Totem acts as a waiter
+    }
   ];
 
   try {

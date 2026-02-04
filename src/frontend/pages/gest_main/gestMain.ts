@@ -1148,7 +1148,7 @@ function renderOrders(ordersData: Order[]) {
 
   if (ordersData.length === 0) {
     tbody.innerHTML =
-      '<tr><td colspan="6" class="loading-cell">Nenhum pedido encontrado</td></tr>';
+      '<tr><td colspan="9" class="loading-cell">Nenhum pedido encontrado</td></tr>';
     return;
   }
 
@@ -1160,6 +1160,9 @@ function renderOrders(ordersData: Order[]) {
         <td>${getTableNumber(order.table_id)}</td>
         <td><span class="status-pill ${order.status.toLowerCase()}">${translateStatus(order.status)}</span></td>
         <td>${formatCurrency(order.total || 0)}</td>
+        <td>${getOrderUserLabel(order.user_id)}</td>
+        <td>${formatCurrency(order.tip || 0)}</td>
+        <td>${order.closed_at ? new Date(order.closed_at).toLocaleString("pt-BR") : "-"}</td>
         <td>${order.opened_at ? new Date(order.opened_at).toLocaleDateString("pt-BR") : "-"}</td>
         <td>
           <div class="action-btns">

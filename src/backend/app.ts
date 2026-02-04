@@ -48,8 +48,8 @@ app.use(
 );
 
 // 4. Rate Limiting (antes de processar requisições)
-app.use('/api/', generalRateLimiter);
-app.use('/api/', mutationRateLimiter);
+// app.use('/api/', generalRateLimiter);
+// app.use('/api/', mutationRateLimiter);
 
 // 5. HPP Protection (antes de sanitizar)
 app.use(hppProtection);

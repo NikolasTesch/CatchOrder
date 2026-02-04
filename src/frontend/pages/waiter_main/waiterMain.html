@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CatchOrder - Garçom</title>
-  <link rel='icon' href='/img/icon.svg' type='image/svg+xml'>
+  <link rel='icon' href='../img/icon.svg' type='image/svg+xml'>
 
   <!-- Noto Sans JP Font -->
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap"
@@ -14,7 +14,7 @@
   <!-- Material Icons -->
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-
+    <link rel="stylesheet" href="style.css" />
 
 </head>
 
@@ -34,6 +34,19 @@
 
     <!-- Right: Actions -->
     <nav class="header-actions">
+        <!-- Commission Display (Header Summary) -->
+        <div class="commission-display">
+            <span class="commission-label">MINHA COMISSÃO (HOJE)</span>
+            <span class="commission-value" id="headerCommissionValue">R$ 0,00</span>
+        </div>
+
+        <button class="btn-new-order" id="headerNewOrderBtn">
+            <span class="material-symbols-outlined">add</span>
+            Novo Pedido
+        </button>
+      
+      <div class="divider-vertical"></div>
+
       <button class="icon-btn-small" id="darkModeToggle" aria-label="Alternar modo escuro">
         <span class="material-symbols-outlined">light_mode</span>
       </button>
@@ -46,68 +59,121 @@
   <!-- Sidebar Navigation -->
   <aside class="sidebar" id="sidebar">
     <nav class="sidebar-nav">
-      <button class="nav-item active" data-href="waiterMain.html">
+      <button class="nav-item active" data-section="dashboard">
         <span class="material-symbols-outlined">dashboard</span>
         <span class="nav-text">Dashboard</span>
       </button>
-      <button class="nav-item" data-href="orders.html">
+      <button class="nav-item" data-section="orders">
         <span class="material-symbols-outlined">receipt_long</span>
         <span class="nav-text">Pedidos</span>
+      </button>
+      <button class="nav-item" data-section="commissions">
+        <span class="material-symbols-outlined">savings</span>
+        <span class="nav-text">Comissões</span>
       </button>
     </nav>
   </aside>
 
   <main class="page-wrapper">
-    <section class="summary-card">
-      <div class="summary-left">
-        <span class="badge-today">Visão Geral de Hoje</span>
-        <p class="summary-date summary-title">Carregando data...</p>
-        <h2 class="summary-value">R$ 0,00</h2>
-        <p class="summary-subtitle">0 mesas atendidas hoje</p>
-      </div>
-
-      <div class="summary-right">
-        <button class="btn btn-gold" id="newOrderBtn">
-          Novo Pedido
-        </button>
-
-      </div>
+    <section id="dashboard-section" class="content-section active">
+      <!-- Active Orders -->
+      <section class="tables-section active-orders-section">
+        <div class="section-header">
+          <div class="title-group">
+            <h3 class="section-title">Pedidos em Andamento</h3>
+          </div>
+        </div>
+        <div class="active-orders-grid" id="activeOrdersGrid">
+          <!-- Injected by TS -->
+        </div>
+      </section>
+      
+      <!-- Available Tables -->
+      <section class="tables-section available-section" id="availableTablesSection">
+        <div class="section-header">
+          <div class="title-group">
+            <h3 class="section-title">Mesas Disponíveis</h3>
+          </div>
+        </div>
+        <div class="available-tables-grid">
+          <!-- Injected by TS -->
+        </div>
+      </section>
     </section>
 
+    <!-- Commissions Section (Hidden by default) -->
+    <section id="commissions-section" class="content-section" style="display: none;">
+        <!-- Summary Cards -->
+        <section class="summary-cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+            <div class="summary-card" style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 1.5rem;">
+                <div class="card-icon" style="width: 60px; height: 60px; border-radius: 50%; background: rgba(244, 172, 69, 0.1); display: flex; align-items: center; justify-content: center; color: var(--color-secondary);">
+                    <span class="material-symbols-outlined" style="font-size: 2rem;">calendar_today</span>
+                </div>
+                <div class="card-info" style="display: flex; flex-direction: column;">
+                    <span class="card-label" style="color: #64748b; font-size: 0.9rem; font-weight: 500;">Comissão Hoje</span>
+                    <span class="card-value" id="dailyCommission" style="font-size: 1.8rem; font-weight: 700; color: var(--color-primary);">R$ 0,00</span>
+                </div>
+            </div>
+            <div class="summary-card" style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 1.5rem;">
+                <div class="card-icon" style="width: 60px; height: 60px; border-radius: 50%; background: rgba(244, 172, 69, 0.1); display: flex; align-items: center; justify-content: center; color: var(--color-secondary);">
+                    <span class="material-symbols-outlined" style="font-size: 2rem;">calendar_month</span>
+                </div>
+                <div class="card-info" style="display: flex; flex-direction: column;">
+                    <span class="card-label" style="color: #64748b; font-size: 0.9rem; font-weight: 500;">Comissão Mês</span>
+                    <span class="card-value" id="monthlyCommission" style="font-size: 1.8rem; font-weight: 700; color: var(--color-primary);">R$ 0,00</span>
+                </div>
+            </div>
+        </section>
 
-
-    <!-- Active Orders -->
-    <section class="tables-section active-orders-section">
-      <div class="section-header">
-        <div class="title-group">
-          <h3 class="section-title">Pedidos em Andamento</h3>
-        </div>
-      </div>
-      <div class="active-orders-grid" id="activeOrdersGrid">
-        <!-- Injected by TS -->
-      </div>
+        <!-- Detailed List -->
+        <section class="tables-section" style="margin-top: 2rem;">
+          <h3 class="section-title">Histórico de Comissões</h3>
+          <div class="table-container" style="background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden;">
+              <table class="data-table" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                  <tr style="background: #f8fafb; border-bottom: 1px solid #e2e8f0;">
+                    <th style="padding: 1rem; text-align: left; text-transform: uppercase; font-size: 0.8rem; color: #64748b;">ID Pedido</th>
+                    <th style="padding: 1rem; text-align: left; text-transform: uppercase; font-size: 0.8rem; color: #64748b;">Data Fechamento</th>
+                    <th style="padding: 1rem; text-align: left; text-transform: uppercase; font-size: 0.8rem; color: #64748b;">Mesa</th>
+                    <th style="padding: 1rem; text-align: left; text-transform: uppercase; font-size: 0.8rem; color: #64748b;">Total Venda</th>
+                    <th style="padding: 1rem; text-align: left; text-transform: uppercase; font-size: 0.8rem; color: #64748b;">Comissão</th>
+                  </tr>
+                </thead>
+                <tbody id="commissionTableBody">
+                    <!-- Loaded by TS -->
+                </tbody>
+              </table>
+          </div>
+        </section>
     </section>
 
-    <!-- Available Tables -->
-    <section class="tables-section available-section" id="availableTablesSection">
-      <div class="section-header">
-        <div class="title-group">
-          <h3 class="section-title">Mesas Disponíveis</h3>
-        </div>
+    <!-- Orders Section (Hidden by default) -->
+    <section id="orders-section" class="content-section" style="display: none;">
+      <!-- Search Bar -->
+      <div class="search-container" role="search" aria-label="Buscar pedidos" style="margin-bottom: 2rem;">
+        <span class="material-symbols-outlined search-icon" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--color-primary);">search</span>
+        <input type="text" id="ordersSearchInput" class="search-input" placeholder="Buscar por mesa..." style="width: 100%; padding: 1rem 1rem 1rem 3rem; border-radius: 12px; border: 1px solid #cbd5e1; outline: none;">
+      </div>
 
-      </div>
-      <div class="available-tables-grid">
-        <!-- Injected by TS -->
-      </div>
+      <!-- Open Orders -->
+      <section class="tables-section" style="background: transparent; box-shadow: none; padding: 0;">
+        <h3 class="section-title">Ordens Abertas</h3>
+        <div class="active-orders-grid" id="orders-open-grid">
+           <!-- Injected -->
+        </div>
+      </section>
+
+      <!-- Finished Orders -->
+      <section class="tables-section" style="background: transparent; box-shadow: none; padding: 0; margin-top: 2rem;">
+        <h3 class="section-title">Ordens Finalizadas</h3>
+        <div class="active-orders-grid" id="orders-finished-grid">
+           <!-- Injected -->
+        </div>
+      </section>
     </section>
   </main>
 
-
-
-
-
-  <script src="waiterMain.js"></script>
+  <script src="waiterMain.ts"></script>
 </body>
 
 </html>
-

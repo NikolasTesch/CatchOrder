@@ -29,6 +29,17 @@
   --radius: 12px;
 }
 
+body.dark-mode {
+  --bg-primary: #1a1a1a;
+  --bg-white: #2d2d2d;
+  --text-primary: #ffffff;
+  --text-secondary: #cccccc;
+  --border-light: #444444;
+  --color-danger-bg: #4a1c1c;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;

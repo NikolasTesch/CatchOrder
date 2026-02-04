@@ -59,12 +59,15 @@ class MenuController {
   private billServiceFeeEl: HTMLElement;
   private billTotalEl: HTMLElement;
   private btnPayPix: HTMLElement;
+  private btnConfirmPix: HTMLElement;
   private btnCallWaiter: HTMLElement;
 
   private products: Product[] = [];
   private categories: Category[] = [];
   private activeCategoryId: string | 'all' = 'all';
   private cart: CartItem[] = [];
+
+  private darkModeToggle: HTMLElement | null = null; // New Property
 
   constructor() {
     this.categoryListEl = document.getElementById('categoryList') as HTMLElement;
@@ -97,12 +100,18 @@ class MenuController {
     this.billServiceFeeEl = document.getElementById('billServiceFee') as HTMLElement;
     this.billTotalEl = document.getElementById('billTotal') as HTMLElement;
     this.btnPayPix = document.getElementById('btnPayPix') as HTMLElement;
+    this.btnConfirmPix = document.getElementById('btnConfirmPix') as HTMLElement;
     this.btnCallWaiter = document.getElementById('btnCallWaiter') as HTMLElement;
+
+    // Dark Mode
+    this.darkModeToggle = document.getElementById('darkModeToggle');
 
     this.init();
   }
 
   private async init() {
+    this.initDarkMode(); // Init Theme
+
     if (!this.checkSession()) return;
 
     this.renderTableInfo();
@@ -125,6 +134,36 @@ class MenuController {
     } catch (error) {
       console.error('Error initializing menu:', error);
       this.showError('Não foi possível carregar o cardápio. Tente novamente.');
+    }
+  }
+
+  /* Dark Mode Methods */
+  private initDarkMode() {
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    // Consistency check
+    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+      document.body.classList.add('dark-mode');
+      this.updateDarkModeIcon(true);
+    } else {
+      this.updateDarkModeIcon(false);
+    }
+  }
+
+  private toggleDarkMode() {
+    const isDark = document.body.classList.toggle('dark-mode');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    this.updateDarkModeIcon(isDark);
+  }
+
+  private updateDarkModeIcon(isDark: boolean) {
+    if (!this.darkModeToggle) return;
+    const icon = this.darkModeToggle.querySelector('span') || this.darkModeToggle.querySelector('i');
+    if (icon) {
+      // Use Lightbulb as requested
+      // Use far (Regular) and fas (Solid) aliases which are robust
+      icon.className = isDark ? 'fas fa-lightbulb' : 'far fa-lightbulb';
     }
   }
 
@@ -155,6 +194,11 @@ class MenuController {
   }
 
   private setupEventListeners() {
+    // Dark Mode Toggle
+    if (this.darkModeToggle) {
+      this.darkModeToggle.addEventListener('click', () => this.toggleDarkMode());
+    }
+
     if (this.searchInput) {
       this.searchInput.addEventListener('input', (e) => {
         const term = (e.target as HTMLInputElement).value.toLowerCase();
@@ -239,6 +283,9 @@ class MenuController {
     }
     if (this.btnPayPix) {
       this.btnPayPix.addEventListener('click', () => this.handlePayPix());
+    }
+    if (this.btnConfirmPix) {
+      this.btnConfirmPix.addEventListener('click', () => this.handleConfirmPix());
     }
     if (this.btnCallWaiter) {
       this.btnCallWaiter.addEventListener('click', () => this.handleCallWaiter());
@@ -652,12 +699,14 @@ class MenuController {
     }, 3000);
   }
 
-  /* Payment Handling Updates */
+
   private handlePayPix() {
     const billSummary = document.getElementById('billSummary');
     const paymentTotals = document.querySelector('.payment-totals') as HTMLElement;
     const pixQrContainer = document.getElementById('pixQrContainer');
     const btnPayPix = document.getElementById('btnPayPix') as HTMLElement;
+    const btnCallWaiter = document.getElementById('btnCallWaiter') as HTMLElement;
+    const btnConfirmPix = document.getElementById('btnConfirmPix') as HTMLElement;
 
     if (billSummary && paymentTotals && pixQrContainer && btnPayPix) {
       // Toggle view
@@ -665,23 +714,129 @@ class MenuController {
         // Show Pix
         billSummary.style.display = 'none';
         paymentTotals.style.display = 'none';
-        pixQrContainer.style.display = 'block';
+        pixQrContainer.style.display = 'flex'; // Changed to flex for centering
+
         btnPayPix.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Voltar';
+
+        if (btnCallWaiter) btnCallWaiter.style.display = 'none';
+        if (btnConfirmPix) btnConfirmPix.style.display = 'flex'; // Show confirm button
+
         this.showToast('Escaneie o QR Code para pagar.', 'success');
       } else {
         // Hide Pix (Back)
         billSummary.style.display = 'block';
         paymentTotals.style.display = 'block';
         pixQrContainer.style.display = 'none';
+
         btnPayPix.innerHTML = '<i class="fa-brands fa-pix"></i> Pagar com Pix';
+
+        if (btnCallWaiter) btnCallWaiter.style.display = 'flex';
+        if (btnConfirmPix) btnConfirmPix.style.display = 'none';
       }
     }
   }
 
-  private handleCallWaiter() {
+  private async handleConfirmPix() {
+    const tableId = sessionStorage.getItem(STORAGE_KEYS.TABLE);
+    if (!tableId) return;
+
+    // Loading state
+    if (this.btnConfirmPix) {
+      this.btnConfirmPix.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processando...';
+      (this.btnConfirmPix as HTMLButtonElement).disabled = true;
+    }
+
+    try {
+      // 1. Find Open Order ID
+      const allOrders = await ApiService.get<{ data: any[] }>('/orders');
+      const openOrder = allOrders.data.find((o: any) => o.table_id === tableId && o.status === 'OPEN');
+
+      if (!openOrder) {
+        this.showToast('Nenhum pedido aberto encontrado.', 'error');
+        if (this.btnConfirmPix) {
+          this.btnConfirmPix.innerHTML = '<i class="fa-solid fa-check-double"></i> Confirmar Pagamento';
+          (this.btnConfirmPix as HTMLButtonElement).disabled = false;
+        }
+        return;
+      }
+
+      // 2. Calculate Tip (10%)
+      const subtotal = openOrder.total || 0;
+      // If openOrder.total isn't updated with items, we might need to sum items locally or trust backend logic. 
+      // Assuming openOrder.total is correct or calculating from items if available.
+      // Better to calculate from items if we have them to be safe, but OrderModel updates total on add item.
+
+      const tip = subtotal * 0.10;
+
+      // 3. Close Order (closes Table automatically on backend)
+      await ApiService.patch(`/orders/${openOrder.id}/close`, {
+        tip: Math.round(tip) // Ensure integer cents
+      });
+
+      this.showToast('Pagamento confirmado e mesa liberada!', 'success');
+
+      // 3. Clear Session and Redirect
+      sessionStorage.removeItem(STORAGE_KEYS.TABLE);
+      sessionStorage.removeItem(STORAGE_KEYS.TABLE_NUMBER);
+
+      setTimeout(() => {
+        window.location.href = '/pages/tablePage.html';
+      }, 2000);
+
+    } catch (error) {
+      console.error('Error closing order:', error);
+      this.showToast('Erro ao confirmar pagamento.', 'error');
+
+      if (this.btnConfirmPix) {
+        this.btnConfirmPix.innerHTML = '<i class="fa-solid fa-check-double"></i> Confirmar Pagamento';
+        (this.btnConfirmPix as HTMLButtonElement).disabled = false;
+      }
+    }
+  }
+
+  private async handleCallWaiter() {
+    const tableId = sessionStorage.getItem(STORAGE_KEYS.TABLE);
     const tableNumber = sessionStorage.getItem(STORAGE_KEYS.TABLE_NUMBER);
+
     this.showToast(`Garçom chamado para a mesa ${tableNumber || ''}!`, 'success');
-    this.closePaymentModal();
+
+    if (!tableId) return;
+
+    if (this.btnCallWaiter) {
+      // Save original text?
+      this.btnCallWaiter.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Encerrando...';
+      (this.btnCallWaiter as HTMLButtonElement).disabled = true;
+    }
+
+    try {
+      // Find Open Order
+      const allOrders = await ApiService.get<{ data: any[] }>('/orders');
+      const openOrder = allOrders.data.find((o: any) => o.table_id === tableId && o.status === 'OPEN');
+
+      if (openOrder) {
+        await ApiService.patch(`/orders/${openOrder.id}/close`, { tip: 0 });
+      }
+
+      this.showToast('Mesa liberada para o próximo cliente!', 'success');
+
+      // Clear Session
+      sessionStorage.removeItem(STORAGE_KEYS.TABLE);
+      sessionStorage.removeItem(STORAGE_KEYS.TABLE_NUMBER);
+
+      // Redirect
+      setTimeout(() => {
+        window.location.href = '/pages/tablePage.html';
+      }, 2000);
+
+    } catch (error) {
+      console.error('Error closing table via waiter:', error);
+      this.showToast('Erro ao liberar mesa.', 'error');
+
+      if (this.btnCallWaiter) {
+        this.btnCallWaiter.innerHTML = '<i class="fa-solid fa-hand-holding-dollar"></i> Chamar Garçom';
+        (this.btnCallWaiter as HTMLButtonElement).disabled = false;
+      }
+    }
   }
 
   private openPaymentModal() {
@@ -697,6 +852,12 @@ class MenuController {
     if (paymentTotals) paymentTotals.style.display = 'block';
     if (pixQrContainer) pixQrContainer.style.display = 'none';
     if (btnPayPix) btnPayPix.innerHTML = '<i class="fa-brands fa-pix"></i> Pagar com Pix';
+
+    // Reset buttons visibility
+    const btnCallWaiter = document.getElementById('btnCallWaiter');
+    const btnConfirmPix = document.getElementById('btnConfirmPix');
+    if (btnCallWaiter) btnCallWaiter.style.display = 'flex';
+    if (btnConfirmPix) btnConfirmPix.style.display = 'none';
 
     this.paymentModal.classList.add('open');
     this.renderBill();

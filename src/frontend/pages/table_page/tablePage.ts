@@ -20,18 +20,57 @@ class TableSelector {
   private selectedTableNumber: number | null = null;
   private tables: TableData[] = [];
 
+  private darkModeToggle: HTMLElement | null = null;
+
   constructor() {
     this.gridContainer = document.getElementById('tablesGrid') as HTMLElement;
     this.confirmButton = document.getElementById('btnConfirm') as HTMLButtonElement;
+    this.darkModeToggle = document.getElementById('darkModeToggle');
     this.init();
   }
 
   private async init(): Promise<void> {
+    this.initDarkMode(); // Init theme
+
     await this.fetchTables();
     if (this.confirmButton) {
       this.confirmButton.addEventListener('click', () => this.handleConfirm());
     }
+
+    if (this.darkModeToggle) {
+      this.darkModeToggle.addEventListener('click', () => this.toggleDarkMode());
+    }
+
     this.checkUrlParams();
+  }
+
+  /* Dark Mode */
+  private initDarkMode() {
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    // Default to dark mode if checking against user request context where "dark mode" is often preferred? 
+    // Or stick to system. Stick to logic similar to waiterMain.
+    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+      document.body.classList.add('dark-mode');
+      this.updateDarkModeIcon(true);
+    } else {
+      this.updateDarkModeIcon(false);
+    }
+  }
+
+  private toggleDarkMode() {
+    const isDark = document.body.classList.toggle('dark-mode');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    this.updateDarkModeIcon(isDark);
+  }
+
+  private updateDarkModeIcon(isDark: boolean) {
+    if (!this.darkModeToggle) return;
+    const icon = this.darkModeToggle.querySelector('span') || this.darkModeToggle.querySelector('i');
+    if (icon) {
+      icon.className = isDark ? 'fas fa-lightbulb' : 'far fa-lightbulb';
+    }
   }
 
   private async fetchTables(): Promise<void> {
@@ -167,14 +206,45 @@ class TableSelector {
     }
   }
 
-  private handleConfirm(): void {
+  private async handleConfirm(): Promise<void> {
     if (!this.selectedTableId) return;
-    sessionStorage.setItem(STORAGE_KEYS.TABLE, this.selectedTableId);
-    if (this.selectedTableNumber !== null) {
-      sessionStorage.setItem(STORAGE_KEYS.TABLE_NUMBER, this.selectedTableNumber.toString());
+
+    // Loading state
+    if (this.confirmButton) {
+      this.confirmButton.disabled = true;
+      const originalText = this.confirmButton.textContent;
+      this.confirmButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Confirmando...';
     }
-    sessionStorage.setItem(STORAGE_KEYS.SESSION_STATUS, 'true');
-    window.location.href = '/pages/menuPage.html';
+
+    try {
+      // 1. Notify backend to occupy table (Triggers Waiter Assignment)
+      await ApiService.patch<{ message: string; data: any }>(`/tables/${this.selectedTableId}/status`, {
+        status: 'OCCUPIED'
+      });
+
+      // 2. Save Session
+      sessionStorage.setItem(STORAGE_KEYS.TABLE, this.selectedTableId);
+      if (this.selectedTableNumber !== null) {
+        sessionStorage.setItem(STORAGE_KEYS.TABLE_NUMBER, this.selectedTableNumber.toString());
+      }
+      sessionStorage.setItem(STORAGE_KEYS.SESSION_STATUS, 'true');
+
+      // 3. Redirect
+      window.location.href = '/pages/menuPage.html';
+
+    } catch (error) {
+      console.error('Error occupying table:', error);
+      alert('Erro ao confirmar mesa. Tente novamente ou escolha outra.');
+
+      // Reset button state
+      if (this.confirmButton) {
+        this.confirmButton.disabled = false;
+        this.confirmButton.textContent = `Confirmar Mesa ${this.selectedTableNumber ? this.formatNumber(this.selectedTableNumber) : ''}`;
+      }
+
+      // Refresh to reflect actual status
+      await this.fetchTables();
+    }
   }
 }
 

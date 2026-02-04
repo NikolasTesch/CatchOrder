@@ -649,7 +649,7 @@ class MenuController {
           name: p.name,
           description: p.description,
           price: p.price,
-          imageUrl: p.image_path,
+          imageUrl: p.image_path ? resolveImagePath(p.image_path) : undefined,
           categoryId: p.category_id,
           active: p.is_active === 1 || p.is_active === true,
         }));

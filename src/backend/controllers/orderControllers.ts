@@ -166,8 +166,9 @@ class OrdersController {
     try {
       const order_id = req.params.id as string;
       const item_id = req.params.itemId as string;
+      const quantity = req.query.quantity ? parseInt(req.query.quantity as string) : undefined;
 
-      const success = await OrderModel.removeItem(order_id, item_id);
+      const success = await OrderModel.removeItem(order_id, item_id, quantity);
 
       if (!success) {
         return res.status(404).json({ message: 'Item n\u00e3o encontrado no pedido' });

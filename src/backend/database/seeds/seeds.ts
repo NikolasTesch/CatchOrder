@@ -15,100 +15,163 @@ const categories = [
 const adminId = uuidv4();
 const waiterId = uuidv4();
 
-// Gerar IDs dos produtos (5 bebidas + 5 comidas)
-const productIds = Array.from({ length: 10 }, () => uuidv4());
+// Gerar IDs dos produtos (7 bebidas + 10 comidas = 17 produtos)
+const productIds = Array.from({ length: 17 }, () => uuidv4());
 
 const products = [
-  // Bebidas (5 produtos)
+  // Bebidas (7 produtos)
   {
     id: productIds[0],
     category_id: categoryBebidasId,
     name: 'Água Mineral',
-    description: 'Água mineral 500ml',
+    description: 'Água mineral sem gás 500ml',
     price: 500,
-    image_path: '/img/agua-mineral.jpg',
+    image_path: '/img/drink/agua.webp',
     is_active: true,
   },
   {
     id: productIds[1],
     category_id: categoryBebidasId,
-    name: 'Refrigerante',
-    description: 'Refrigerante 350ml (Vários sabores)',
-    price: 800,
-    image_path: '/img/refrigerante.jpg',
+    name: 'Café Expresso',
+    description: 'Café expresso intenso',
+    price: 600,
+    image_path: '/img/drink/cafe.webp',
     is_active: true,
   },
   {
     id: productIds[2],
     category_id: categoryBebidasId,
-    name: 'Suco Natural',
-    description: 'Suco natural de laranja 350ml',
-    price: 1000,
-    image_path: '/img/suco-natural.jpg',
+    name: 'Caipirinha',
+    description: 'Caipirinha tradicional de limão',
+    price: 1500,
+    image_path: '/img/drink/caipirinha.webp',
     is_active: true,
   },
   {
     id: productIds[3],
     category_id: categoryBebidasId,
-    name: 'Café Expresso',
-    description: 'Café expresso italiano',
-    price: 600,
-    image_path: '/img/cafe-expresso.jpg',
+    name: 'Cerveja Artesanal',
+    description: 'Cerveja artesanal gelada',
+    price: 1200,
+    image_path: '/img/drink/cerveja.webp',
     is_active: true,
   },
   {
     id: productIds[4],
     category_id: categoryBebidasId,
-    name: 'Cerveja',
-    description: 'Cerveja long neck gelada',
-    price: 900,
-    image_path: '/img/cerveja.jpg',
+    name: 'Milkshake',
+    description: 'Milkshake cremoso de chocolate',
+    price: 1800,
+    image_path: '/img/drink/milkshake.webp',
     is_active: true,
   },
-  // Comidas (5 produtos)
   {
     id: productIds[5],
-    category_id: categoryComidasId,
-    name: 'Hambúrguer',
-    description: 'Hambúrguer artesanal com fritas',
-    price: 2500,
-    image_path: '/img/hamburguer.jpg',
+    category_id: categoryBebidasId,
+    name: 'Refrigerante',
+    description: 'Refrigerante lata 350ml',
+    price: 800,
+    image_path: '/img/drink/refrigerante.webp',
     is_active: true,
   },
   {
     id: productIds[6],
-    category_id: categoryComidasId,
-    name: 'Pizza Margherita',
-    description: 'Pizza margherita tradicional',
-    price: 3500,
-    image_path: '/img/pizza-margherita.jpg',
+    category_id: categoryBebidasId,
+    name: 'Suco Natural',
+    description: 'Suco natural de frutas da estação',
+    price: 1000,
+    image_path: '/img/drink/suco.webp',
     is_active: true,
   },
+  // Comidas (10 produtos)
   {
     id: productIds[7],
     category_id: categoryComidasId,
-    name: 'Salada Caesar',
-    description: 'Salada caesar com frango grelhado',
-    price: 1800,
-    image_path: '/img/salada-caesar.jpg',
+    name: 'Açaí com Peixe',
+    description: 'Açaí tradicional com peixe frito',
+    price: 3500,
+    image_path: '/img/food/acai-peixe.webp',
     is_active: true,
   },
   {
     id: productIds[8],
     category_id: categoryComidasId,
-    name: 'Filé à Parmegiana',
-    description: 'Filé à parmegiana com arroz e fritas',
+    name: 'Spaghetti Carbonara',
+    description: 'Massa italiana clássica com pancetta e ovos',
     price: 4200,
-    image_path: '/img/file-parmegiana.jpg',
+    image_path: '/img/food/carbonara.webp',
     is_active: true,
   },
   {
     id: productIds[9],
     category_id: categoryComidasId,
-    name: 'Pastel Assado',
-    description: 'Pastel assado (3 unidades)',
-    price: 1500,
-    image_path: '/img/pastel-assado.jpg',
+    name: 'Carne Assada',
+    description: 'Carne assada suculenta com batatas rústicas',
+    price: 4500,
+    image_path: '/img/food/carne-assada.webp',
+    is_active: true,
+  },
+  {
+    id: productIds[10],
+    category_id: categoryComidasId,
+    name: 'Frango no Tucupi',
+    description: 'Prato típico com frango e tucupi',
+    price: 3800,
+    image_path: '/img/food/frango-tucupi.webp',
+    is_active: true,
+  },
+  {
+    id: productIds[11],
+    category_id: categoryComidasId,
+    name: 'Gyoza',
+    description: 'Porção de 6 unidades de Gyoza',
+    price: 2200,
+    image_path: '/img/food/gyoza.webp',
+    is_active: true,
+  },
+  {
+    id: productIds[12],
+    category_id: categoryComidasId,
+    name: 'Maniçoba',
+    description: 'Prato tradicional paraense',
+    price: 4000,
+    image_path: '/img/food/manicoba.webp',
+    is_active: true,
+  },
+  {
+    id: productIds[13],
+    category_id: categoryComidasId,
+    name: 'Pizza Calabresa',
+    description: 'Pizza de calabresa com cebola e queijo',
+    price: 3500,
+    image_path: '/img/food/pizza.webp',
+    is_active: true,
+  },
+  {
+    id: productIds[14],
+    category_id: categoryComidasId,
+    name: 'Salada Caesar',
+    description: 'Salada leve com frango grelhado e molho especial',
+    price: 2800,
+    image_path: '/img/food/salada-frango.webp',
+    is_active: true,
+  },
+  {
+    id: productIds[15],
+    category_id: categoryComidasId,
+    name: 'Combinado Sushi',
+    description: 'Seleção especial de sushis e sahimis',
+    price: 6500,
+    image_path: '/img/food/sushi.webp',
+    is_active: true,
+  },
+  {
+    id: productIds[16],
+    category_id: categoryComidasId,
+    name: 'Tacacá',
+    description: 'Tacacá quente com jambu e camarão',
+    price: 2500,
+    image_path: '/img/food/tacaca.webp',
     is_active: true,
   },
 ];
@@ -135,12 +198,13 @@ const tables = [
 const orderIds = Array.from({ length: 10 }, () => uuidv4());
 
 const orders = [
+  // Pedidos Abertos (Mesas 6-10)
   {
     id: orderIds[0],
     table_id: tableIds[5],
     user_id: waiterId,
     status: 'OPEN',
-    total: 0,
+    total: 5900,
     opened_at: new Date('2026-01-30T10:00:00'),
     closed_at: null as Date | null,
   },
@@ -149,7 +213,7 @@ const orders = [
     table_id: tableIds[6],
     user_id: waiterId,
     status: 'OPEN',
-    total: 0,
+    total: 8500,
     opened_at: new Date('2026-01-30T10:30:00'),
     closed_at: null as Date | null,
   },
@@ -158,7 +222,7 @@ const orders = [
     table_id: tableIds[7],
     user_id: waiterId,
     status: 'OPEN',
-    total: 0,
+    total: 3100,
     opened_at: new Date('2026-01-30T11:00:00'),
     closed_at: null as Date | null,
   },
@@ -167,7 +231,7 @@ const orders = [
     table_id: tableIds[8],
     user_id: waiterId,
     status: 'OPEN',
-    total: 0,
+    total: 3800,
     opened_at: new Date('2026-01-30T11:30:00'),
     closed_at: null as Date | null,
   },
@@ -176,18 +240,18 @@ const orders = [
     table_id: tableIds[9],
     user_id: waiterId,
     status: 'OPEN',
-    total: 0,
+    total: 4700,
     opened_at: new Date('2026-01-30T12:00:00'),
     closed_at: null as Date | null,
   },
-  // Pedidos fechados
+  // Pedidos Fechados (Mesas 1-5 que agora estão Available)
   {
     id: orderIds[5],
     table_id: tableIds[0],
     user_id: waiterId,
     status: 'CLOSED',
-    total: 6600,
-    tip: 660,
+    total: 8600,
+    tip: 860,
     opened_at: new Date('2026-01-29T14:00:00'),
     closed_at: new Date('2026-01-29T15:30:00') as Date | null,
   },
@@ -206,8 +270,8 @@ const orders = [
     table_id: tableIds[2],
     user_id: waiterId,
     status: 'CLOSED',
-    total: 4900,
-    tip: 490,
+    total: 9500,
+    tip: 950,
     opened_at: new Date('2026-01-29T18:00:00'),
     closed_at: new Date('2026-01-29T19:00:00') as Date | null,
   },
@@ -216,8 +280,8 @@ const orders = [
     table_id: tableIds[3],
     user_id: waiterId,
     status: 'CLOSED',
-    total: 9200,
-    tip: 920,
+    total: 7300,
+    tip: 730,
     opened_at: new Date('2026-01-30T08:00:00'),
     closed_at: new Date('2026-01-30T09:15:00') as Date | null,
   },
@@ -226,8 +290,8 @@ const orders = [
     table_id: tableIds[4],
     user_id: waiterId,
     status: 'CLOSED',
-    total: 5700,
-    tip: 570,
+    total: 4500,
+    tip: 450,
     opened_at: new Date('2026-01-30T09:30:00'),
     closed_at: new Date('2026-01-30T10:45:00') as Date | null,
   },
@@ -235,167 +299,154 @@ const orders = [
 
 // Itens dos pedidos
 const orderItems = [
-  // Pedido 1 (Mesa 6 - Carlos)
+  // Pedido 0 (Aberto) -> 2x Cerveja + 1x Pizza Calabresa
   {
     id: uuidv4(),
     order_id: orderIds[0],
-    product_id: productIds[5], // Hambúrguer
+    product_id: productIds[3],
     quantity: 2,
-    unit_price: 2500,
+    unit_price: 1200,
   },
   {
     id: uuidv4(),
     order_id: orderIds[0],
-    product_id: productIds[1], // Refrigerante
-    quantity: 2,
-    unit_price: 800,
-  },
-  // Pedido 2 (Mesa 7 - Ana)
-  {
-    id: uuidv4(),
-    order_id: orderIds[1],
-    product_id: productIds[6], // Pizza
+    product_id: productIds[13],
     quantity: 1,
     unit_price: 3500,
   },
+  // Pedido 1 (Aberto) -> 2x Suco + 1x Sushi
   {
     id: uuidv4(),
     order_id: orderIds[1],
-    product_id: productIds[4], // Cerveja
-    quantity: 3,
-    unit_price: 900,
-  },
-  // Pedido 3 (Mesa 8 - Pedro)
-  {
-    id: uuidv4(),
-    order_id: orderIds[2],
-    product_id: productIds[8], // Filé à Parmegiana
-    quantity: 1,
-    unit_price: 4200,
-  },
-  {
-    id: uuidv4(),
-    order_id: orderIds[2],
-    product_id: productIds[2], // Suco Natural
-    quantity: 1,
+    product_id: productIds[6],
+    quantity: 2,
     unit_price: 1000,
   },
-  // Pedido 4 (Mesa 9 - Carlos)
+  {
+    id: uuidv4(),
+    order_id: orderIds[1],
+    product_id: productIds[15],
+    quantity: 1,
+    unit_price: 6500,
+  },
+  // Pedido 2 (Aberto) -> 1x Cafe + 1x Tacaca
+  {
+    id: uuidv4(),
+    order_id: orderIds[2],
+    product_id: productIds[1],
+    quantity: 1,
+    unit_price: 600,
+  },
+  {
+    id: uuidv4(),
+    order_id: orderIds[2],
+    product_id: productIds[16],
+    quantity: 1,
+    unit_price: 2500,
+  },
+  // Pedido 3 (Aberto) -> 2x Refri + 1x Gyoza
   {
     id: uuidv4(),
     order_id: orderIds[3],
-    product_id: productIds[7], // Salada Caesar
+    product_id: productIds[5],
     quantity: 2,
-    unit_price: 1800,
+    unit_price: 800,
   },
   {
     id: uuidv4(),
     order_id: orderIds[3],
-    product_id: productIds[0], // Água Mineral
-    quantity: 2,
+    product_id: productIds[11],
+    quantity: 1,
+    unit_price: 2200,
+  },
+  // Pedido 4 (Aberto) -> 1x Agua + 1x Carbonara
+  {
+    id: uuidv4(),
+    order_id: orderIds[4],
+    product_id: productIds[0],
+    quantity: 1,
     unit_price: 500,
   },
-  // Pedido 5 (Mesa 10 - Ana)
   {
     id: uuidv4(),
     order_id: orderIds[4],
-    product_id: productIds[9], // Pastel Assado
-    quantity: 3,
-    unit_price: 1500,
-  },
-  {
-    id: uuidv4(),
-    order_id: orderIds[4],
-    product_id: productIds[3], // Café Expresso
-    quantity: 2,
-    unit_price: 600,
-  },
-  // Pedido fechado 1 (Mesa 1 - Carlos)
-  {
-    id: uuidv4(),
-    order_id: orderIds[5],
-    product_id: productIds[5], // Hambúrguer
-    quantity: 2,
-    unit_price: 2500,
-  },
-  {
-    id: uuidv4(),
-    order_id: orderIds[5],
-    product_id: productIds[1], // Refrigerante
-    quantity: 2,
-    unit_price: 800,
-  },
-  // Pedido fechado 2 (Mesa 2 - Ana)
-  {
-    id: uuidv4(),
-    order_id: orderIds[6],
-    product_id: productIds[8], // Filé à Parmegiana
+    product_id: productIds[8],
     quantity: 1,
     unit_price: 4200,
   },
+
+  // Pedido 5 (Fechado) -> 2x Pizza + 2x Refri
   {
     id: uuidv4(),
-    order_id: orderIds[6],
-    product_id: productIds[2], // Suco Natural
-    quantity: 2,
-    unit_price: 1000,
-  },
-  {
-    id: uuidv4(),
-    order_id: orderIds[6],
-    product_id: productIds[4], // Cerveja
-    quantity: 2,
-    unit_price: 900,
-  },
-  // Pedido fechado 3 (Mesa 3 - Pedro)
-  {
-    id: uuidv4(),
-    order_id: orderIds[7],
-    product_id: productIds[9], // Pastel Assado
-    quantity: 2,
-    unit_price: 1500,
-  },
-  {
-    id: uuidv4(),
-    order_id: orderIds[7],
-    product_id: productIds[4], // Cerveja
-    quantity: 2,
-    unit_price: 900,
-  },
-  // Pedido fechado 4 (Mesa 4 - Carlos)
-  {
-    id: uuidv4(),
-    order_id: orderIds[8],
-    product_id: productIds[6], // Pizza Margherita
+    order_id: orderIds[5],
+    product_id: productIds[13],
     quantity: 2,
     unit_price: 3500,
   },
   {
     id: uuidv4(),
-    order_id: orderIds[8],
-    product_id: productIds[1], // Refrigerante
-    quantity: 3,
+    order_id: orderIds[5],
+    product_id: productIds[5],
+    quantity: 2,
     unit_price: 800,
   },
-  // Pedido fechado 5 (Mesa 5 - Ana)
+  // Pedido 6 (Fechado) -> 1x Carne Assada + 2x Milkshake
   {
     id: uuidv4(),
-    order_id: orderIds[9],
-    product_id: productIds[7], // Salada Caesar
+    order_id: orderIds[6],
+    product_id: productIds[9],
+    quantity: 1,
+    unit_price: 4500,
+  },
+  {
+    id: uuidv4(),
+    order_id: orderIds[6],
+    product_id: productIds[4],
     quantity: 2,
     unit_price: 1800,
   },
+  // Pedido 7 (Fechado) -> 1x Sushi + 2x Caipirinha
+  {
+    id: uuidv4(),
+    order_id: orderIds[7],
+    product_id: productIds[15],
+    quantity: 1,
+    unit_price: 6500,
+  },
+  {
+    id: uuidv4(),
+    order_id: orderIds[7],
+    product_id: productIds[2],
+    quantity: 2,
+    unit_price: 1500,
+  },
+  // Pedido 8 (Fechado) -> 1x Frango Tucupi + 1x Acai
+  {
+    id: uuidv4(),
+    order_id: orderIds[8],
+    product_id: productIds[10],
+    quantity: 1,
+    unit_price: 3800,
+  },
+  {
+    id: uuidv4(),
+    order_id: orderIds[8],
+    product_id: productIds[7],
+    quantity: 1,
+    unit_price: 3500,
+  },
+  // Pedido 9 (Fechado) -> 1x Manicoba + 1x Agua
   {
     id: uuidv4(),
     order_id: orderIds[9],
-    product_id: productIds[3], // Café Expresso
-    quantity: 3,
-    unit_price: 600,
+    product_id: productIds[12],
+    quantity: 1,
+    unit_price: 4000,
   },
   {
     id: uuidv4(),
     order_id: orderIds[9],
-    product_id: productIds[0], // Água Mineral
+    product_id: productIds[0],
     quantity: 1,
     unit_price: 500,
   },

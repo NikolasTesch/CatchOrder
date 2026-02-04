@@ -484,14 +484,19 @@ body.dark-mode .logo-image {
 }
 
 /* Dark Mode Overrides */
+body.dark-mode .main-header,
 body.dark-mode .product-card,
 body.dark-mode .order-summary-card {
-  background-color: var(--bg-dark-secondary, #1f2937);
+  background-color: rgba(30, 41, 59, 0.7) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 body.dark-mode .order-card-header {
-  background-color: #1e6375;
-  /* Same as light mode --color-primary-light */
+  background-color: rgba(30, 41, 59, 0.8) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 body.dark-mode .card-footer-row .btn-add-action {
@@ -513,8 +518,8 @@ body.dark-mode .obs-textarea {
 }
 
 body.dark-mode .order-card-footer {
-  background-color: var(--bg-dark, #111827);
-  border-top-color: #374151;
+  background-color: transparent !important;
+  border-top-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Responsive */
@@ -693,8 +698,12 @@ body.user-modal-open .user-modal-content {
 }
 
 /* Dark mode user modal */
-body.dark-mode .user-modal-content {
-  background-color: var(--bg-dark, #1a1a1a);
+body.dark-mode .user-modal-content,
+body.dark-mode .quantity-modal-content {
+  background-color: rgba(30, 41, 59, 0.9) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 body.dark-mode .user-modal-header {
@@ -913,4 +922,8 @@ body.dark-mode .btn-cancel-modal {
   background: #fef2f2;
   border-color: #fee2e2;
   color: #ef4444;
-}
+}/ *  
+ f o r c e  
+ u p d a t e  
+ * /  
+ 

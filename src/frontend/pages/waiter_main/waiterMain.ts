@@ -714,6 +714,8 @@ async function loadCommissions() {
   try {
     if (!currentUser) return;
 
+    if (allTables.length === 0) await loadTables();
+
     const response = await ApiService.get<{ data: Order[] }>("/orders");
     const orders = response.data || [];
 
@@ -802,11 +804,19 @@ function renderCommissionsView(orders: Order[]) {
             }
           }
 
+          // Find Table Number
+          const table = allTables.find((t) => t.id === order.table_id);
+          const tableNumber = table
+            ? table.number < 10
+              ? "0" + table.number
+              : table.number
+            : "?";
+
           return `
                     <tr style="border-bottom: 1px solid #f1f5f9;">
                         <td style="padding: 1rem; color: var(--color-primary);">#${order.id.slice(0, 8)}</td>
                         <td style="padding: 1rem; color: var(--color-primary);">${dateStr}</td>
-                        <td style="padding: 1rem; color: var(--color-primary);">${order.table_id}</td> 
+                        <td style="padding: 1rem; color: var(--color-primary);">${tableNumber}</td> 
                         <td style="padding: 1rem; color: #64748b;">${formatCurrency(total)}</td>
                         <td style="padding: 1rem; color: ${finalTip > 0 ? "#10b981" : "#94a3b8"}; font-weight: 600;">${finalTip > 0 ? formatCurrency(finalTip) : "---"}</td>
                     </tr>

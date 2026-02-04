@@ -1,6 +1,6 @@
 ﻿/* Importando as variáveis do global e sobrescrevendo o necessário */
 :root {
-  --header-height: 70px;
+  --header-height: 80px;
   --color-primary: #154a57;
   --color-secondary: #f4ac45;
   --color-danger: #9f2727;
@@ -22,20 +22,56 @@ body {
 
 /* --- SIDEBAR --- */
 .sidebar {
-  position: fixed;
-  top: 0;
-  top: 0;
-  left: 0;
-  height: 100vh;
   width: var(--sidebar-width);
+  position: fixed;
+  top: var(--header-height);
+  bottom: 0;
+  left: 0;
+  z-index: 40;
+  padding: 1.5rem 1rem;
+  border-right: 1px solid var(--border-glass);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   background-color: white;
-  z-index: 1010;
-  transform: translateX(-100%);
-  transition: transform 0.3s ease;
-  box-shadow: 2px 0 10px rgba(0,0,0,0.05);
   display: flex;
   flex-direction: column;
-  padding-top: var(--header-height);
+}
+
+.sidebar-header {
+  padding: 0 0 1.5rem 0; /* Padding adjustment if needed, but gest_main doesn't seem to have this specific header class used in the same way, keeping it lighter */
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  margin-bottom: 0.5rem;
+}
+
+.brand-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logo-circle {
+  width: 3rem;
+  height: 3rem;
+  background-color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.logo-circle img {
+  width: 70%;
+  height: 70%;
+  object-fit: contain;
+}
+
+.brand-text {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--color-primary);
+  letter-spacing: -0.02em;
 }
 
 .sidebar.active {
@@ -43,48 +79,76 @@ body {
 }
 
 .sidebar-nav {
-  padding: 1.5rem 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  padding: 0; /* Removing padding as it is handled by sidebar */
 }
 
 .nav-item {
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 1rem 1.5rem;
-  border-radius: 12px;
-  color: #64748b;
-  font-weight: 500;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  color: var(--text-muted);
+  cursor: pointer;
   transition: all 0.2s;
-  border: none;
+  font-weight: 500;
   background: transparent;
   width: 100%;
   text-align: left;
-  cursor: pointer;
-  text-decoration: none; /* In case it's an anchor */
+  border: none;
+  text-decoration: none;
 }
 
-.nav-item:hover, .nav-item.active {
-  background-color: rgba(21, 74, 87, 0.05);
+.nav-item:hover {
+  background: rgba(21, 74, 87, 0.05);
   color: var(--color-primary);
 }
 
+.nav-item.active {
+  background: rgba(21, 74, 87, 0.08); /* Lighter background */
+  color: var(--color-primary);
+  border-left: 4px solid var(--color-primary); /* Active indicator */
+  font-weight: 700;
+  border-radius: 4px; /* Slight adjustment for square left edge if needed, or keep 8px */
+}
+
 .nav-item .material-symbols-outlined {
-  font-size: 1.5rem;
+  font-size: 22px;
+  color: var(--color-primary);
+  opacity: 0.7;
+}
+
+.nav-item.active .material-symbols-outlined {
+  opacity: 1;
 }
 
 body.dark-mode .sidebar {
+  background-color: #1a1a1a;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .sidebar-header {
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode .logo-circle {
   background-color: #242424;
-  box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .brand-text {
+  color: white;
 }
 
 body.dark-mode .nav-item {
   color: #a0a0a0;
 }
 
-body.dark-mode .nav-item:hover, body.dark-mode .nav-item.active {
+body.dark-mode .nav-item:hover,
+body.dark-mode .nav-item.active {
   background-color: rgba(255, 255, 255, 0.05);
   color: white;
 }
@@ -92,8 +156,9 @@ body.dark-mode .nav-item:hover, body.dark-mode .nav-item.active {
 /* Add desktop persistence */
 @media (min-width: 1024px) {
   .sidebar {
-    transform: translateX(0) !important;
+    transform: translateX(0);
   }
+
   
   .page-wrapper {
     margin-left: var(--sidebar-width);
@@ -101,7 +166,7 @@ body.dark-mode .nav-item:hover, body.dark-mode .nav-item.active {
   }
 
   .main-header {
-    padding-left: calc(var(--sidebar-width) + 2rem) !important;
+    padding-left: 2rem !important; /* Standard padding */
   }
 
   #menuBtn {
@@ -119,16 +184,15 @@ body.dark-mode .nav-item:hover, body.dark-mode .nav-item.active {
   left: 0;
   width: 100%;
   box-sizing: border-box;
-  /* Fix for 100% width + padding */
-  height: 64px;
+  height: 80px; /* Increased to match common premium header heights */
   background-color: white;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 4rem 0 2rem;
   z-index: 1000;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  transition: background-color 0.3s ease;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.03);
+  transition: all 0.3s ease;
 }
 
 .header-left {
@@ -138,9 +202,10 @@ body.dark-mode .nav-item:hover, body.dark-mode .nav-item.active {
 }
 
 .header-title {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--color-primary);
+  font-family: var(--font-display);
 }
 
 .header-center {
@@ -150,9 +215,9 @@ body.dark-mode .nav-item:hover, body.dark-mode .nav-item.active {
 }
 
 .logo-image {
-  height: 90px;
+  height: 48px; /* Standard logo height for 80px header */
+  width: auto;
   transition: transform 0.3s;
-  /* Filter specific to this project logo color if needed, otherwise default */
 }
 
 .header-actions {
@@ -164,43 +229,74 @@ body.dark-mode .nav-item:hover, body.dark-mode .nav-item.active {
 /* User Profile & Search Bar removed from header - styles can be cleaned or repurposed */
 
 /* DARK MODE OVERRIDES */
+/* DARK MODE OVERRIDES */
 body.dark-mode {
-  --bg-page: #1a1a1a;
-  --text-main: #ffffff;
-  --text-secondary: #cccccc;
-  --text-muted: #999999;
+  --bg-page: #0b1120;
+  --text-main: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --border-glass: rgba(255, 255, 255, 0.06);
 }
 
 body.dark-mode .main-header {
-  background: #242424;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  background-color: rgba(30, 41, 59, 0.7); /* Glassmorphism #1E293B */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid var(--border-glass);
+}
+
+body.dark-mode .sidebar {
+  background-color: rgba(30, 41, 59, 0.7); /* Glassmorphism #1E293B */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-right: 1px solid var(--border-glass);
 }
 
 body.dark-mode .tables-section {
-  background: #334155; /* Slate 700 - Lighter for better contrast */
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(30, 41, 59, 0.6); /* Slightly more transparent */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-glass);
+}
+
+body.dark-mode .available-section {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+body.dark-mode .active-orders-section,
+body.dark-mode #orders-section .tables-section,
+body.dark-mode #commissions-section .tables-section {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 body.dark-mode .section-title {
-  color: var(--text-title) !important; /* Ensure standardized light color */
+  color: #e0e7ff !important; /* Indigo 100 */
 }
 
 body.dark-mode .header-title {
-  color: var(--text-title) !important;
+  color: #e0e7ff !important;
 }
 
 body.dark-mode .logo-image {
-  filter: brightness(0) invert(1);
-  opacity: 0.9;
+  filter: brightness(0) invert(1) opacity(0.9);
 }
 
 body.dark-mode .summary-date {
-  color: rgba(255, 255, 255, 0.9); /* Much lighter */
+  color: #94a3b8;
 }
 
 body.dark-mode .count-badge {
-  background: #475569;
+  background: #1e293b;
   color: #f8fafc;
 }
 
@@ -211,29 +307,38 @@ body.dark-mode .count-badge {
   flex-direction: column;
   align-items: flex-end;
   margin-right: 1.5rem;
-  padding: 0.5rem 1rem;
-  background: rgba(33, 37, 41, 0.4);
-  border-radius: 8px;
-  min-width: 120px;
+  padding: 0.6rem 1.2rem;
+  background: white;
+  border: 1.5px solid var(--color-primary-light);
+  border-radius: 14px;
+  min-width: 150px;
+  box-shadow: 0 4px 15px rgba(21, 74, 87, 0.08);
 }
 
 body.dark-mode .commission-display {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(30, 41, 59, 0.6);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .commission-label {
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  color: #94a3b8;
+  color: var(--color-primary-light);
   letter-spacing: 0.5px;
   text-transform: uppercase;
+  margin-bottom: 2px;
+  opacity: 0.9;
 }
 
 .commission-value {
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   font-weight: 800;
+  color: var(--color-secondary-dark);
+  line-height: 1;
+}
+
+body.dark-mode .commission-value {
   color: var(--color-secondary);
-  line-height: 1.2;
 }
 
 .btn-new-order {
@@ -314,8 +419,11 @@ body.dark-mode .section-title {
 }
 
 body.dark-mode .active-order-card {
-  background: #1e1e1e; /* Darker card background */
-  border-color: #333;
+  background-color: rgba(30, 41, 59, 0.6); /* Glassmorphism #1E293B */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .active-order-card:hover {
@@ -414,13 +522,13 @@ body.dark-mode .item-qty {
 }
 
 body.dark-mode .order-card-footer {
-  border-top-color: #333;
+  border-top-color: rgba(255, 255, 255, 0.1);
 }
 
 .order-price {
   font-size: 1.4rem;
   font-weight: 800;
-  color: var(--color-secondary);
+  color: var(--color-success);
 }
 
 .btn-edit-order {
@@ -514,19 +622,9 @@ body.dark-mode .new-order-icon {
   font-size: 0.9rem;
 }
 
-/* Title bar accent */
+/* Title bar style */
 .section-title {
   padding-left: 0;
-}
-
-.section-title::before {
-  content: '';
-  display: inline-block;
-  width: 6px;
-  height: 24px;
-  background-color: var(--color-secondary);
-  margin-right: 12px;
-  border-radius: 4px;
 }
 
 /* Mobile Responsiveness */
@@ -666,9 +764,9 @@ body.dark-mode .data-table td {
 }
 
 body.dark-mode .search-input {
-  background: #333;
+  background: rgba(30, 41, 59, 0.6);
   color: white;
-  border-color: #444 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
 body.dark-mode .search-input:focus {
@@ -701,7 +799,9 @@ body.dark-mode .search-input:focus {
 }
 
 body.dark-mode .table-card {
-    background: #1e1e1e;
+    background-color: rgba(30, 41, 59, 0.6); /* Glassmorphism #1E293B */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-color: #333;
 }
 
@@ -757,6 +857,14 @@ body.dark-mode .table-card .table-number {
     text-transform: uppercase;
 }
 
+.table-card .card-footer {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding-top: 0.5rem;
+    background: transparent;
+}
+
 .table-card.available .status-badge {
     background: rgba(16, 185, 129, 0.1);
     color: #10b981;
@@ -768,6 +876,33 @@ body.dark-mode .table-card .table-number {
 }
 
 /* Occupied Specifics */
+
+/* --- DARK MODE FIXES FOR COMMISSIONS --- */
+body.dark-mode .summary-card {
+  background: rgba(30, 41, 59, 0.6) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+body.dark-mode .table-container {
+  background: rgba(30, 41, 59, 0.6) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+body.dark-mode .data-table td {
+  color: white !important;
+  border-bottom-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+body.dark-mode .data-table th {
+  color: #6366f1 !important; /* Highlight Purple (Indigo 500) */
+  background: #0f172a !important; /* Darker header background */
+  border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+  font-weight: 700;
+}
 .table-card.occupied {
     background: #fff1f2;
     border-color: #fecaca;

@@ -35,11 +35,15 @@ router.get('/server09/pages/sellingPage.html', serveSellingPage);
 // 3. Root & App Redirects
 // 3. Root & App Redirects
 router.get('/', (req, res) => {
-  res.redirect('/pages/sellingPage.html');
+  res.redirect('pages/sellingPage.html');
 });
 
 router.get('/server09', (req, res) => {
-  res.redirect('/server09/pages/sellingPage.html');
+  // Ensure trailing slash for correct relative linking in browser
+  if (!req.originalUrl.endsWith('/')) {
+    return res.redirect(301, req.originalUrl + '/');
+  }
+  res.redirect('pages/sellingPage.html');
 });
 
 // App Entry Points

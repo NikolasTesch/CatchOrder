@@ -640,7 +640,6 @@ function showUserForm(userId: string | null = null) {
       <div class="form-group">
         <label class="form-label">Função</label>
         <select class="form-select" name="role" required>
-          <option value="admin" ${user?.role === "admin" ? "selected" : ""}>Admin</option>
           <option value="manager" ${user?.role === "manager" ? "selected" : ""}>Manager</option>
           <option value="waiter" ${user?.role === "waiter" ? "selected" : ""}>Waiter</option>
         </select>
@@ -1268,7 +1267,7 @@ function showCategoryForm(categoryId: string | null = null) {
       </div>
       <div class="form-group">
         <label class="form-label">Slug</label>
-        <input type="text" class="form-input" name="slug" value="${category?.slug || ""}" required maxlength="30" pattern="[a-z0-9-]+" title="Apenas letras minúsculas, números e hifens.">
+        <input type="text" class="form-input" name="slug" value="${category?.slug || ""}" maxlength="30" pattern="[a-z0-9-]+" title="Apenas letras minúsculas, números e hifens.">
       </div>
       <div class="form-actions">
         <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>

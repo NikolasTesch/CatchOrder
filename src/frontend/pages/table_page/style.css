@@ -1,0 +1,261 @@
+:root {
+  /* --- PALETA CATCHORDER --- */
+  --color-primary: #154a57;
+  --color-primary-dark: #0d3540;
+  --color-secondary: #f4ac45;
+
+  --color-success: #28a745;
+  --color-success-light: #48c765;
+  /* Mint da imagem */
+
+  --color-danger: #9f2727;
+  --color-danger-light: #c53030;
+  /* Tom avermelhado */
+  --color-danger-bg: #ffeaea;
+  /* Fundo suave para ocupado */
+
+  --bg-primary: #fcf7f8;
+  --bg-white: #ffffff;
+
+  --text-primary: #000000;
+  --text-secondary: #666666;
+  --text-white: #ffffff;
+
+  --border-light: #e0e0e0;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  --radius: 12px;
+}
+
+body.dark-mode {
+  --bg-primary: #1a1a1a;
+  --bg-white: #2d2d2d;
+  --text-primary: #ffffff;
+  --text-secondary: #cccccc;
+  --border-light: #444444;
+  --color-danger-bg: #4a1c1c;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  padding-bottom: 80px;
+  /* Espaço para o botão flutuante */
+}
+
+.container {
+  width: 100%;
+  max-width: 900px;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+.brand-name {
+  font-size: 2rem;
+  color: var(--color-primary);
+  font-weight: 800;
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+/* --- GRID DE MESAS --- */
+.tables-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 30px;
+  width: 100%;
+  margin-top: 20px;
+}
+
+@media (min-width: 450px) {
+  .tables-grid {
+    grid-template-columns: repeat(3, 1fr);
+    /* 3 por linha em telas maiores */
+  }
+}
+
+/* --- CARD DA MESA --- */
+.table-card {
+  background-color: var(--bg-white);
+  border-radius: 16px;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  min-height: 180px;
+}
+
+.table-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.table-card.selected {
+  border-color: var(--color-primary);
+  background-color: #f4fcfd;
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+.table-number {
+  font-size: 3rem;
+  /* Bem grande */
+  font-weight: 800;
+  color: var(--color-primary);
+  /* Azul escuro da sua paleta */
+  line-height: 1;
+  margin-bottom: 5px;
+}
+
+/* Label "MESA" que aparece na imagem */
+.table-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 600;
+  margin-bottom: 25px;
+  /* Espaço entre o texto MESA e o status */
+}
+
+/* Badge de Status */
+.status-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 8px 24px;
+  /* Mais largo, estilo pílula */
+  border-radius: 50px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 1px solid;
+}
+
+/* Cores dos Status */
+.status-available {
+  background-color: transparent;
+  color: var(--color-success);
+  /* Verde */
+  border-color: var(--color-success);
+}
+
+.status-occupied {
+  background-color: var(--color-danger-bg);
+  color: var(--color-danger);
+  border-color: transparent;
+  /* Ocupado geralmente é cheio */
+}
+
+.table-card.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  filter: grayscale(0.1);
+}
+
+.table-card.disabled:hover {
+  transform: none;
+  box-shadow: var(--shadow-sm);
+}
+
+/* --- ACTION BAR --- */
+.action-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 15px 20px;
+  background: var(--bg-white);
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.05);
+  display: flex;
+  justify-content: center;
+  z-index: 100;
+}
+
+.btn-primary {
+  width: 100%;
+  max-width: 400px;
+  padding: 16px;
+
+  background-color: var(--bg-white);
+  border: 2px solid var(--color-primary);
+  /* Borda Azul */
+  color: var(--color-primary);
+
+  border-radius: var(--radius);
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Hover (Quando ativo e passa o mouse) */
+.btn-primary:not(:disabled):hover {
+  background-color: var(--color-primary);
+  color: var(--text-white);
+  box-shadow: 0 5px 15px rgba(21, 74, 87, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Estado Desabilitado (Com Borda Cinza) */
+.btn-primary:disabled {
+  /* Borda cinza clara */
+  border: 2px solid var(--color-primary);
+
+  /* Texto cinza */
+  color: var(--color-primary);
+
+  /* Fundo levemente cinza ou branco */
+  background-color: var(--bg-primary);
+
+  cursor: not-allowed;
+  opacity: 0.7;
+  /* Deixa um pouco mais transparente */
+  box-shadow: none;
+  transform: none;
+}
+
+.footer {
+  margin-top: 20px;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  text-align: center;
+  background-color: transparent;
+}
+
+.logo {
+  height: 240px;
+  width: auto;
+  display: flex;
+  transition: all 0.3s ease;
+  margin-top: -30px;
+}

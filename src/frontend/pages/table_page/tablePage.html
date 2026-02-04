@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CatchOrder - Selecionar Mesa</title>
+</head>
+
+<body>
+
+  <div id="app" class="container">
+    <header class="header">
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <img src="../img/logoName.svg" alt="CatchOrder Logo" class="logo">
+        <button class="icon-btn-small" id="darkModeToggle" aria-label="Alternar modo escuro"
+          style="background: transparent; border: 1px solid var(--border-light); border-radius: 8px; width: 40px; height: 40px;">
+          <span class="far fa-lightbulb"></span>
+        </button>
+      </div>
+      <p class="subtitle">Toque na sua mesa para começar.</p>
+    </header>
+
+    <main class="card-area">
+
+      <div id="tablesGrid" class="tables-grid">
+        <div class="loading-state">Carregando mesas...</div>
+      </div>
+
+      <div class="action-bar">
+        <button type="button" id="btnConfirm" class="btn-primary" disabled>
+          Selecione sua mesa
+        </button>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <p>CatchOrder Tecnologia &copy; 2025</p>
+    </footer>
+  </div>
+
+</body>
+
+</html>

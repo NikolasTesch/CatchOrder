@@ -21,7 +21,7 @@ export const requireRole = (...allowedRoles: userRole[]) => {
   };
 };
 
-export const isAdmin = requireRole(userRole.ADMIN);
+export const isAdmin = requireRole(userRole.MANAGER);
 export const isManager = requireRole(userRole.MANAGER);
 export const isWaiter = requireRole(userRole.WAITER);
-export const isAdminOrManager = requireRole(userRole.ADMIN, userRole.MANAGER);
+export const isAdminOrManager = requireRole(userRole.MANAGER);

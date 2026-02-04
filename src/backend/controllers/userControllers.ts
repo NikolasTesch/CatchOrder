@@ -127,15 +127,7 @@ class UsersController {
           });
         }
 
-        // Restriction 2: Manager cannot promote to Admin
-        if (
-          currentUser.role === userRole.MANAGER &&
-          userData.role === userRole.ADMIN
-        ) {
-          return res.status(403).json({
-            message: "Gerentes não podem promover usuários a Administrador.",
-          });
-        }
+
       }
 
       // Prevent password update via this method if not intended, or handle hashing if involved.

@@ -197,19 +197,6 @@ function setupEventListeners() {
     });
   }
 
-  // New Order Button (Header)
-  const newOrderBtn = document.getElementById("headerNewOrderBtn");
-  if (newOrderBtn) {
-    newOrderBtn.addEventListener("click", () => {
-      const availableSection = document.getElementById(
-        "availableTablesSection",
-      );
-      if (availableSection) {
-        availableSection.scrollIntoView({ behavior: "smooth" });
-      }
-    });
-  }
-
   // Orders Search Input
   const ordersSearch = document.getElementById("ordersSearchInput");
   if (ordersSearch) {
@@ -666,19 +653,7 @@ function renderActiveOrders(orders: Order[], tables: Table[]) {
       </div>
     `;
     })
-    .join("");
-
-  // New Order Placeholder Card
-  const newOrderCardHtml = `
-    <div class="new-order-card" id="cardNewOrderBtn">
-      <div class="new-order-icon">
-         <span class="material-symbols-outlined">add</span>
-      </div>
-      <span class="new-order-text">Novo Pedido</span>
-    </div>
-  `;
-
-  container.innerHTML = ordersHtml + newOrderCardHtml;
+    .join("");  container.innerHTML = ordersHtml;
 
   // Add click listeners to Edit Buttons
   container.querySelectorAll(".btn-edit-order").forEach((btn) => {
@@ -692,20 +667,7 @@ function renderActiveOrders(orders: Order[], tables: Table[]) {
         window.location.href = `createOrder.html?table_id=${order.table_id}&order_id=${order.id}`;
       }
     });
-  });
-
-  // Add click listener to New Order Card
-  const cardNewOrderBtn = document.getElementById("cardNewOrderBtn");
-  if (cardNewOrderBtn) {
-    cardNewOrderBtn.addEventListener("click", () => {
-      const availableSection = document.getElementById(
-        "availableTablesSection",
-      );
-      if (availableSection)
-        availableSection.scrollIntoView({ behavior: "smooth" });
-    });
-  }
-}
+  });}
 
 // ========================================
 // SECTION HANDLING (SPA)

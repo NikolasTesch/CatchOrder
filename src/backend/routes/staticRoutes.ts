@@ -29,7 +29,7 @@ router.get('/pages/sellingPage.html', serveSellingPage);
 router.get('/server09/pages/sellingPage.html', serveSellingPage);
 
 // 3. Root & App Redirects
-// If accessing root, redirect to selling page based on context
+// 3. Root & App Redirects
 router.get('/', (req, res) => {
   res.redirect('pages/sellingPage.html');
 });
@@ -51,6 +51,8 @@ router.get('/app', appHandler);
 router.get('/server09/app', appHandler);
 
 // 4. Protected Pages (Rest of /pages)
+// 4. Protected Pages (Rest of /pages)
 router.use('/pages', authenticatePage, express.static(path.join(__dirname, '../../../public/pages')));
+router.use('/server09/pages', authenticatePage, express.static(path.join(__dirname, '../../../public/pages')));
 
 export { router as staticRoutes };

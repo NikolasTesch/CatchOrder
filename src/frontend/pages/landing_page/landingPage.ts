@@ -1,182 +1,196 @@
-import '../../styles/global.css';
 import './style.css';
 import { ApiService } from '../../services/apiService';
 
-console.log('Landing Page Script Loaded'); // Debug 1
+type Nullable<T> = T | null;
 
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM Content Loaded'); // Debug 2
+function getEl<T extends HTMLElement>(id: string): T {
+  const el = document.getElementById(id);
+  if (!el) throw new Error(`Elemento com id="${id}" não encontrado.`);
+  return el as T;
+}
 
-    const usernameInput = document.getElementById('username') as HTMLInputElement | null;
-    const passwordInput = document.getElementById('password') as HTMLInputElement | null;
-    const togglePasswordBtn = document.querySelector('.password-toggle') as HTMLElement | null;
-    const loginButton = document.querySelector('.btn-primary') as HTMLElement | null;
-    const errorContainer = document.getElementById('login-error') as HTMLElement | null;
-    const darkModeToggle = document.getElementById('darkModeToggle');
+function qs<T extends Element>(
+  selector: string,
+  parent: ParentNode = document,
+): T {
+  const el = parent.querySelector(selector);
+  if (!el)
+    throw new Error(`Seletor "${selector}" não encontrou nenhum elemento.`);
+  return el as T;
+}
 
-    init();
+// ---------- Elements ----------
+const loginForm = getEl<HTMLFormElement>('loginForm');
+const usernameInput = getEl<HTMLInputElement>('username');
+const passwordInput = getEl<HTMLInputElement>('password');
+const errorMessage = getEl<HTMLDivElement>('errorMessage');
+const errorText = getEl<HTMLSpanElement>('errorText');
+const submitBtn = getEl<HTMLButtonElement>('submitBtn');
+const togglePasswordBtn = getEl<HTMLButtonElement>('togglePasswordBtn');
 
-    function init(): void {
-        initDarkMode();
-        setupEventListeners();
+// ---------- Limits ----------
+const MAX_LEN = 20;
+const MIN_PASS = 6;
+
+// garante pelo JS também (caso alguém remova maxlength no HTML)
+[usernameInput, passwordInput].forEach((inp) => {
+  inp.maxLength = MAX_LEN;
+  inp.addEventListener('input', () => {
+    if (inp.value.length > MAX_LEN) inp.value = inp.value.slice(0, MAX_LEN);
+  });
+});
+
+// ---------- Password toggle ----------
+togglePasswordBtn.addEventListener('click', () => {
+  const currentType = passwordInput.getAttribute('type');
+  const nextType = currentType === 'password' ? 'text' : 'password';
+
+  passwordInput.setAttribute('type', nextType);
+
+  const iconSpan = qs<HTMLSpanElement>('span', togglePasswordBtn);
+  iconSpan.textContent =
+    nextType === 'password' ? 'visibility_off' : 'visibility';
+});
+
+// ---------- Anti spam submit (client-side) ----------
+let isSubmitting = false;
+
+// cooldown simples
+const COOLDOWN_MS = 2000;
+let lastSubmitAt = 0;
+
+// limite de tentativas por janela (anti click-spam)
+const WINDOW_MS = 60_000; // 1 min
+const MAX_ATTEMPTS_PER_WINDOW = 10;
+const attempts: number[] = [];
+
+function canAttemptNow(): { ok: true } | { ok: false; reason: string } {
+  const now = Date.now();
+
+  // remove tentativas antigas
+  while (attempts.length && now - attempts[0] > WINDOW_MS) attempts.shift();
+
+  if (now - lastSubmitAt < COOLDOWN_MS) {
+    const wait = Math.ceil((COOLDOWN_MS - (now - lastSubmitAt)) / 1000);
+    return { ok: false, reason: `Aguarde ${wait}s antes de tentar novamente.` };
+  }
+
+  if (attempts.length >= MAX_ATTEMPTS_PER_WINDOW) {
+    return {
+      ok: false,
+      reason: 'Muitas tentativas. Aguarde 1 minuto e tente novamente.',
+    };
+  }
+
+  return { ok: true };
+}
+
+function setLoading(loading: boolean): void {
+  if (loading) {
+    submitBtn.classList.add('loading');
+    submitBtn.disabled = true;
+    submitBtn.setAttribute('aria-disabled', 'true');
+  } else {
+    submitBtn.classList.remove('loading');
+    submitBtn.disabled = false;
+    submitBtn.removeAttribute('aria-disabled');
+  }
+}
+
+// ---------- Login submit + validation ----------
+loginForm.addEventListener('submit', (e: SubmitEvent) => {
+  e.preventDefault();
+
+  // trava re-entrância
+  if (isSubmitting) return;
+
+  // anti spam/cooldown
+  const check = canAttemptNow();
+  if (!check.ok) {
+    errorText.textContent = check.reason;
+    errorMessage.classList.add('visible');
+    return;
+  }
+
+  errorMessage.classList.remove('visible');
+  usernameInput.classList.remove('input-error');
+  passwordInput.classList.remove('input-error');
+
+  const usernameVal = usernameInput.value.trim().slice(0, MAX_LEN);
+  const passwordVal = passwordInput.value.slice(0, MAX_LEN);
+
+  // mantém valores limitados
+  usernameInput.value = usernameVal;
+  passwordInput.value = passwordVal;
+
+  let isValid = true;
+  const errors: string[] = [];
+
+  if (!usernameVal) {
+    usernameInput.classList.add('input-error');
+    errors.push('O usuário é obrigatório.');
+    isValid = false;
+  }
+
+  if (passwordVal.length < MIN_PASS) {
+    passwordInput.classList.add('input-error');
+    errors.push(`A senha deve ter no mínimo ${MIN_PASS} caracteres.`);
+    isValid = false;
+  }
+
+  if (!isValid) {
+    errorText.textContent = errors[0] ?? 'Dados inválidos.';
+    errorMessage.classList.add('visible');
+    return;
+  }
+
+  // registra tentativa
+  const now = Date.now();
+  attempts.push(now);
+  lastSubmitAt = now;
+
+  isSubmitting = true;
+  setLoading(true);
+
+  ApiService.post<any>('/auth/login', {
+    username: usernameVal,
+    password: passwordVal,
+  })
+    .then((data) => {
+      // Login Success
+      setLoading(false);
+      isSubmitting = false;
+
+      // Store auth data
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+
+      // Redirect based on role
+      if (data.user.role === 'waiter') {
+        window.location.href = 'waiterMain.html';
+      } else {
+        // Admin or Manager -> Gestão
+        window.location.href = 'gestMain.html';
+      }
+    })
+    .catch((err) => {
+      // Login Failed
+      setLoading(false);
+      isSubmitting = false;
+
+      errorMessage.classList.add('visible');
+      errorText.textContent =
+        err.message || 'Credenciais inválidas. Tente novamente.';
+      usernameInput.classList.add('input-error');
+      passwordInput.classList.add('input-error');
+    });
+});
+
+([usernameInput, passwordInput] as HTMLInputElement[]).forEach((input) => {
+  input.addEventListener('input', () => {
+    if (input.classList.contains('input-error')) {
+      input.classList.remove('input-error');
+      errorMessage.classList.remove('visible');
     }
-
-    function initDarkMode() {
-        const savedTheme = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-        if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-            document.body.classList.add('dark-mode');
-            updateDarkModeIcon(true);
-        } else {
-            updateDarkModeIcon(false);
-        }
-    }
-
-    function toggleDarkMode() {
-        const isDark = document.body.classList.toggle('dark-mode');
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        updateDarkModeIcon(isDark);
-    }
-
-    function updateDarkModeIcon(isDark: boolean) {
-        if (darkModeToggle) {
-            const icon = darkModeToggle.querySelector('.material-symbols-outlined');
-            if (icon) icon.textContent = isDark ? 'dark_mode' : 'light_mode';
-        }
-    }
-
-    function setupEventListeners(): void {
-        if (darkModeToggle) {
-            darkModeToggle.addEventListener('click', toggleDarkMode);
-        }
-
-        if (togglePasswordBtn && passwordInput) {
-            togglePasswordBtn.addEventListener('click', handlePasswordToggle);
-            togglePasswordBtn.style.cursor = 'pointer';
-        }
-
-        if (loginButton) {
-            console.log('Attaching click listener to login button'); // Debug 4
-            loginButton.addEventListener('click', handleLogin);
-        } else {
-            console.error('Login button NOT found'); // Debug Error
-        }
-
-        // Clear error on input
-        if (usernameInput) usernameInput.addEventListener('input', clearError);
-        if (passwordInput) passwordInput.addEventListener('input', clearError);
-    }
-
-    function handlePasswordToggle(): void {
-        if (!passwordInput || !togglePasswordBtn) return;
-
-        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordInput.setAttribute('type', type);
-
-        // Update icon
-        const icon = togglePasswordBtn.querySelector('.material-symbols-outlined');
-        if (icon) {
-            icon.textContent = type === 'password' ? 'visibility' : 'visibility_off';
-        }
-    }
-
-    async function handleLogin(e: Event): Promise<void> {
-        console.log('Login button clicked'); // Debug 5
-        if (e) e.preventDefault();
-
-        if (!usernameInput || !passwordInput) return;
-
-        const username = usernameInput.value.trim();
-        const password = passwordInput.value.trim();
-
-        console.log('Values:', { username, password }); // Debug 6
-
-        // Reset error
-        clearError();
-
-        // Validation - Backend Match: Both required
-        if (!username) {
-            showError('Por favor, insira seu usuário.');
-            return;
-        }
-
-        if (!password) {
-            showError('Por favor, insira sua senha.');
-            return;
-        }
-
-        // Success - Loading State
-        setLoadingState(true);
-
-        try {
-            console.log('Sending request to /auth/login...'); // Debug 7
-            // Using ApiService for consistent request handling
-            const response = await ApiService.post<{ user: { role: string; id: string; name: string; username: string }, token: string }>('/auth/login', { username, password });
-
-            console.log('Login successful', response);
-
-            // Save user and token to localStorage
-            if (response.user) {
-                localStorage.setItem('user', JSON.stringify(response.user));
-            }
-            if (response.token) {
-                localStorage.setItem('token', response.token);
-            }
-
-            // Redirect based on role
-            if (response.user.role === 'waiter') {
-                window.location.href = 'waiterMain.html';
-            } else {
-                // Default for admin, manager, kitchen, etc.
-                window.location.href = 'gestMain.html';
-            }
-
-        } catch (error: any) {
-            console.error('Login error:', error);
-            showError(error.message || 'Falha no login. Verifique suas credenciais.');
-        } finally {
-            setLoadingState(false);
-        }
-    }
-
-    function showError(message: string): void {
-        if (errorContainer) {
-            errorContainer.textContent = message;
-            errorContainer.style.display = 'block';
-        }
-    }
-
-    function clearError(): void {
-        if (errorContainer) {
-            errorContainer.textContent = '';
-            errorContainer.style.display = 'none';
-        }
-    }
-
-    function setLoadingState(isLoading: boolean): void {
-        if (!loginButton) return;
-
-        if (isLoading) {
-            loginButton.classList.add('btn-loading');
-
-            // Create and append spinner if it doesn't exist
-            if (!loginButton.querySelector('.btn-label')) {
-                // Backup original text if necessary, for now assuming it's replaced
-            }
-
-            // Create and append spinner if it doesn't exist
-            if (!loginButton.querySelector('.spinner')) {
-                const spinner = document.createElement('div');
-                spinner.className = 'spinner';
-                loginButton.appendChild(spinner);
-            }
-        } else {
-            loginButton.classList.remove('btn-loading');
-            const spinner = loginButton.querySelector('.spinner');
-            if (spinner) {
-                spinner.remove();
-            }
-        }
-    }
+  });
 });

@@ -53,8 +53,8 @@
 
 .logo-box {
   background-color: var(--color-primary);
-  width: 80px;
-  height: 80px;
+  width: 96px;
+  height: 96px;
   border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
@@ -70,7 +70,7 @@
 
 .icon-main {
   color: var(--text-white);
-  font-size: 48px !important;
+  font-size: 56px !important;
 }
 
 .brand-name {
@@ -302,12 +302,12 @@ input:-webkit-autofill:active {
   }
 
   .logo-box {
-    width: 60px;
-    height: 60px;
+    width: 72px;
+    height: 72px;
   }
 
   .icon-main {
-    font-size: 36px !important;
+    font-size: 42px !important;
   }
 }
 

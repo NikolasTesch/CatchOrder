@@ -83,12 +83,20 @@ export class OrderModel {
     const initialTotal = 0;
     const initialStatus = 'OPEN';
 
+    // Check if table has a waiter assigned
+    const table = await TableModel.findById(data.table_id);
+    let userIdForOrder = data.user_id;
+
+    if (table && table.waiter_id) {
+      userIdForOrder = table.waiter_id;
+    }
+
     await db.run(
       `INSERT INTO orders(id, table_id, user_id, status, total, tip, opened_at) VALUES(?, ?, ?, ?, ?, ?, ?)`,
       [
         id,
         data.table_id,
-        data.user_id,
+        userIdForOrder,
         initialStatus,
         initialTotal,
         0,
@@ -96,11 +104,11 @@ export class OrderModel {
       ],
     );
 
-    // Atualizar status da mesa para ocupada e vincular o garçom
+    // Atualizar status da mesa para ocupada e vincular o garçom (ou manter o existente)
     await TableModel.updateStatus(
       data.table_id,
       TableStatus.OCCUPIED,
-      data.user_id,
+      userIdForOrder,
     );
 
     const order = await OrderModel.findById(id);

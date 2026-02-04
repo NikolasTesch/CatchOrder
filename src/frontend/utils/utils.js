@@ -39,7 +39,7 @@ class ToastManager {
 
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
-    
+
     toast.innerHTML = `
       <span class="material-icons toast-icon">${icons[type]}</span>
       <div class="toast-content">
@@ -238,36 +238,36 @@ const FormValidator = {
     required: (value) => {
       return value.trim() !== '';
     },
-    
+
     email: (value) => {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return emailRegex.test(value);
     },
-    
+
     minLength: (value, length) => {
       return value.length >= length;
     },
-    
+
     maxLength: (value, length) => {
       return value.length <= length;
     },
-    
+
     number: (value) => {
       return !isNaN(value) && value.trim() !== '';
     },
-    
+
     phone: (value) => {
       const phoneRegex = /^[\d\s\-\(\)]+$/;
       return phoneRegex.test(value) && value.replace(/\D/g, '').length >= 10;
     },
-    
+
     cpf: (value) => {
       const cpf = value.replace(/\D/g, '');
       if (cpf.length !== 11) return false;
-      
+
       // Verificar se todos os dígitos são iguais
       if (/^(\d)\1+$/.test(cpf)) return false;
-      
+
       // Validar dígitos verificadores
       let sum = 0;
       for (let i = 0; i < 9; i++) {
@@ -276,7 +276,7 @@ const FormValidator = {
       let digit = 11 - (sum % 11);
       if (digit >= 10) digit = 0;
       if (digit !== parseInt(cpf.charAt(9))) return false;
-      
+
       sum = 0;
       for (let i = 0; i < 10; i++) {
         sum += parseInt(cpf.charAt(i)) * (11 - i);
@@ -285,18 +285,18 @@ const FormValidator = {
       if (digit >= 10) digit = 0;
       return digit === parseInt(cpf.charAt(10));
     },
-    
+
     password: (value) => {
       // Mínimo 6 caracteres
       return value.length >= 6;
     },
-    
+
     strongPassword: (value) => {
       // Mínimo 8 caracteres, 1 maiúscula, 1 minúscula, 1 número
       const strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
       return strongRegex.test(value);
     },
-    
+
     url: (value) => {
       try {
         new URL(value);
@@ -305,7 +305,7 @@ const FormValidator = {
         return false;
       }
     },
-    
+
     match: (value, targetValue) => {
       return value === targetValue;
     }
@@ -330,22 +330,22 @@ const FormValidator = {
   validateField(input, validations) {
     const value = input.value;
     const group = input.closest('.form-group');
-    
+
     if (!group) return true;
 
     for (const validation of validations) {
       const { rule, params = [], message } = validation;
-      
+
       if (!this.rules[rule]) continue;
-      
+
       const isValid = this.rules[rule](value, ...params);
-      
+
       if (!isValid) {
         this.setFieldError(group, input, message || this.messages[rule].replace('{length}', params[0]));
         return false;
       }
     }
-    
+
     this.setFieldSuccess(group, input);
     return true;
   },
@@ -353,16 +353,16 @@ const FormValidator = {
   setFieldError(group, input, message) {
     group.classList.remove('is-valid', 'is-warning');
     group.classList.add('is-invalid');
-    
+
     let helper = group.querySelector('.form-helper');
     if (!helper) {
       helper = document.createElement('div');
       helper.className = 'form-helper';
       input.parentNode.appendChild(helper);
     }
-    
+
     helper.innerHTML = `<span class="material-icons">error</span> ${message}`;
-    
+
     // Update icon in wrapper if exists
     const wrapper = input.closest('.form-input-wrapper');
     if (wrapper) {
@@ -379,12 +379,12 @@ const FormValidator = {
   setFieldSuccess(group, input) {
     group.classList.remove('is-invalid', 'is-warning');
     group.classList.add('is-valid');
-    
+
     let helper = group.querySelector('.form-helper');
     if (helper) {
       helper.remove();
     }
-    
+
     // Update icon in wrapper if exists
     const wrapper = input.closest('.form-input-wrapper');
     if (wrapper) {
@@ -401,14 +401,14 @@ const FormValidator = {
   setFieldWarning(group, input, message) {
     group.classList.remove('is-valid', 'is-invalid');
     group.classList.add('is-warning');
-    
+
     let helper = group.querySelector('.form-helper');
     if (!helper) {
       helper = document.createElement('div');
       helper.className = 'form-helper';
       input.parentNode.appendChild(helper);
     }
-    
+
     helper.innerHTML = `<span class="material-icons">warning</span> ${message}`;
   },
 
@@ -423,20 +423,20 @@ const FormValidator = {
   // Setup real-time validation for a form
   setupForm(formElement, validationConfig) {
     const inputs = formElement.querySelectorAll('input, select, textarea');
-    
+
     inputs.forEach(input => {
       const fieldName = input.name || input.id;
       const fieldValidations = validationConfig[fieldName];
-      
+
       if (!fieldValidations) return;
-      
+
       // Validate on blur
       input.addEventListener('blur', () => {
         if (input.value) {
           this.validateField(input, fieldValidations);
         }
       });
-      
+
       // Validate on input (after first blur)
       let hasBlurred = false;
       input.addEventListener('blur', () => { hasBlurred = true; }, { once: true });
@@ -446,22 +446,22 @@ const FormValidator = {
         }
       });
     });
-    
+
     // Validate all on submit
     formElement.addEventListener('submit', (e) => {
       e.preventDefault();
-      
+
       let isValid = true;
       inputs.forEach(input => {
         const fieldName = input.name || input.id;
         const fieldValidations = validationConfig[fieldName];
-        
+
         if (fieldValidations) {
           const fieldIsValid = this.validateField(input, fieldValidations);
           if (!fieldIsValid) isValid = false;
         }
       });
-      
+
       if (isValid) {
         // Form is valid, trigger custom event
         formElement.dispatchEvent(new CustomEvent('formValid', { detail: { form: formElement } }));
@@ -509,4 +509,73 @@ const LoadingHelper = {
   }
 };
 
+
 window.LoadingHelper = LoadingHelper;
+
+// ==================== THEME MANAGER ====================
+
+const ThemeManager = {
+  activeTheme: 'light',
+
+  init() {
+    // 1. Load saved or preference
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+      this.applyTheme('dark');
+    } else {
+      this.applyTheme('light');
+    }
+
+    // 2. Setup global listener (Delegation)
+    // This allows the button to be created at any time (dynamic content)
+    document.addEventListener('click', (e) => {
+      // Check if target is the toggle button or inside it
+      const toggleBtn = e.target.closest('#darkModeToggle');
+      if (toggleBtn) {
+        e.preventDefault(); // Prevent default if it's a link
+        this.toggleTheme();
+      }
+    });
+
+    // 3. Listen for OS changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      if (!localStorage.getItem('theme')) {
+        this.applyTheme(e.matches ? 'dark' : 'light');
+      }
+    });
+  },
+
+  toggleTheme() {
+    const newTheme = this.activeTheme === 'dark' ? 'light' : 'dark';
+    this.applyTheme(newTheme);
+  },
+
+  applyTheme(theme) {
+    this.activeTheme = theme;
+
+    // 1. Body Class
+    if (theme === 'dark') {
+      document.body.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+    }
+
+    // 2. Button Icon (if present)
+    // We search every time in case the button was re-rendered
+    const toggleBtn = document.getElementById('darkModeToggle');
+    if (toggleBtn) {
+      const icon = toggleBtn.querySelector('.material-symbols-outlined') || toggleBtn.querySelector('.material-icons');
+      if (icon) {
+        icon.textContent = theme === 'dark' ? 'dark_mode' : 'light_mode';
+      }
+    }
+
+    // 3. Persist
+    localStorage.setItem('theme', theme);
+  }
+};
+
+window.ThemeManager = ThemeManager;
+

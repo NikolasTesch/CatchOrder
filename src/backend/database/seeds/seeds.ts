@@ -26,7 +26,7 @@ const products = [
     name: 'Água Mineral',
     description: 'Água mineral sem gás 500ml',
     price: 500,
-    image_path: '/img/drink/agua.webp',
+    image_path: 'public/img/drink/agua.webp',
     is_active: true,
   },
   {
@@ -35,7 +35,7 @@ const products = [
     name: 'Café Expresso',
     description: 'Café expresso intenso',
     price: 600,
-    image_path: '/img/drink/cafe.jpg',
+    image_path: 'public/img/drink/cafe.jpg',
     is_active: true,
   },
   {
@@ -53,7 +53,7 @@ const products = [
     name: 'Cerveja Artesanal',
     description: 'Cerveja artesanal gelada',
     price: 1200,
-    image_path: '/img/drink/cerveja.webp',
+    image_path: 'public/img/drink/cerveja.webp',
     is_active: true,
   },
   {
@@ -62,7 +62,7 @@ const products = [
     name: 'Milkshake',
     description: 'Milkshake cremoso de chocolate',
     price: 1800,
-    image_path: '/img/drink/milkshake.webp',
+    image_path: 'public/img/drink/milkshake.webp',
     is_active: true,
   },
   {
@@ -80,7 +80,7 @@ const products = [
     name: 'Suco Natural',
     description: 'Suco natural de frutas da estação',
     price: 1000,
-    image_path: '/img/drink/suco.webp',
+    image_path: 'public/img/drink/suco.webp',
     is_active: true,
   },
   // Comidas (10 produtos)
@@ -90,7 +90,7 @@ const products = [
     name: 'Açaí com Peixe',
     description: 'Açaí tradicional com peixe frito',
     price: 3500,
-    image_path: '/img/food/acai-peixe.webp',
+    image_path: 'public/img/food/acai-peixe.webp',
     is_active: true,
   },
   {
@@ -99,7 +99,7 @@ const products = [
     name: 'Spaghetti Carbonara',
     description: 'Massa italiana clássica com pancetta e ovos',
     price: 4200,
-    image_path: '/img/food/carbonara.webp',
+    image_path: 'public/img/food/carbonara.webp',
     is_active: true,
   },
   {
@@ -108,7 +108,7 @@ const products = [
     name: 'Carne Assada',
     description: 'Carne assada suculenta com batatas rústicas',
     price: 4500,
-    image_path: '/img/food/carne-assada.webp',
+    image_path: 'public/img/food/carne-assada.webp',
     is_active: true,
   },
   {
@@ -117,7 +117,7 @@ const products = [
     name: 'Frango no Tucupi',
     description: 'Prato típico com frango e tucupi',
     price: 3800,
-    image_path: '/img/food/frango-tucupi.webp',
+    image_path: 'public/img/food/frango-tucupi.webp',
     is_active: true,
   },
   {
@@ -126,7 +126,7 @@ const products = [
     name: 'Gyoza',
     description: 'Porção de 6 unidades de Gyoza',
     price: 2200,
-    image_path: '/img/food/gyoza.webp',
+    image_path: 'public/img/food/gyoza.webp',
     is_active: true,
   },
   {
@@ -135,7 +135,7 @@ const products = [
     name: 'Maniçoba',
     description: 'Prato tradicional paraense',
     price: 4000,
-    image_path: '/img/food/manicoba.webp',
+    image_path: 'public/img/food/manicoba.webp',
     is_active: true,
   },
   {
@@ -144,7 +144,7 @@ const products = [
     name: 'Pizza Calabresa',
     description: 'Pizza de calabresa com cebola e queijo',
     price: 3500,
-    image_path: '/img/food/pizza.webp',
+    image_path: 'public/img/food/pizza.webp',
     is_active: true,
   },
   {
@@ -153,7 +153,7 @@ const products = [
     name: 'Salada Caesar',
     description: 'Salada leve com frango grelhado e molho especial',
     price: 2800,
-    image_path: '/img/food/salada-frango.webp',
+    image_path: 'public/img/food/salada-frango.webp',
     is_active: true,
   },
   {
@@ -162,7 +162,7 @@ const products = [
     name: 'Combinado Sushi',
     description: 'Seleção especial de sushis e sahimis',
     price: 6500,
-    image_path: '/img/food/sushi.webp',
+    image_path: 'public/img/food/sushi.webp',
     is_active: true,
   },
   {
@@ -171,7 +171,7 @@ const products = [
     name: 'Tacacá',
     description: 'Tacacá quente com jambu e camarão',
     price: 2500,
-    image_path: '/img/food/tacaca.webp',
+    image_path: 'public/img/food/tacaca.webp',
     is_active: true,
   },
 ];

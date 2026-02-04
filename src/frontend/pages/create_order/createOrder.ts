@@ -1,5 +1,6 @@
 import './style.css';
 import { ApiService } from '../../services/apiService';
+import { resolveImagePath } from '../../utils/assets';
 import { centsToReais, formatCurrency } from '../../utils/currency';
 import { ModalService } from '../../utils/modalService';
 
@@ -311,7 +312,7 @@ function createProductCard(product: Product): HTMLElement {
   card.dataset.productId = product.id;
 
   const imageUrl =
-    product.image_path ||
+    (product.image_path ? resolveImagePath(product.image_path) : null) ||
     product.image_url ||
     'https://placehold.co/300x200/png?text=Product';
 
@@ -481,8 +482,14 @@ function updateTotals() {
 
 // --- API Actions ---
 
-async function removeOrderItem(orderId: string, itemId: string, quantity?: number) {
-  const confirmMessage = quantity ? `Tem certeza que deseja cancelar ${quantity} item(s)?` : 'Tem certeza que deseja cancelar este item?';
+async function removeOrderItem(
+  orderId: string,
+  itemId: string,
+  quantity?: number,
+) {
+  const confirmMessage = quantity
+    ? `Tem certeza que deseja cancelar ${quantity} item(s)?`
+    : 'Tem certeza que deseja cancelar este item?';
 
   showConfirmationModal('Cancelar Item', confirmMessage, async () => {
     try {
@@ -503,7 +510,6 @@ async function removeOrderItem(orderId: string, itemId: string, quantity?: numbe
   });
 }
 //...
-
 
 async function deliverItem(orderId: string, itemId: string, quantity?: number) {
   try {
@@ -957,9 +963,11 @@ function showQuantityModal(item: OrderItem, onConfirm: (qty: number) => void) {
   });
 }
 
-
 // Helper Modal for Quantity (Generic or Specific)
-function showCancelQuantityModal(item: OrderItem, onConfirm: (qty: number) => void) {
+function showCancelQuantityModal(
+  item: OrderItem,
+  onConfirm: (qty: number) => void,
+) {
   const modal = document.createElement('div');
   modal.className = 'quantity-modal-overlay active';
   modal.innerHTML = `

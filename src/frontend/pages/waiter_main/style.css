@@ -38,6 +38,27 @@ body {
   /* Hidden by default on mobile */
 }
 
+/* Sidebar Overlay */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 30;
+  /* Below sidebar (40) */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  backdrop-filter: blur(2px);
+}
+
+.sidebar-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 .sidebar-header {
   padding: 0 0 1.5rem 0;
   /* Padding adjustment if needed, but gest_main doesn't seem to have this specific header class used in the same way, keeping it lighter */
@@ -416,6 +437,13 @@ body.dark-mode .section-title {
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 1.5rem;
   margin-top: 1.5rem;
+}
+
+.table-container {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  overflow-x: auto;
 }
 
 /* New Active Order Card Styling */

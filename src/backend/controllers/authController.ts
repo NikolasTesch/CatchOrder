@@ -37,6 +37,7 @@ class AuthController {
 
       const { password_hash, ...userSafe } = user;
 
+      const isTotem = user.username === process.env.TOTEM_USERNAME;
 
       res.cookie('token', token, {
         httpOnly: true,
@@ -47,7 +48,7 @@ class AuthController {
       return res.status(200).json({
         message: 'Login realizado com sucesso',
         token,
-        user: userSafe,
+        user: { ...userSafe, isTotem },
       });
     } catch (error) {
       console.error("Login error:", error);

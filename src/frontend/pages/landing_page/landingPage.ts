@@ -1,4 +1,5 @@
 import './style.css';
+import { ApiService } from '../../services/apiService';
 
 type Nullable<T> = T | null;
 
@@ -151,21 +152,38 @@ loginForm.addEventListener('submit', (e: SubmitEvent) => {
   isSubmitting = true;
   setLoading(true);
 
-  window.setTimeout(() => {
-    const randomSuccess = Math.random() > 0.3;
+  ApiService.post<any>('/auth/login', {
+    username: usernameVal,
+    password: passwordVal,
+  })
+    .then((data) => {
+      // Login Success
+      setLoading(false);
+      isSubmitting = false;
 
-    setLoading(false);
-    isSubmitting = false;
+      // Store auth data
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
 
-    if (randomSuccess) {
-      alert(`Bem-vindo, ${usernameVal}! Login realizado com sucesso.`);
-    } else {
+      // Redirect based on role
+      if (data.user.role === 'waiter') {
+        window.location.href = 'waiterMain.html';
+      } else {
+        // Admin or Manager -> Gestão
+        window.location.href = 'gestMain.html';
+      }
+    })
+    .catch((err) => {
+      // Login Failed
+      setLoading(false);
+      isSubmitting = false;
+
       errorMessage.classList.add('visible');
-      errorText.textContent = 'Credenciais inválidas. Tente novamente.';
+      errorText.textContent =
+        err.message || 'Credenciais inválidas. Tente novamente.';
       usernameInput.classList.add('input-error');
       passwordInput.classList.add('input-error');
-    }
-  }, 1500);
+    });
 });
 
 ([usernameInput, passwordInput] as HTMLInputElement[]).forEach((input) => {

@@ -24,9 +24,10 @@ body {
 .sidebar {
   position: fixed;
   top: 0;
+  top: 0;
   left: 0;
   height: 100vh;
-  width: 280px;
+  width: var(--sidebar-width);
   background-color: white;
   z-index: 1010;
   transform: translateX(-100%);
@@ -95,12 +96,12 @@ body.dark-mode .nav-item:hover, body.dark-mode .nav-item.active {
   }
   
   .page-wrapper {
-    margin-left: 280px; /* Sidebar width */
+    margin-left: var(--sidebar-width);
     max-width: none; /* Allow full width minus sidebar */
   }
 
   .main-header {
-    padding-left: 312px !important; /* 280px + 32px padding */
+    padding-left: calc(var(--sidebar-width) + 2rem) !important;
   }
 
   #menuBtn {

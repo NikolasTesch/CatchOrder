@@ -185,7 +185,12 @@ img {
   --z-modal-backdrop: 400;
   --z-modal: 500;
   --z-popover: 600;
+  --z-popover: 600;
   --z-tooltip: 700;
+
+  /* Layout Variables */
+  --sidebar-width: clamp(250px, 18vw, 320px);
+  --header-height: 70px;
 }
 
 /* Manual dark mode toggle via JavaScript */

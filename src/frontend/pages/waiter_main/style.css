@@ -4,7 +4,7 @@
   --color-primary: #154a57;
   --color-secondary: #f4ac45;
   --color-danger: #9f2727;
-  --bg-page: #f8fafb;
+  --bg-page: #f4f7f8;
 }
 
 /* --- LAYOUT FIX --- */
@@ -303,12 +303,12 @@ body.dark-mode .section-title {
   background: white;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
   display: flex;
   flex-direction: column;
   position: relative;
   transition: transform 0.2s, box-shadow 0.2s;
-  border: 1px solid #e2e8f0;
+  border: 1.5px solid var(--border-light);
   min-height: 220px;
   cursor: default; /* Action is on edit button */
 }
@@ -686,8 +686,8 @@ body.dark-mode .search-input:focus {
 
 .table-card {
     background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
+    border: 1.5px solid var(--border-light);
+    border-radius: 16px;
     padding: 1.5rem 1rem;
     display: flex;
     flex-direction: column;
@@ -697,7 +697,7 @@ body.dark-mode .search-input:focus {
     min-height: 160px; /* Bigger layout */
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
 }
 
 body.dark-mode .table-card {

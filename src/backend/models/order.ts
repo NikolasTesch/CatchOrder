@@ -23,7 +23,7 @@ export class OrderModel {
       SELECT 
         o.*, 
         u.name as user_name,
-        COALESCE(SUM(CASE WHEN oi.delivered_at IS NOT NULL THEN oi.quantity * oi.unit_price ELSE 0 END), 0) as total,
+        COALESCE(SUM(oi.quantity * oi.unit_price), 0) as total,
         json_group_array(json_object('name', p.name, 'quantity', oi.quantity, 'unit_price', oi.unit_price, 'created_at', oi.created_at, 'delivered_at', oi.delivered_at)) as items_json
       FROM orders o
       LEFT JOIN order_items oi ON o.id = oi.order_id

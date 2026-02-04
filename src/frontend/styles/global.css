@@ -105,14 +105,14 @@ img {
   --color-info: #17a2b8;
 
   /* Background Colors */
-  --bg-primary: #fcf7f8;
+  --bg-primary: #ffffff;
   --bg-secondary: #dfdfdf;
   --bg-white: #ffffff;
   --bg-card: #ffffff;
   --bg-overlay: rgba(0, 0, 0, 0.5);
 
   /* Text Colors */
-  --text-primary: #000000;
+  --text-primary: #154a57;
   --text-secondary: #666666;
   --text-tertiary: #999999;
   --text-white: #ffffff;
@@ -129,6 +129,13 @@ img {
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
   --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+
+  /* Neon & Glass Effects (Light Mode) */
+  --neon-primary: 0 0 10px rgba(21, 74, 87, 0.5), 0 0 20px rgba(21, 74, 87, 0.3);
+  --neon-secondary: 0 0 10px rgba(244, 172, 69, 0.5), 0 0 20px rgba(244, 172, 69, 0.3);
+  --glass-bg-light: rgba(255, 255, 255, 0.7);
+  --glass-border-light: rgba(255, 255, 255, 0.5);
+  --neon-border-color: rgba(21, 74, 87, 0.4);
 
   /* === SPACING SCALE === */
   --space-xs: 0.25rem; /* 4px */
@@ -626,86 +633,7 @@ body.dark-mode {
   background-size: 20px;
 }
 
-:root {
-  /* === PALETA DE CORES (Light Mode - Default) === */
-
-  /* Cores Principais */
-  --primary: #6366f1; /* Indigo 500 */
-  --primary-hover: #4f46e5; /* Indigo 600 */
-  --primary-soft: rgba(99, 102, 241, 0.1);
-
-  /* Legacy Mapping (Light) */
-  --color-primary: var(--primary);
-  --color-primary-rgb: 99, 102, 241;
-  --color-secondary: #0f172a; /* Slate 900 */
-  --color-info: #3b82f6; /* Blue 500 */
-  --color-success: #10b981; /* Emerald 500 */
-  --color-warning: #f59e0b; /* Amber 500 */
-  --color-danger: #ef4444; /* Red 500 */
-
-  /* Backgrounds (Light) */
-  --background-dark: #f8fafc; /* Slate 50 */
-  --background-glass: rgba(255, 255, 255, 0.7);
-  --background-glass-hover: rgba(255, 255, 255, 0.9);
-  --background-card: #ffffff;
-
-  /* Legacy Backgrounds (Light) */
-  --bg-primary: #f8fafc;
-  --bg-secondary: #ffffff;
-  --bg-tertiary: #e2e8f0;
-
-  /* Textos (Light) */
-  --text-light: #1e293b; /* Slate 800 */
-  --text-main: #334155; /* Slate 700 */
-  --text-muted: #475569; /* Slate 600 (Darker for contrast) */
-  --text-dim: #64748b; /* Slate 500 (Darker for contrast) */
-
-  /* Legacy Text (Light) */
-  --text-primary: #1e293b;
-  --text-secondary: #475569;
-  --text-tertiary: #64748b;
-  --text-white: #ffffff;
-  --text-title: #1e293b; /* Slate 800 - Standard Title Color */
-
-  /* Status Colors */
-  --emerald: #10b981;
-  --red: #ef4444;
-  --amber: #f59e0b;
-  --blue: #3b82f6;
-
-  /* Bordas e Efeitos */
-  --border-glass: rgba(
-    0,
-    0,
-    0,
-    0.1
-  ); /* Darker border for light mode visibility */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
-
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-  --radius-full: 9999px;
-
-  /* Layout */
-  --header-height: 70px;
-  --sidebar-width: 260px;
-
-  /* Transitions */
-  --transition-base: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-fast: 150ms ease-in-out;
-
-  /* Z-Index */
-  --z-negative: -1;
-  --z-normal: 1;
-  --z-fixed: 1030;
-  --z-modal: 1050;
-  --z-toast: 1080;
-}
+/* Removed duplicate :root block */
 
 /* === DARK MODE (Glassmorphism Identity - Requested) === */
 body.dark-mode {
@@ -790,6 +718,25 @@ h1, h2, h3, h4, h5, h6,
   -webkit-backdrop-filter: blur(16px) saturate(180%);
   border: 1px solid var(--border-glass);
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.glass-light {
+  background: var(--glass-bg-light);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(21, 74, 87, 0.15);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+}
+
+.neon-border {
+  border: 1px solid var(--neon-border-color);
+  box-shadow: var(--neon-primary);
+  transition: all 0.3s ease-in-out;
+}
+
+.neon-border:hover {
+  box-shadow: 0 0 15px rgba(21, 74, 87, 0.6), 0 0 30px rgba(21, 74, 87, 0.4);
+  border-color: var(--color-primary);
 }
 
 /* --- Background Blobs (Animação de Fundo) --- */

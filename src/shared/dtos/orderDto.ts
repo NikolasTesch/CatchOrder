@@ -17,11 +17,13 @@ export interface CreateOrderDTO {
 }
 
 export interface UpdateOrderDTO {
-  status?: 'OPEN' | 'CLOSED';
+  status?: "OPEN" | "CLOSED";
   total?: number;
   tip?: number;
   closed_at?: string;
   observations?: string;
+  table_id?: string;
+  user_id?: string;
 }
 
 export interface OrderItemDTO {
@@ -32,4 +34,6 @@ export interface OrderItemDTO {
   unit_price: number;
   total_item: number;
   product_name?: string;
+  created_at?: string;
+  delivered_at?: string;
 }

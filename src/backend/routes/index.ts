@@ -5,6 +5,7 @@ import { tablesRoutes } from './tableRoutes';
 import { categoryRoutes } from './categoryRoutes';
 import { productsRoutes } from './productRoutes';
 import { authRoutes } from './authRoutes';
+import { metricsRoutes } from './metricsRoutes';
 import { authenticateToken } from '../middlewares/jwtAuth';
 import authController from '../controllers/authController';
 import { validateLogin } from '../middlewares/validateAuth';
@@ -29,5 +30,6 @@ routes.use('/orders', ordersRoutes);
 routes.use('/tables', tablesRoutes);
 routes.use('/categories', categoryRoutes);
 routes.use('/products', productsRoutes);
+routes.use('/metrics', metricsRoutes);
 
 export { routes };

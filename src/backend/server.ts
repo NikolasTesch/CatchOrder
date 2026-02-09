@@ -1,10 +1,10 @@
-import dotenv from 'dotenv';
+import 'dotenv/config';
 import { app } from './app';
 import { runMigrations } from './database/migrations/migrations';
 
-dotenv.config();
 
 const PORT = process.env.PORT || 3000;
+console.log('Ambiente carregado. BASE_PATH:', process.env.BASE_PATH);
 
 const startServer = async () => {
     try {

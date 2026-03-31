@@ -288,6 +288,11 @@ function toggleProfilePopover(btn: HTMLElement) {
     popover.id = "profilePopover";
     popover.className = "popover";
 
+    // Prevent clicks inside popover from closing it
+    popover.addEventListener("click", (e) => {
+      e.stopPropagation();
+    });
+
     if (currentUser) {
       // Logic to handle potential different role format if needed
       const createdDate =
